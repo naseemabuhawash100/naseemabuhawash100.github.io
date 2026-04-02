@@ -21,46 +21,28 @@
 
     <div class="text-right mb-8">
       <h2 class="text-xl font-bold mb-3">1) 2 + 3 = ؟</h2>
-      <label class="block mb-2">
-        <input type="radio" name="q1" value="5"> 5
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q1" value="4"> 4
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q1" value="6"> 6
-      </label>
+      <label class="block mb-2"><input type="radio" name="q1" value="5"> 5</label>
+      <label class="block mb-2"><input type="radio" name="q1" value="4"> 4</label>
+      <label class="block mb-2"><input type="radio" name="q1" value="6"> 6</label>
     </div>
 
     <div class="text-right mb-8">
       <h2 class="text-xl font-bold mb-3">2) 4 + 1 = ؟</h2>
-      <label class="block mb-2">
-        <input type="radio" name="q2" value="5"> 5
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q2" value="3"> 3
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q2" value="6"> 6
-      </label>
+      <label class="block mb-2"><input type="radio" name="q2" value="5"> 5</label>
+      <label class="block mb-2"><input type="radio" name="q2" value="3"> 3</label>
+      <label class="block mb-2"><input type="radio" name="q2" value="6"> 6</label>
     </div>
 
     <div class="text-right mb-8">
       <h2 class="text-xl font-bold mb-3">3) 1 + 2 = ؟</h2>
-      <label class="block mb-2">
-        <input type="radio" name="q3" value="3"> 3
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q3" value="2"> 2
-      </label>
-      <label class="block mb-2">
-        <input type="radio" name="q3" value="4"> 4
-      </label>
+      <label class="block mb-2"><input type="radio" name="q3" value="3"> 3</label>
+      <label class="block mb-2"><input type="radio" name="q3" value="2"> 2</label>
+      <label class="block mb-2"><input type="radio" name="q3" value="4"> 4</label>
     </div>
 
     <button
       type="button"
-      onclick="finishQuiz()"
+      id="finishBtn"
       class="bg-blue-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-800 transition"
     >
       إنهاء التمرين
@@ -74,7 +56,7 @@
   </div>
 
   <script>
-    function finishQuiz() {
+    document.getElementById("finishBtn").addEventListener("click", function () {
       const resultElement = document.getElementById("result");
       const studentName = document.getElementById("studentName").value.trim();
 
@@ -87,19 +69,18 @@
       const q2 = document.querySelector('input[name="q2"]:checked');
       const q3 = document.querySelector('input[name="q3"]:checked');
 
-      if (!q1  !q2  !q3) {
+      if (!q1 || !q2 || !q3) {
         resultElement.innerText = "أجب عن جميع الأسئلة أولًا";
         return;
       }
 
       let score = 0;
-
       if (q1.value === "5") score++;
       if (q2.value === "5") score++;
       if (q3.value === "3") score++;
 
       resultElement.innerText = studentName + "، نتيجتك: " + score + " من 3 🎉";
-    }
+    });
   </script>
 
 </body>
