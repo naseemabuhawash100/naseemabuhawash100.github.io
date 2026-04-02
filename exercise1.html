@@ -11,7 +11,18 @@
 
 <div class="bg-white p-8 rounded-xl shadow-lg text-center w-full max-w-md">
 
-<h2 class="text-2xl font-bold mb-6">2 + 3 = ؟</h2>
+<h2 class="text-2xl font-bold mb-4">التمرين الأول</h2>
+
+<p class="mb-4 text-gray-700">اكتب اسمك أولًا ثم اختر الإجابة الصحيحة</p>
+
+<input
+  id="studentName"
+  type="text"
+  placeholder="اكتب اسم الطالب"
+  class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6 text-center"
+/>
+
+<h3 class="text-xl font-bold mb-6">2 + 3 = ؟</h3>
 
 <button onclick="checkAnswer(5)" class="bg-blue-900 text-white px-6 py-3 rounded m-2">5</button>
 <button onclick="checkAnswer(4)" class="bg-blue-900 text-white px-6 py-3 rounded m-2">4</button>
@@ -25,10 +36,17 @@
 
 <script>
 function checkAnswer(answer){
+  const studentName = document.getElementById("studentName").value.trim();
+
+  if(studentName === ""){
+    document.getElementById("result").innerText = "اكتب اسمك أولًا";
+    return;
+  }
+
   if(answer === 5){
-    document.getElementById("result").innerText = "إجابة صحيحة 🎉";
+    document.getElementById("result").innerText = studentName + "، إجابة صحيحة 🎉";
   } else {
-    document.getElementById("result").innerText = "إجابة خاطئة ❌";
+    document.getElementById("result").innerText = studentName + "، إجابة خاطئة ❌";
   }
 }
 </script>
