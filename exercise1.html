@@ -61,7 +61,8 @@
 
       db.collection("results").add({
         studentName: name,
-        score: score
+        score: score,
+        exercise: "exercise1"
       })
       .then(function () {
         if (score === 1) {
