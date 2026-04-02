@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض أعمال مصمم جرافيك | تصاميم كتب وأعمال منشورة</title>
+    <meta name="description" content="معرض أعمال احترافي يعرض مشاريع التصميم الجرافيكي، بما في ذلك تصاميم الكتب والأعمال المنشورة والمشاريع الإبداعية الأخرى.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1a365d",
+                        secondary: "#2d3748",
+                        accent: "#c53030",
+                        light: "#f7fafc",
+                        dark: "#1a202c"
+                    },
+                    fontFamily: {
+                        'sans': ['Tajawal', 'Inter', 'system-ui', 'sans-serif'],
+                        'serif': ['Cairo', 'Georgia', 'serif']
+                    },
+                    spacing: {
+                        '128': '32rem',
+                        '144': '36rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .filter-active {
+            background-color: #c53030;
+            color: white;
+        }
+        body { direction: rtl; }
+        input, textarea, select { text-align: right; }
+    </style>
+</head>
+<body class="min-h-screen bg-light font-sans text-gray-800 text-right">
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center gap-2 mb-4 md:mb-0">
+                    <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">GD</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-primary font-serif">مصمم جرافيك</h1>
+                        <p class="text-sm text-gray-600">تصاميم كتب وأعمال منشورة</p>
+                    </div>
+                </div>
+                
+                <nav class="w-full md:w-auto">
+                    <ul id="nav-menu" class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-8 text-center md:text-left"></ul>
+                </nav>
+                
+                <div class="mt-4 md:mt-0">
+                    <button id="contact-btn" class="bg-accent text-white px-6 py-2 rounded-full font-medium hover:bg-red-700 transition duration-300">
+                        تواصل معي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient text-white py-16 md:py-24">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 font-serif">إبداع بصري يعكس التميّز</h2>
+                <p class="text-xl mb-8 opacity-90">معرض أعمال احترافي في التصميم الجرافيكي يضم تصاميم كتب وأعمالاً منشورة وحلولاً بصرية مبتكرة توصل الرسالة بوضوح وتُلهم الجمهور.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#portfolio" class="bg-white text-primary px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition duration-300">
+                        عرض الأعمال
+                    </a>
+                    <a href="#about" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-primary transition duration-300">
+                        من أنا
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الأعمال Filter -->
+    <section id="portfolio" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">معرض أعمالي</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">مجموعة مختارة من أعمالي في التصميم الجرافيكي، تشمل تصاميم كتب منشورة ومشاريع إبداعية متنوعة.</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 mb-10" id="filter-buttons"></div>
+            
+            <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <!-- من أنا Section -->
+    <section id="about" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mb-6 font-serif">نبذة عن عملي</h2>
+                    <p class="text-gray-700 mb-6">أمتلك خبرة تمتد لسنوات في التصميم الجرافيكي، وأتخصص في إعداد تصاميم كتب تعليمية تجمع بين الجاذبية البصرية والفعالية التعليمية لتعزيز تجربة التعلّم.</p>
+                    <p class="text-gray-700 mb-8">تتنوع أعمالي المنشورة بين مجالات وصيغ مختلفة، وقد صُمم كل مشروع بعناية في الخطوط والتخطيط ونظرية الألوان والتسلسل البصري لتقديم المعلومات بوضوح وبأسلوب جذاب.</p>
+                    
+                    <div id="skills-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"></div>
+                    
+                    <div class="flex items-center gap-4">
+                        <a href="#contact" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-900 transition duration-300">
+                            ابدأ مشروعك
+                        </a>
+                        <a href="#" class="text-primary font-medium hover:underline">
+                            تحميل السيرة الذاتية <i class="fas fa-download mr-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="bg-white p-8 rounded-2xl shadow-xl">
+                        <div class="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden mb-6">
+                            <img src="https://picsum.photos/600/450?random=100" alt="مساحة عمل مصمم تحتوي على كتب وأدوات تصميم" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <h3 class="text-2xl font-bold text-primary mb-4">فلسفة التصميم</h3>
+                        <p class="text-gray-700">أؤمن أن التصميم الناجح لا يقتصر على الجمال البصري فقط، بل يجب أن يكون عملياً وسهل الاستخدام ومبنياً على هدف واضح. كل مشروع يبدأ بفهم الجمهور وينتهي بحل بصري يتجاوز التوقعات.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">الخدمات</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">حلول تصميم جرافيكي متكاملة تناسب الاحتياجات التعليمية والنشر والمشاريع الإبداعية.</p>
+            </div>
+            
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <!-- التواصل Section -->
+    <section id="contact" class="py-16 bg-primary text-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4 font-serif">لنصنع شيئاً مميزاً معاً</h2>
+                    <p class="text-gray-300">هل لديك مشروع؟ يسعدني الاطلاع على احتياجاتك التصميمية ومناقشة أفضل طريقة لتحويل فكرتك إلى واقع.</p>
+                </div>
+                
+                <form id="contact-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block mb-2">الاسم الكامل</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-accent focus:outline-none transition duration-300" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block mb-2">البريد الإلكتروني</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-accent focus:outline-none transition duration-300" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="project-type" class="block mb-2">نوع المشروع</label>
+                        <select id="project-type" class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-accent focus:outline-none transition duration-300">
+                            <option value="">اختر نوع المشروع</option>
+                            <option value="textbook">تصميم كتاب</option>
+                            <option value="publication">تصميم منشورات</option>
+                            <option value="branding">الهوية البصرية والعلامة التجارية</option>
+                            <option value="other">تصميم جرافيكي آخر</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message" class="block mb-2">تفاصيل المشروع</label>
+                        <textarea id="message" rows="5" class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-accent focus:outline-none transition duration-300" placeholder="أخبرني عن مشروعك والمدة الزمنية والميزانية المتوقعة..." required></textarea>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="bg-accent text-white px-10 py-3 rounded-lg font-medium hover:bg-red-700 transition duration-300">
+                            إرسال الرسالة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-gray-400 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">GD</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">مصمم جرافيك</h3>
+                        </div>
+                    </div>
+                    <p class="text-sm">تصميم أعمال بصرية مؤثرة لقطاع التعليم والنشر منذ عام 2015.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">روابط سريعة</h4>
+                    <ul id="footer-links-1" class="space-y-2"></ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">الخدمات</h4>
+                    <ul id="footer-links-2" class="space-y-2"></ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">تواصل</h4>
+                    <div id="social-links" class="flex gap-4"></div>
+                    <p class="mt-6 text-sm">البريد الإلكتروني: <a href="mailto:hello@designerportfolio.com" class="text-accent hover:text-red-400">hello@designerportfolio.com</a></p>
+                    <p class="text-sm">الهاتف: <span class="text-white">+1 (555) 123-4567</span></p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-sm">
+                <p>&copy; <span id="current-year"></span> معرض أعمال مصمم جرافيك. جميع الحقوق محفوظة | جميع الأعمال المعروضة محفوظة الحقوق.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ========== DATA LAYER ==========
+        const navigationData = [
+            { "label": "الرئيسية", "href": "#home", "icon": "fas fa-home" },
+            { "label": "الأعمال", "href": "#portfolio", "icon": "fas fa-briefcase" },
+            { "label": "من أنا", "href": "#about", "icon": "fas fa-user" },
+            { "label": "الخدمات", "href": "#services", "icon": "fas fa-cogs" },
+            { "label": "التواصل", "href": "#contact", "icon": "fas fa-envelope" }
+        ];
+
+        const portfolioFilters = [
+            { "id": "all", "label": "كل الأعمال", "count": 9 },
+            { "id": "textbooks", "label": "تصاميم الكتب", "count": 4 },
+            { "id": "published", "label": "أعمال منشورة", "count": 3 },
+            { "id": "other", "label": "مشاريع أخرى", "count": 2 }
+        ];
+
+        const portfolioItems = [
+            { 
+                "id": 1, 
+                "category": "textbooks", 
+                "title": "سلسلة كتب الرياضيات", 
+                "description": "تصميم متكامل لسلسلة كتب الرياضيات من المرحلة الأساسية حتى الثانوية، مع عناصر تفاعلية وشروحات بصرية واضحة.",
+                "image": "https://picsum.photos/600/400?random=1",
+                "alt": "تصميم كتاب رياضيات مع أنماط هندسية",
+                "year": "2023",
+                "client": "دار نشر تعليمية"
+            },
+            { 
+                "id": 2, 
+                "category": "published", 
+                "title": "إعادة تصميم مجلة علمية", 
+                "description": "إعادة صياغة بصرية كاملة لمجلة علمية مع تحسين القراءة وتحديث التخطيط العام.",
+                "image": "https://picsum.photos/600/400?random=2",
+                "alt": "تصميم غلاف وتخطيط مجلة علمية",
+                "year": "2023",
+                "client": "منشورات علمية"
+            },
+            { 
+                "id": 3, 
+                "category": "textbooks", 
+                "title": "مجموعة كتب التاريخ", 
+                "description": "تصميم بصري لكتب التاريخ للمرحلة الثانوية يتضمن مخططات زمنية وصوراً تاريخية.",
+                "image": "https://picsum.photos/600/400?random=3",
+                "alt": "كتاب تاريخ مع مخططات زمنية",
+                "year": "2022",
+                "client": "دار التاريخ للنشر"
+            },
+            { 
+                "id": 4, 
+                "category": "other", 
+                "title": "حزمة هوية بصرية جامعية", 
+                "description": "هوية بصرية متكاملة تشمل الشعار والمطبوعات والمواد التسويقية لإحدى الأقسام الجامعية.",
+                "image": "https://picsum.photos/600/400?random=4",
+                "alt": "هوية بصرية جامعية مع الشعار والمطبوعات",
+                "year": "2022",
+                "client": "جامعة حكومية"
+            },
+            { 
+                "id": 5, 
+                "category": "published", 
+                "title": "تصميم مجلة أدبية", 
+                "description": "تصميم فائز لعدد فصلي من مجلة أدبية يتضمن رسومات وخطوطاً مخصصة.",
+                "image": "https://picsum.photos/600/400?random=5",
+                "alt": "غلاف مجلة أدبية وصفحات داخلية",
+                "year": "2022",
+                "client": "مؤسسة الفنون الأدبية"
+            },
+            { 
+                "id": 6, 
+                "category": "textbooks", 
+                "title": "سلسلة تعلّم اللغات", 
+                "description": "تصميم كتب جذاب لتعلّم اللغات يتضمن إشارات ثقافية وتمارين تفاعلية.",
+                "image": "https://picsum.photos/600/400?random=6",
+                "alt": "كتاب تعلّم لغات بعناصر ثقافية",
+                "year": "2021",
+                "client": "معهد اللغات العالمي"
+            },
+            { 
+                "id": 7, 
+                "category": "published", 
+                "title": "كتاب بحث أكاديمي", 
+                "description": "تصميم لكتاب بحث أكاديمي معقد يحتوي على العديد من الرسوم البيانية والمراجع.",
+                "image": "https://picsum.photos/600/400?random=7",
+                "alt": "كتاب بحث أكاديمي مع تصورات بيانية",
+                "year": "2021",
+                "client": "النشر الأكاديمي"
+            },
+            { 
+                "id": 8, 
+                "category": "textbooks", 
+                "title": "سلسلة العلوم للمرحلة الابتدائية", 
+                "description": "تصميم كتب علوم ملوّن وجذاب للمرحلة الابتدائية.",
+                "image": "https://picsum.photos/600/400?random=8",
+                "alt": "كتاب علوم ابتدائي برسومات ملوّنة",
+                "year": "2020",
+                "client": "دار نشر الناشئة"
+            },
+            { 
+                "id": 9, 
+                "category": "other", 
+                "title": "واجهة تطبيق تعليمي", 
+                "description": "تصميم واجهة مستخدم لتطبيق تعليمي على الهاتف يستخدمه آلاف الطلاب.",
+                "image": "https://picsum.photos/600/400?random=9",
+                "alt": "شاشات واجهة تطبيق تعليمي",
+                "year": "2020",
+                "client": "حلول التقنية التعليمية"
+            }
+        ];
+
+        const skillsData = [
+            { "name": "تصميم الكتب والإخراج", "level": "خبير" },
+            { "name": "الطباعة والخطوط", "level": "خبير" },
+            { "name": "نظرية الألوان", "level": "متقدم" },
+            { "name": "حزمة أدوبي الإبداعية", "level": "خبير" },
+            { "name": "تصميم الإنفوجرافيك", "level": "متقدم" },
+            { "name": "الإنتاج الطباعي", "level": "خبير" }
+        ];
+
+        const servicesData = [
+            { 
+                "title": "تصميم الكتب", 
+                "description": "تصميم كتب متكامل من الفكرة حتى الملفات الجاهزة للطباعة، مع ضمان الفاعلية التعليمية والجاذبية البصرية.",
+                "icon": "fas fa-book",
+                "features": ["تصميم متوافق مع المنهاج", "عناصر تفاعلية", "تخطيطات سهلة الاستخدام", "تهيئة للطباعة"]
+            },
+            { 
+                "title": "تصميم المنشورات", 
+                "description": "تصميم المجلات والكتب والمنشورات مع التركيز على سهولة القراءة والتسلسل البصري والسرد المرئي.",
+                "icon": "fas fa-newspaper",
+                "features": ["إخراج تحريري", "تصميم أغلفة", "دمج الصور", "تصميم أنظمة الخطوط"]
+            },
+            { 
+                "title": "مواد تعليمية", 
+                "description": "تصميم دفاتر العمل وأدلة المعلمين والمواد المساندة التي تطور تجربة التعلّم.",
+                "icon": "fas fa-graduation-cap",
+                "features": ["تصميم الأنشطة", "تخطيطات التقييم", "موارد المعلمين", "ملاحق رقمية"]
+            }
+        ];
+
+        const footerLinks1 = [
+            { "label": "الرئيسية", "href": "#home" },
+            { "label": "الأعمال", "href": "#portfolio" },
+            { "label": "من أنا", "href": "#about" },
+            { "label": "التواصل", "href": "#contact" }
+        ];
+
+        const footerLinks2 = [
+            { "label": "تصميم الكتب", "href": "#textbooks" },
+            { "label": "تصميم المنشورات", "href": "#published" },
+            { "label": "الهوية البصرية", "href": "#services" },
+            { "label": "الاستشارة", "href": "#contact" }
+        ];
+
+        const socialLinks = [
+            { "platform": "Behance", "icon": "fab fa-behance", "href": "#", "color": "hover:text-blue-500" },
+            { "platform": "Dribbble", "icon": "fab fa-dribbble", "href": "#", "color": "hover:text-pink-500" },
+            { "platform": "LinkedIn", "icon": "fab fa-linkedin", "href": "#", "color": "hover:text-blue-400" },
+            { "platform": "Instagram", "icon": "fab fa-instagram", "href": "#", "color": "hover:text-purple-500" }
+        ];
+
+        // ========== REUSABLE RENDER FUNCTIONS ==========
+        function renderNavigation(items) {
+            return items.map(item => 
+                `<li>
+                    <a href="${item.href}" class="text-gray-700 hover:text-primary font-medium transition duration-300 flex items-center gap-2">
+                        <i class="${item.icon} w-5"></i>
+                        <span>${item.label}</span>
+                    </a>
+                </li>`
+            ).join("");
+        }
+
+        function renderFilterButtons(filters) {
+            return filters.map(filter => 
+                `<button class="filter-btn px-5 py-2 rounded-full border border-gray-300 hover:border-primary hover:text-primary transition duration-300 ${filter.id === 'all' ? 'filter-active' : ''}" data-filter="${filter.id}">
+                    ${filter.label} <span class="mr-2 text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">${filter.count}</span>
+                </button>`
+            ).join("");
+        }
+
+        function renderالأعمالItems(items) {
+            return items.map(item => 
+                `<div class="portfolio-item card-hover bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100" data-category="${item.category === 'textbooks' ? 'تصاميم الكتب' : item.category === 'published' ? 'أعمال منشورة' : 'مشاريع أخرى'}">
+                    <div class="relative overflow-hidden">
+                        <img src="${item.image}" alt="${item.alt}" class="w-full h-64 object-cover transition duration-500 hover:scale-105" loading="lazy">
+                        <div class="absolute top-4 right-4 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
+                            ${item.category === 'textbooks' ? 'كتب' : item.category === 'published' ? 'منشور' : 'أخرى'}
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-bold text-primary">${item.title}</h3>
+                            <span class="text-sm text-gray-500">${item.year}</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">${item.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">العميل: ${item.client}</span>
+                            <button class="view-details-btn text-primary font-medium hover:text-accent transition duration-300" data-id="${item.id}">
+                                عرض التفاصيل <i class="fas fa-arrow-right mr-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`
+            ).join("");
+        }
+
+        function renderSkills(skills) {
+            return skills.map(skill => 
+                `<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-gray-800">${skill.name}</span>
+                        <span class="text-sm bg-primary text-white px-2 py-1 rounded">${skill.level}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-accent h-2 rounded-full" style="width: ${skill.level === 'خبير' ? '95%' : skill.level === 'متقدم' ? '85%' : '75%'}"></div>
+                    </div>
+                </div>`
+            ).join("");
+        }
+
+        function renderServices(services) {
+            return services.map(service => 
+                `<div class="card-hover bg-white p-8 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center text-2xl mb-6">
+                        <i class="${service.icon}"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">${service.title}</h3>
+                    <p class="text-gray-600 mb-6">${service.description}</p>
+                    <ul class="space-y-2">
+                        ${service.features.map(feature => `<li class="flex items-center text-gray-700"><i class="fas fa-check text-accent ml-3"></i> ${feature}</li>`).join("")}
+                    </ul>
+                    <a href="#contact" class="inline-block mt-6 text-primary font-medium hover:text-accent transition duration-300">
+                        مناقشة المشروع <i class="fas fa-arrow-right mr-2"></i>
+                    </a>
+                </div>`
+            ).join("");
+        }
+
+        function renderFooterLinks1(links) {
+            return links.map(link => 
+                `<li><a href="${link.href}" class="hover:text-white transition duration-300">${link.label}</a></li>`
+            ).join("");
+        }
+
+        function renderFooterLinks2(links) {
+            return links.map(link => 
+                `<li><a href="${link.href}" class="hover:text-white transition duration-300">${link.label}</a></li>`
+            ).join("");
+        }
+
+        function renderSocialLinks(links) {
+            return links.map(link => 
+                `<a href="${link.href}" class="text-gray-400 text-xl ${link.color} transition duration-300" aria-label="${link.platform}">
+                    <i class="${link.icon}"></i>
+                </a>`
+            ).join("");
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Render all components
+            document.getElementById('nav-menu').innerHTML = renderNavigation(navigationData);
+            document.getElementById('filter-buttons').innerHTML = renderFilterButtons(portfolioFilters);
+            document.getElementById('portfolio-grid').innerHTML = renderالأعمالItems(portfolioItems);
+            document.getElementById('skills-list').innerHTML = renderSkills(skillsData);
+            document.getElementById('services-grid').innerHTML = renderServices(servicesData);
+            document.getElementById('footer-links-1').innerHTML = renderFooterLinks1(footerLinks1);
+            document.getElementById('footer-links-2').innerHTML = renderFooterLinks2(footerLinks2);
+            document.getElementById('social-links').innerHTML = renderSocialLinks(socialLinks);
+            
+            // ========== EVENT HANDLING ==========
+            // الأعمال filtering
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const portfolioItemsElements = document.querySelectorAll('.portfolio-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('filter-active', 'bg-accent', 'text-white');
+                        btn.classList.add('border-gray-300', 'text-gray-700');
+                    });
+                    this.classList.add('filter-active', 'bg-accent', 'text-white');
+                    this.classList.remove('border-gray-300', 'text-gray-700');
+                    
+                    // Filter items
+                    portfolioItemsElements.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // View details buttons (delegated event handling)
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.view-details-btn')) {
+                    const button = event.target.closest('.view-details-btn');
+                    const itemId = button.getAttribute('data-id');
+                    const item = portfolioItems.find(p => p.id == itemId);
+                    
+                    if (item) {
+                        alert(`تفاصيل المشروع:\n\nالعنوان: ${item.title}\nالفئة: ${item.category === 'textbooks' ? 'تصاميم الكتب' : item.category === 'published' ? 'أعمال منشورة' : 'مشاريع أخرى'}\nالسنة: ${item.year}\nالعميل: ${item.client}\n\n${item.description}`);
+                    }
+                    event.preventDefault();
+                }
+            });
+            
+            // التواصل form submission
+            const contactForm = document.getElementById('contact-form');
+            contactForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const projectType = document.getElementById('project-type').value;
+                const message = document.getElementById('message').value;
+                
+                // In a real implementation, this would send data to a server
+                alert(`شكراً لك، ${name}! تم استلام رسالتك.\n\nسأراجع طلب ${projectType || 'المشروع'} وأتواصل معك عبر ${email} خلال 24 ساعة.`);
+                
+                // Reset form
+                contactForm.reset();
+            });
+            
+            // التواصل button
+            document.getElementById('contact-btn').addEventListener('click', function() {
+                document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Smooth scrolling for all anchor links (delegated event handling)
+            document.addEventListener('click', function(event) {
+                const link = event.target.closest('a[href^="#"]');
+                if (!link) return;
+                
+                const targetId = link.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    event.preventDefault();
+                    targetElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
