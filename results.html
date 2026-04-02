@@ -28,6 +28,8 @@
       </table>
     </div>
 
+    <p id="status" class="text-center mt-4 text-sm text-gray-600"></p>
+
     <div class="text-center mt-6">
       <a href="index.html" class="text-red-600 font-bold hover:underline">العودة للرئيسية</a>
     </div>
@@ -51,37 +53,49 @@
     const db = firebase.firestore();
 
     const resultsTable = document.getElementById("resultsTable");
-    resultsTable.innerHTML = "";
+    const status = document.getElementById("status");
 
-    db.collection("results").get().then((querySnapshot) => {
-      if (querySnapshot.empty) {
-        resultsTable.innerHTML = 
-          <tr>
-            <td colspan="3" class="p-4">لا توجد نتائج بعد</td>
-          </tr>
-        ;
-        return;
-      }
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-
-        resultsTable.innerHTML += 
-          <tr class="border-b">
-            <td class="p-3">${data.studentName || ""}</td>
-            <td class="p-3">${data.score ?? ""}</td>
-            <td class="p-3">${data.exercise || ""}</td>
-          </tr>
-        ;
-      });
-    }).catch((error) => {
-      resultsTable.innerHTML = 
-        <tr>
-          <td colspan="3" class="p-4 text-red-600">حدث خطأ في تحميل النتائج</td>
+    function renderRow(data) {
+      return 
+        <tr class="border-b">
+          <td class="p-3">${data.studentName || ""}</td>
+          <td class="p-3">${data.score ?? ""}</td>
+          <td class="p-3">${data.exercise || ""}</td>
         </tr>
       ;
-      console.error(error);
-    });
+    }
+
+    db.collection("results").onSnapshot(
+      function(snapshot) {
+        resultsTable.innerHTML = "";
+
+        if (snapshot.empty) {
+          resultsTable.innerHTML = 
+            <tr>
+              <td colspan="3" class="p-4">لا توجد نتائج بعد</td>
+            </tr>
+          ;
+          status.innerText = "لم يتم العثور على نتائج.";
+          return;
+        }
+
+        snapshot.forEach(function(doc) {
+          const data = doc.data();
+          resultsTable.innerHTML += renderRow(data);
+        });
+
+        status.innerText = "تم تحميل النتائج بنجاح.";
+      },
+      function(error) {
+        resultsTable.innerHTML = 
+          <tr>
+            <td colspan="3" class="p-4 text-red-600">حدث خطأ في تحميل النتائج</td>
+          </tr>
+        ;
+        status.innerText = "الخطأ: " + error.message;
+        console.error(error);
+      }
+    );
   </script>
 
 </body>
