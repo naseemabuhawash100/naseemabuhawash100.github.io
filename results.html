@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نتائج الطلاب</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6" style="font-family: Arial, sans-serif;">
+
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-6">نتائج الطلاب</h1>
+
+    <div class="bg-white rounded-xl shadow p-4 overflow-x-auto">
+      <table class="w-full text-center border-collapse">
+        <thead>
+          <tr class="bg-blue-900 text-white">
+            <th class="p-3">اسم الطالب</th>
+            <th class="p-3">النتيجة</th>
+            <th class="p-3">التمرين</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTable" class="text-gray-800">
+          <tr>
+            <td colspan="3" class="p-4">جاري تحميل النتائج...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center mt-6">
+      <a href="index.html" class="text-red-600 font-bold hover:underline">العودة للرئيسية</a>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.appspot.com",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const resultsTable = document.getElementById("resultsTable");
+    resultsTable.innerHTML = "";
+
+    db.collection("results").get().then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        resultsTable.innerHTML = 
+          <tr>
+            <td colspan="3" class="p-4">لا توجد نتائج بعد</td>
+          </tr>
+        ;
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        resultsTable.innerHTML += 
+          <tr class="border-b">
+            <td class="p-3">${data.studentName || ""}</td>
+            <td class="p-3">${data.score ?? ""}</td>
+            <td class="p-3">${data.exercise || ""}</td>
+          </tr>
+        ;
+      });
+    }).catch((error) => {
+      resultsTable.innerHTML = 
+        <tr>
+          <td colspan="3" class="p-4 text-red-600">حدث خطأ في تحميل النتائج</td>
+        </tr>
+      ;
+      console.error(error);
+    });
+  </script>
+
+</body>
+</html>
