@@ -4,36 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>نتائج الطلاب</title>
-  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-6" style="font-family: Arial, sans-serif;">
+<body style="font-family: Arial; text-align: center; padding: 40px;">
 
-  <div class="max-w-5xl mx-auto">
-    <h1 class="text-3xl font-bold text-center mb-6">نتائج الطلاب</h1>
+  <h1>نتائج الطلاب</h1>
 
-    <div class="bg-white rounded-xl shadow p-4 overflow-x-auto">
-      <table class="w-full text-center border-collapse">
-        <thead>
-          <tr class="bg-blue-900 text-white">
-            <th class="p-3">اسم الطالب</th>
-            <th class="p-3">النتيجة</th>
-            <th class="p-3">التمرين</th>
-          </tr>
-        </thead>
-        <tbody id="resultsTable" class="text-gray-800">
-          <tr>
-            <td colspan="3" class="p-4">جاري تحميل النتائج...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <table border="1" cellpadding="10" cellspacing="0" style="margin: 20px auto; border-collapse: collapse; width: 80%;">
+    <thead>
+      <tr>
+        <th>اسم الطالب</th>
+        <th>النتيجة</th>
+        <th>التمرين</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTable">
+      <tr>
+        <td colspan="3">جاري تحميل النتائج...</td>
+      </tr>
+    </tbody>
+  </table>
 
-    <p id="status" class="text-center mt-4 text-sm text-gray-600"></p>
+  <p id="status"></p>
 
-    <div class="text-center mt-6">
-      <a href="index.html" class="text-red-600 font-bold hover:underline">العودة للرئيسية</a>
-    </div>
-  </div>
+  <a href="index.html">العودة للرئيسية</a>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -55,47 +48,48 @@
     const resultsTable = document.getElementById("resultsTable");
     const status = document.getElementById("status");
 
-    function renderRow(data) {
-      return 
-        <tr class="border-b">
-          <td class="p-3">${data.studentName || ""}</td>
-          <td class="p-3">${data.score ?? ""}</td>
-          <td class="p-3">${data.exercise || ""}</td>
-        </tr>
-      ;
-    }
+    console.log("Firebase شغال");
 
-    db.collection("results").onSnapshot(
-      function(snapshot) {
+    db.collection("results").get()
+      .then(function(querySnapshot) {
+        console.log("عدد النتائج:", querySnapshot.size);
+
         resultsTable.innerHTML = "";
 
-        if (snapshot.empty) {
+        if (querySnapshot.empty) {
           resultsTable.innerHTML = 
             <tr>
-              <td colspan="3" class="p-4">لا توجد نتائج بعد</td>
+              <td colspan="3">لا توجد نتائج بعد</td>
             </tr>
           ;
           status.innerText = "لم يتم العثور على نتائج.";
           return;
         }
 
-        snapshot.forEach(function(doc) {
+        querySnapshot.forEach(function(doc) {
           const data = doc.data();
-          resultsTable.innerHTML += renderRow(data);
+          console.log(data);
+
+          resultsTable.innerHTML += 
+            <tr>
+              <td>${data.studentName || ""}</td>
+              <td>${data.score ?? ""}</td>
+              <td>${data.exercise || ""}</td>
+            </tr>
+          ;
         });
 
         status.innerText = "تم تحميل النتائج بنجاح.";
-      },
-      function(error) {
+      })
+      .catch(function(error) {
+        console.error("خطأ:", error);
         resultsTable.innerHTML = 
           <tr>
-            <td colspan="3" class="p-4 text-red-600">حدث خطأ في تحميل النتائج</td>
+            <td colspan="3">حدث خطأ في تحميل النتائج</td>
           </tr>
         ;
-        status.innerText = "الخطأ: " + error.message;
-        console.error(error);
-      }
-    );
+        status.innerText = "خطأ: " + error.message;
+      });
   </script>
 
 </body>
