@@ -1,55 +1,87 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تمرين 1</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>التمرين الأول</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center">
+    <h1 class="text-3xl font-bold text-blue-900 mb-4">التمرين الأول</h1>
+    <p class="text-gray-600 mb-6">اكتب اسمك ثم أجب عن الأسئلة واضغط إنهاء</p>
 
-<div class="bg-white p-8 rounded-xl shadow-lg text-center w-full max-w-md">
+    <input
+      id="studentName"
+      type="text"
+      placeholder="اكتب اسم الطالب"
+      class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-8 text-center"
+    />
 
-<h2 class="text-2xl font-bold mb-4">التمرين الأول</h2>
+    <div class="text-right mb-8">
+      <h2 class="text-xl font-bold mb-3">1) 2 + 3 = ؟</h2>
+      <label class="block mb-2"><input type="radio" name="q1" value="5"> 5</label>
+      <label class="block mb-2"><input type="radio" name="q1" value="4"> 4</label>
+      <label class="block mb-2"><input type="radio" name="q1" value="6"> 6</label>
+    </div>
 
-<p class="mb-4 text-gray-700">اكتب اسمك أولًا ثم اختر الإجابة الصحيحة</p>
+    <div class="text-right mb-8">
+      <h2 class="text-xl font-bold mb-3">2) 4 + 1 = ؟</h2>
+      <label class="block mb-2"><input type="radio" name="q2" value="5"> 5</label>
+      <label class="block mb-2"><input type="radio" name="q2" value="3"> 3</label>
+      <label class="block mb-2"><input type="radio" name="q2" value="6"> 6</label>
+    </div>
 
-<input
-  id="studentName"
-  type="text"
-  placeholder="اكتب اسم الطالب"
-  class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-6 text-center"
-/>
+    <div class="text-right mb-8">
+      <h2 class="text-xl font-bold mb-3">3) 1 + 2 = ؟</h2>
+      <label class="block mb-2"><input type="radio" name="q3" value="3"> 3</label>
+      <label class="block mb-2"><input type="radio" name="q3" value="2"> 2</label>
+      <label class="block mb-2"><input type="radio" name="q3" value="4"> 4</label>
+    </div>
 
-<h3 class="text-xl font-bold mb-6">2 + 3 = ؟</h3>
+    <button
+      onclick="finishQuiz()"
+      class="bg-blue-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-800 transition"
+    >
+      إنهاء التمرين
+    </button>
 
-<button onclick="checkAnswer(5)" class="bg-blue-900 text-white px-6 py-3 rounded m-2">5</button>
-<button onclick="checkAnswer(4)" class="bg-blue-900 text-white px-6 py-3 rounded m-2">4</button>
-<button onclick="checkAnswer(6)" class="bg-blue-900 text-white px-6 py-3 rounded m-2">6</button>
+    <p id="result" class="mt-6 text-xl font-bold"></p>
 
-<p id="result" class="mt-6 text-lg font-bold"></p>
+    <a href="grade1.html" class="block mt-6 text-red-600 font-bold hover:underline">
+      رجوع
+    </a>
+  </div>
 
-<a href="grade1.html" class="block mt-6 text-red-600">رجوع</a>
+  <script>
+    function finishQuiz() {
+      const studentName = document.getElementById("studentName").value.trim();
 
-</div>
+      if (studentName === "") {
+        document.getElementById("result").innerText = "اكتب اسمك أولًا";
+        return;
+      }
 
-<script>
-function checkAnswer(answer){
-  const studentName = document.getElementById("studentName").value.trim();
+      let score = 0;
 
-  if(studentName === ""){
-    document.getElementById("result").innerText = "اكتب اسمك أولًا";
-    return;
-  }
+      const q1 = document.querySelector('input[name="q1"]:checked');
+      const q2 = document.querySelector('input[name="q2"]:checked');
+      const q3 = document.querySelector('input[name="q3"]:checked');
 
-  if(answer === 5){
-    document.getElementById("result").innerText = studentName + "، إجابة صحيحة 🎉";
-  } else {
-    document.getElementById("result").innerText = studentName + "، إجابة خاطئة ❌";
-  }
-}
-</script>
+      if (!q1  !q2  !q3) {
+        document.getElementById("result").innerText = "أجب عن جميع الأسئلة أولًا";
+        return;
+      }
+
+      if (q1.value === "5") score++;
+      if (q2.value === "5") score++;
+      if (q3.value === "3") score++;
+
+      document.getElementById("result").innerText =
+        studentName + "، نتيجتك: " + score + " من 3 🎉";
+    }
+  </script>
 
 </body>
 </html>
