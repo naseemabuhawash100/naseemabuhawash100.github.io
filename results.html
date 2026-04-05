@@ -58,7 +58,7 @@
               <td colspan="3">لا توجد نتائج</td>
             </tr>
           ;
-          status.innerText = "تم الاتصال لكن ما في نتائج";
+          status.innerText = "تم الاتصال لكن لا توجد نتائج";
           return;
         }
 
@@ -78,10 +78,11 @@
       .catch(function(error) {
         table.innerHTML = 
           <tr>
-            <td colspan="3">حدث خطأ</td>
+            <td colspan="3">حدث خطأ أثناء تحميل النتائج</td>
           </tr>
         ;
         status.innerText = "الخطأ: " + error.message;
+        console.error(error);
       });
   </script>
 
