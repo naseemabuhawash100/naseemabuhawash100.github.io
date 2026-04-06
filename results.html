@@ -11,33 +11,27 @@
       padding: 40px;
       background: #f9f9f9;
     }
-
     h1 {
       color: #1a365d;
       margin-bottom: 20px;
     }
-
     table {
       margin: 20px auto;
       border-collapse: collapse;
       width: 85%;
       background: white;
     }
-
     th, td {
       border: 1px solid #ddd;
       padding: 12px;
     }
-
     th {
       background: #1a365d;
       color: white;
     }
-
     tr:nth-child(even) {
       background: #f2f2f2;
     }
-
     #status {
       margin-top: 20px;
       font-weight: bold;
@@ -91,11 +85,11 @@
         table.innerHTML = "";
 
         if (snapshot.empty) {
-          table.innerHTML = 
+          table.innerHTML = `
             <tr>
               <td colspan="3">لا توجد نتائج</td>
             </tr>
-          ;
+          `;
           status.innerText = "تم الاتصال لكن لا توجد نتائج";
           return;
         }
@@ -107,24 +101,24 @@
           const score = data.score !== undefined ? data.score : "غير موجود";
           const exercise = data.exercise || "غير محدد";
 
-          table.innerHTML += 
+          table.innerHTML += `
             <tr>
               <td>${studentName}</td>
               <td>${score}</td>
               <td>${exercise}</td>
             </tr>
-          ;
+          `;
         });
 
         status.innerText = "تم تحميل النتائج بنجاح";
       })
       .catch(function(error) {
         console.error(error);
-        table.innerHTML = 
+        table.innerHTML = `
           <tr>
             <td colspan="3">حدث خطأ أثناء تحميل النتائج</td>
           </tr>
-        ;
+        `;
         status.innerText = "الخطأ: " + error.message;
       });
   </script>
