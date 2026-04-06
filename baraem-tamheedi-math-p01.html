@@ -129,7 +129,6 @@
     }
 
     const db = firebase.firestore();
-
     const answers = { q1: null, q2: null, q3: null };
 
     function activateChoice(groupClass, selectedButton) {
@@ -163,6 +162,10 @@
       });
     });
 
+    function getTodayDateOnly() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
     document.getElementById("submitBtn").addEventListener("click", function() {
       const studentName = document.getElementById("studentName").value.trim();
       const className = document.getElementById("className").value.trim();
@@ -186,30 +189,47 @@
       if (answers.q3 === "2") score++;
 
       const total = 3;
+      const today = getTodayDateOnly();
 
-      db.collection("results").add({
-        studentName: studentName,
-        className: className || "",
-        score: score,
-        total: total,
-        exercise: "math-page-01",
-        kindergarten: "baraem",
-        kindergartenName: "روضة البراعم",
-        stage: "tamheedi",
-        subject: "math",
-        pageNumber: 1,
-        teacherPage: "results-baraem.html",
-        createdAt: new Date().toISOString()
-      })
-      .then(function() {
-        resultMessage.innerText = `تم حفظ النتيجة بنجاح: ${score} / ${total}`;
-        resultMessage.className = "mt-5 text-lg font-bold text-green-600";
-      })
-      .catch(function(error) {
-        console.error(error);
-        resultMessage.innerText = "حدث خطأ أثناء حفظ النتيجة";
-        resultMessage.className = "mt-5 text-lg font-bold text-red-600";
-      });
+      db.collection("results")
+        .where("kindergarten", "==", "baraem")
+        .where("stage", "==", "tamheedi")
+        .where("subject", "==", "math")
+        .where("pageNumber", "==", 1)
+        .where("studentName", "==", studentName)
+        .where("dateOnly", "==", today)
+        .get()
+        .then(function(snapshot) {
+          if (!snapshot.empty) {
+            resultMessage.innerText = "تم حل هذا التمرين اليوم بالفعل لهذا الطالب";
+            resultMessage.className = "mt-5 text-lg font-bold text-red-600";
+            return;
+          }
+
+          return db.collection("results").add({
+            studentName: studentName,
+            className: className || "",
+            score: score,
+            total: total,
+            exercise: "math-page-01",
+            kindergarten: "baraem",
+            kindergartenName: "روضة البراعم",
+            stage: "tamheedi",
+            subject: "math",
+            pageNumber: 1,
+            teacherPage: "results-baraem.html",
+            createdAt: new Date().toISOString(),
+            dateOnly: today
+          }).then(function() {
+            resultMessage.innerText = `تم حفظ النتيجة بنجاح: ${score} / ${total}`;
+            resultMessage.className = "mt-5 text-lg font-bold text-green-600";
+          });
+        })
+        .catch(function(error) {
+          console.error(error);
+          resultMessage.innerText = "حدث خطأ أثناء حفظ النتيجة";
+          resultMessage.className = "mt-5 text-lg font-bold text-red-600";
+        });
     });
   </script>
 
