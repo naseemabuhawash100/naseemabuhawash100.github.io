@@ -129,6 +129,21 @@
     let qrScanner = null;
     let isScanning = false;
 
+    const allowedStudents = {
+      "AHMAD-001": "أحمد هواش",
+      "LAYAN-002": "ليان خالد"
+    };
+
+    function normalizeArabicName(name) {
+      return String(name || "")
+        .trim()
+        .replace(/أ|إ|آ/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/ة/g, "ه")
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+    }
+
     function activateChoice(groupClass, selectedButton) {
       document.querySelectorAll("." + groupClass).forEach(btn => {
         btn.classList.remove("bg-blue-900", "text-white", "border-blue-900");
@@ -192,7 +207,7 @@
     document.getElementById("submitBtn").addEventListener("click", function() {
       const studentName = document.getElementById("studentName").value.trim();
       const className = document.getElementById("className").value.trim();
-      const studentCode = document.getElementById("studentCode").value.trim();
+      const studentCode = document.getElementById("studentCode").value.trim().toUpperCase();
       const resultMessage = document.getElementById("resultMessage");
 
       if (!studentName) {
@@ -205,6 +220,21 @@
         resultMessage.className = "mt-5 text-lg font-bold text-red-600";
         return;
       }
+      if (!allowedStudents[studentCode]) {
+        resultMessage.innerText = "هذا الكود غير معتمد";
+        resultMessage.className = "mt-5 text-lg font-bold text-red-600";
+        return;
+      }
+
+      const expectedName = normalizeArabicName(allowedStudents[studentCode]);
+      const enteredName = normalizeArabicName(studentName);
+
+      if (enteredName !== expectedName) {
+        resultMessage.innerText = "الاسم لا يطابق الكود الممسوح";
+        resultMessage.className = "mt-5 text-lg font-bold text-red-600";
+        return;
+      }
+
       if (!answers.q1 || !answers.q2 || !answers.q3) {
         resultMessage.innerText = "يرجى حل جميع التمارين أولًا";
         resultMessage.className = "mt-5 text-lg font-bold text-red-600";
