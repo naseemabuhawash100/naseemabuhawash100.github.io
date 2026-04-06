@@ -37,12 +37,51 @@
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl md:text-5xl font-bold mb-5">نتائج الطلاب - روضة البراعم</h2>
       <p class="text-lg md:text-xl opacity-90 leading-9">
-        هذه الصفحة تعرض النتائج المحفوظة فقط لروضة البراعم.
+        يمكن تصفية النتائج حسب التاريخ ورقم الصفحة واسم الطالب والشعبة.
       </p>
     </div>
   </section>
 
-  <section class="py-12">
+  <section class="py-10">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <h3 class="text-2xl font-bold text-blue-900 mb-6 text-center">فلاتر النتائج</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div>
+            <label class="block mb-2 font-medium text-gray-700">التاريخ</label>
+            <input id="filterDate" type="date" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-gray-700">رقم الصفحة</label>
+            <input id="filterPage" type="number" min="1" placeholder="مثال: 1" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-gray-700">اسم الطالب</label>
+            <input id="filterStudent" type="text" placeholder="اكتب اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium text-gray-700">الصف / الشعبة</label>
+            <input id="filterClass" type="text" placeholder="مثال: التمهيدي A" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+          </div>
+
+          <div class="flex items-end gap-3">
+            <button id="applyFilters" class="w-full bg-blue-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-blue-800 btn-hover">
+              تطبيق
+            </button>
+            <button id="resetFilters" class="w-full bg-gray-200 text-gray-800 px-5 py-3 rounded-xl font-medium hover:bg-gray-300 btn-hover">
+              مسح
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-12">
     <div class="max-w-7xl mx-auto px-4">
       <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 overflow-x-auto">
         <table class="w-full text-center border-collapse">
@@ -54,11 +93,12 @@
               <th class="p-3 border">المرحلة</th>
               <th class="p-3 border">المادة</th>
               <th class="p-3 border">رقم الصفحة</th>
+              <th class="p-3 border">التاريخ</th>
             </tr>
           </thead>
           <tbody id="resultsTable">
             <tr>
-              <td colspan="6" class="p-4 border">جاري تحميل النتائج...</td>
+              <td colspan="7" class="p-4 border">جاري تحميل النتائج...</td>
             </tr>
           </tbody>
         </table>
@@ -67,6 +107,15 @@
       </div>
     </div>
   </section>
+
+  <script>
+    const teacherLoggedIn = sessionStorage.getItem("teacherLoggedIn");
+    const teacherKindergarten = sessionStorage.getItem("teacherKindergarten");
+
+    if (teacherLoggedIn !== "true" || teacherKindergarten !== "baraem") {
+      window.location.href = "kindergartens.html";
+    }
+  </script>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -89,58 +138,118 @@
     const db = firebase.firestore();
     const table = document.getElementById("resultsTable");
     const status = document.getElementById("status");
+    let allResults = [];
+
+    function formatStage(stage) {
+      const stageMap = { tamheedi: "التمهيدي", tahdiri: "التحضيري" };
+      return stageMap[stage] || stage || "";
+    }
+
+    function formatSubject(subject) {
+      const subjectMap = { math: "الرياضيات", arabic: "العربي", english: "الإنجليزي" };
+      return subjectMap[subject] || subject || "";
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return value;
+      return d.toLocaleDateString("ar-EG");
+    }
+
+    function extractDateOnly(value) {
+      if (!value) return "";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return "";
+      return d.toISOString().slice(0, 10);
+    }
+
+    function renderRows(results) {
+      table.innerHTML = "";
+      if (!results.length) {
+        table.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد نتائج مطابقة للفلاتر</td></tr>';
+        return;
+      }
+
+      results.forEach(function(data) {
+        table.innerHTML += `
+          <tr class="bg-white hover:bg-gray-50">
+            <td class="p-3 border">${data.studentName || ""}</td>
+            <td class="p-3 border">${data.className || ""}</td>
+            <td class="p-3 border">${data.score ?? ""} / ${data.total ?? ""}</td>
+            <td class="p-3 border">${formatStage(data.stage)}</td>
+            <td class="p-3 border">${formatSubject(data.subject)}</td>
+            <td class="p-3 border">${data.pageNumber ?? ""}</td>
+            <td class="p-3 border">${formatDate(data.createdAt)}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function applyFilters() {
+      const filterDate = document.getElementById("filterDate").value;
+      const filterPage = document.getElementById("filterPage").value.trim();
+      const filterStudent = document.getElementById("filterStudent").value.trim().toLowerCase();
+      const filterClass = document.getElementById("filterClass").value.trim().toLowerCase();
+
+      const filtered = allResults.filter(function(item) {
+        const itemDate = extractDateOnly(item.createdAt);
+        const itemPage = String(item.pageNumber ?? "");
+        const itemStudent = String(item.studentName || "").toLowerCase();
+        const itemClass = String(item.className || "").toLowerCase();
+
+        if (filterDate && itemDate !== filterDate) return false;
+        if (filterPage && itemPage !== filterPage) return false;
+        if (filterStudent && !itemStudent.includes(filterStudent)) return false;
+        if (filterClass && !itemClass.includes(filterClass)) return false;
+        return true;
+      });
+
+      renderRows(filtered);
+      status.innerText = `تم عرض ${filtered.length} نتيجة بعد التصفية`;
+    }
+
+    function resetFilters() {
+      document.getElementById("filterDate").value = "";
+      document.getElementById("filterPage").value = "";
+      document.getElementById("filterStudent").value = "";
+      document.getElementById("filterClass").value = "";
+      renderRows(allResults);
+      status.innerText = "تمت إعادة عرض كل نتائج روضة البراعم";
+    }
 
     db.collection("results")
       .where("kindergarten", "==", "baraem")
       .get()
       .then(function(snapshot) {
-        table.innerHTML = "";
-
+        allResults = [];
         if (snapshot.empty) {
-          table.innerHTML = `
-            <tr>
-              <td colspan="6" class="p-4 border">لا توجد نتائج حتى الآن</td>
-            </tr>
-          `;
+          table.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد نتائج حتى الآن</td></tr>';
           status.innerText = "لا توجد نتائج محفوظة لروضة البراعم";
           return;
         }
 
         snapshot.forEach(function(doc) {
-          const data = doc.data();
-          const stageMap = {
-            tamheedi: "التمهيدي",
-            tahdiri: "التحضيري"
-          };
-          const subjectMap = {
-            math: "الرياضيات",
-            arabic: "العربي",
-            english: "الإنجليزي"
-          };
-
-          table.innerHTML += `
-            <tr class="bg-white hover:bg-gray-50">
-              <td class="p-3 border">${data.studentName || ""}</td>
-              <td class="p-3 border">${data.className || ""}</td>
-              <td class="p-3 border">${data.score ?? ""} / ${data.total ?? ""}</td>
-              <td class="p-3 border">${stageMap[data.stage] || data.stage || ""}</td>
-              <td class="p-3 border">${subjectMap[data.subject] || data.subject || ""}</td>
-              <td class="p-3 border">${data.pageNumber ?? ""}</td>
-            </tr>
-          `;
+          allResults.push(doc.data());
         });
 
+        allResults.sort(function(a, b) {
+          const da = new Date(a.createdAt || 0).getTime();
+          const dbv = new Date(b.createdAt || 0).getTime();
+          return dbv - da;
+        });
+
+        renderRows(allResults);
         status.innerText = "تم تحميل نتائج روضة البراعم بنجاح";
       })
       .catch(function(error) {
         console.error(error);
-        table.innerHTML = `
-          <tr>
-            <td colspan="6" class="p-4 border">حدث خطأ أثناء تحميل النتائج</td>
-          </tr>
-        `;
+        table.innerHTML = '<tr><td colspan="7" class="p-4 border">حدث خطأ أثناء تحميل النتائج</td></tr>';
         status.innerText = "الخطأ: " + error.message;
       });
+
+    document.getElementById("applyFilters").addEventListener("click", applyFilters);
+    document.getElementById("resetFilters").addEventListener("click", resetFilters);
   </script>
 
 </body>
