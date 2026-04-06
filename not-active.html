@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الروضة غير مفعّلة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    .btn-hover { transition: all 0.25s ease; }
+    .btn-hover:hover { transform: scale(1.04); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,.12), 0 10px 10px -5px rgba(0,0,0,.06); }
+    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-right">
+
+  <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-blue-900">منصة الروضات التفاعلية</h1>
+        <p class="text-sm text-gray-600">صفحة حالة الاشتراك</p>
+      </div>
+
+      <div class="flex gap-3">
+        <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">
+          العودة للرئيسية
+        </a>
+        <a href="kindergartens.html" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">
+          العودة لاختيار الروضة
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-gradient text-white py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-5">هذه الروضة غير مفعّلة حاليًا</h2>
+      <p class="text-lg md:text-xl opacity-90 leading-9">
+        عذرًا، الصفحة الخاصة بهذه الروضة غير متاحة الآن ضمن المنصة.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="card-hover bg-white rounded-2xl shadow-lg p-8 md:p-10 border border-gray-100 text-center">
+        <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+          !
+        </div>
+
+        <h3 class="text-3xl font-bold text-blue-900 mb-4">الروضة غير مشتركة أو غير مفعّلة</h3>
+
+        <p class="text-gray-600 leading-9 max-w-2xl mx-auto">
+          قد تكون هذه الروضة غير مفعّلة حاليًا ضمن المنصة، أو أن الصفحة الخاصة بها لم تُجهّز بعد.
+          يمكنك العودة لاختيار روضة أخرى، أو التواصل معنا في حال كنت ترغب بتفعيل صفحة خاصة للروضة.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 mt-8">
+          <a href="kindergartens.html" class="bg-blue-900 text-white px-8 py-3 rounded-full font-medium hover:bg-blue-800 btn-hover">
+            العودة لاختيار الروضة
+          </a>
+
+          <a href="index.html#contact" class="border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-blue-900 hover:text-white btn-hover">
+            تواصل معنا
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-16">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+          <div class="w-14 h-14 bg-blue-900 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">1</div>
+          <h4 class="text-xl font-bold text-blue-900 mb-3">التحقق من الاشتراك</h4>
+          <p class="text-gray-600 leading-8">قد لا تكون الروضة مشتركة حاليًا في خدمات المنصة.</p>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+          <div class="w-14 h-14 bg-red-700 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">2</div>
+          <h4 class="text-xl font-bold text-blue-900 mb-3">صفحة قيد الإعداد</h4>
+          <p class="text-gray-600 leading-8">ربما تكون الصفحة الخاصة بالروضة ما زالت قيد التجهيز.</p>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+          <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">3</div>
+          <h4 class="text-xl font-bold text-blue-900 mb-3">إمكانية التفعيل</h4>
+          <p class="text-gray-600 leading-8">يمكن تفعيل صفحة خاصة للروضة وربطها بالمحتوى المطلوب لاحقًا.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black text-gray-400 py-10">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p>&copy; 2026 منصة الروضات التفاعلية. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
