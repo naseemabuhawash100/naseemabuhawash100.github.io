@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة - Firebase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-right">
+  <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-blue-900">لوحة إدارة الروضات والطلاب</h1>
+        <p class="text-sm text-gray-600">مرتبطة مباشرة بـ Firebase Firestore</p>
+      </div>
+      <div class="flex gap-3">
+        <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300">العودة للرئيسية</a>
+        <button id="refreshBtn" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800">تحديث</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-gradient text-white py-12 md:py-16">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">لوحة التحكم الرئيسية</h2>
+      <p class="text-lg md:text-xl opacity-90 leading-9">
+        من هنا يمكنك إدارة الروضات المعتمدة، بيانات المعلمات، الطلاب، والأكواد الخاصة بهم.
+      </p>
+      <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري الاتصال بـ Firebase...</p>
+    </div>
+  </section>
+
+  <section class="py-10">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <div class="xl:col-span-1 space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة روضة</h3>
+          <div class="space-y-4">
+            <input id="kgName" type="text" placeholder="اسم الروضة" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <input id="kgId" type="text" placeholder="المعرف الداخلي مثل baraem" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <select id="kgActive" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+              <option value="true">مفعلة</option>
+              <option value="false">غير مفعلة</option>
+            </select>
+            <input id="kgTeacherUser" type="text" placeholder="بريد/مستخدم المعلمة" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <input id="kgTeacherPass" type="text" placeholder="كلمة مرور المعلمة" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <button id="addKgBtn" class="w-full bg-blue-900 text-white px-5 py-3 rounded-xl font-medium hover:bg-blue-800">حفظ الروضة</button>
+            <p id="kgMsg" class="text-sm font-medium text-center text-gray-600"></p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة طالب</h3>
+          <div class="space-y-4">
+            <select id="studentKgSelect" class="w-full px-4 py-3 rounded-xl border border-gray-300"></select>
+            <input id="studentName" type="text" placeholder="اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <input id="studentCode" type="text" placeholder="كود الطالب مثل AHMAD-001" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <input id="studentClass" type="text" placeholder="الشعبة / الصف" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+            <button id="addStudentBtn" class="w-full bg-green-600 text-white px-5 py-3 rounded-xl font-medium hover:bg-green-700">حفظ الطالب</button>
+            <p id="studentMsg" class="text-sm font-medium text-center text-gray-600"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="xl:col-span-2 space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">الروضات المعتمدة</h3>
+          <div id="kindergartensList" class="space-y-4"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+            <h3 class="text-2xl font-bold text-blue-900">الطلاب والأكواد</h3>
+            <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+              <select id="filterKgStudents" class="px-4 py-2 rounded-xl border border-gray-300"></select>
+              <input id="searchStudent" type="text" placeholder="ابحث باسم الطالب أو الكود" class="px-4 py-2 rounded-xl border border-gray-300">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-center border-collapse">
+              <thead>
+                <tr class="bg-blue-900 text-white">
+                  <th class="p-3 border">الروضة</th>
+                  <th class="p-3 border">اسم الطالب</th>
+                  <th class="p-3 border">كود الطالب</th>
+                  <th class="p-3 border">الشعبة</th>
+                  <th class="p-3 border">إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTable">
+                <tr><td colspan="5" class="p-4 border">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.appspot.com",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const topStatus = document.getElementById("topStatus");
+    const kgMsg = document.getElementById("kgMsg");
+    const studentMsg = document.getElementById("studentMsg");
+    let kindergartens = [];
+    let students = [];
+
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderKindergartenSelects() {
+      const studentSelect = document.getElementById("studentKgSelect");
+      const filterSelect = document.getElementById("filterKgStudents");
+
+      studentSelect.innerHTML = "";
+      filterSelect.innerHTML = '<option value="">كل الروضات</option>';
+
+      kindergartens.forEach(kg => {
+        const opt1 = document.createElement("option");
+        opt1.value = kg.id;
+        opt1.textContent = kg.name;
+        studentSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = kg.id;
+        opt2.textContent = kg.name;
+        filterSelect.appendChild(opt2);
+      });
+    }
+
+    function renderKindergartens() {
+      const box = document.getElementById("kindergartensList");
+      box.innerHTML = "";
+      if (!kindergartens.length) {
+        box.innerHTML = '<p class="text-gray-500">لا توجد روضات بعد.</p>';
+        return;
+      }
+
+      kindergartens.forEach(kg => {
+        const div = document.createElement("div");
+        div.className = "border border-gray-200 rounded-2xl p-5 bg-gray-50";
+        div.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h4 class="text-xl font-bold text-blue-900">${escapeHtml(kg.name)}</h4>
+              <p class="text-sm text-gray-600">المعرف: ${escapeHtml(kg.id)}</p>
+              <p class="text-sm text-gray-600">الحالة: ${kg.active ? "مفعلة" : "غير مفعلة"}</p>
+              <p class="text-sm text-gray-600">المعلمة: ${escapeHtml(kg.teacherUser || "-")}</p>
+            </div>
+            <div class="flex gap-3">
+              <button class="delete-kg bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(kg.id)}">حذف</button>
+            </div>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+
+      document.querySelectorAll(".delete-kg").forEach(btn => {
+        btn.addEventListener("click", async function() {
+          const id = this.dataset.id;
+          if (!confirm("هل تريد حذف هذه الروضة وكل طلابها؟")) return;
+          try {
+            const studentsSnap = await db.collection("students").where("kindergartenId", "==", id).get();
+            const batch = db.batch();
+            studentsSnap.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            await db.collection("kindergartens").doc(id).delete();
+            await loadAll();
+          } catch (e) {
+            alert("حدث خطأ أثناء الحذف");
+            console.error(e);
+          }
+        });
+      });
+    }
+
+    function renderStudents() {
+      const tbody = document.getElementById("studentsTable");
+      const filterKg = document.getElementById("filterKgStudents").value;
+      const search = document.getElementById("searchStudent").value.trim().toLowerCase();
+      tbody.innerHTML = "";
+
+      const filtered = students.filter(student => {
+        const kgMatch = !filterKg || student.kindergartenId === filterKg;
+        const text = `${student.name || ""} ${student.code || ""} ${student.className || ""}`.toLowerCase();
+        const searchMatch = !search || text.includes(search);
+        return kgMatch && searchMatch;
+      });
+
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 border">لا توجد بيانات مطابقة</td></tr>';
+        return;
+      }
+
+      filtered.forEach(student => {
+        const kg = kindergartens.find(k => k.id === student.kindergartenId);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-3 border">${escapeHtml(kg ? kg.name : student.kindergartenId)}</td>
+          <td class="p-3 border">${escapeHtml(student.name)}</td>
+          <td class="p-3 border">${escapeHtml(student.code)}</td>
+          <td class="p-3 border">${escapeHtml(student.className || "")}</td>
+          <td class="p-3 border">
+            <button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(student.docId)}">حذف</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll(".delete-student").forEach(btn => {
+        btn.addEventListener("click", async function() {
+          if (!confirm("هل تريد حذف هذا الطالب؟")) return;
+          try {
+            await db.collection("students").doc(this.dataset.id).delete();
+            await loadStudents();
+          } catch (e) {
+            alert("حدث خطأ أثناء حذف الطالب");
+            console.error(e);
+          }
+        });
+      });
+    }
+
+    async function loadKindergartens() {
+      const snap = await db.collection("kindergartens").get();
+      kindergartens = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name).localeCompare(String(b.name), 'ar'));
+    }
+
+    async function loadStudents() {
+      const snap = await db.collection("students").get();
+      students = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name).localeCompare(String(b.name), 'ar'));
+      renderStudents();
+    }
+
+    async function loadAll() {
+      topStatus.innerText = "جاري تحميل البيانات من Firebase...";
+      await loadKindergartens();
+      await loadStudents();
+      renderKindergartenSelects();
+      renderKindergartens();
+      renderStudents();
+      topStatus.innerText = "تم تحميل البيانات بنجاح";
+    }
+
+    document.getElementById("addKgBtn").addEventListener("click", async function() {
+      const name = document.getElementById("kgName").value.trim();
+      const id = document.getElementById("kgId").value.trim().toLowerCase();
+      const active = document.getElementById("kgActive").value === "true";
+      const teacherUser = document.getElementById("kgTeacherUser").value.trim();
+      const teacherPass = document.getElementById("kgTeacherPass").value.trim();
+
+      kgMsg.innerText = "";
+      if (!name || !id) {
+        kgMsg.innerText = "يرجى إدخال اسم الروضة والمعرف الداخلي";
+        kgMsg.className = "text-sm font-medium text-center text-red-600";
+        return;
+      }
+
+      try {
+        await db.collection("kindergartens").doc(id).set({ id, name, active, teacherUser, teacherPass });
+        kgMsg.innerText = "تم حفظ الروضة بنجاح";
+        kgMsg.className = "text-sm font-medium text-center text-green-600";
+        document.getElementById("kgName").value = "";
+        document.getElementById("kgId").value = "";
+        document.getElementById("kgTeacherUser").value = "";
+        document.getElementById("kgTeacherPass").value = "";
+        await loadAll();
+      } catch (e) {
+        kgMsg.innerText = "حدث خطأ أثناء حفظ الروضة";
+        kgMsg.className = "text-sm font-medium text-center text-red-600";
+        console.error(e);
+      }
+    });
+
+    document.getElementById("addStudentBtn").addEventListener("click", async function() {
+      const kindergartenId = document.getElementById("studentKgSelect").value;
+      const name = document.getElementById("studentName").value.trim();
+      const code = document.getElementById("studentCode").value.trim().toUpperCase();
+      const className = document.getElementById("studentClass").value.trim();
+
+      studentMsg.innerText = "";
+      if (!kindergartenId || !name || !code) {
+        studentMsg.innerText = "يرجى اختيار الروضة وإدخال اسم الطالب والكود";
+        studentMsg.className = "text-sm font-medium text-center text-red-600";
+        return;
+      }
+
+      try {
+        const existing = await db.collection("students").where("code", "==", code).get();
+        if (!existing.empty) {
+          studentMsg.innerText = "هذا الكود مستخدم بالفعل";
+          studentMsg.className = "text-sm font-medium text-center text-red-600";
+          return;
+        }
+
+        await db.collection("students").add({ kindergartenId, name, code, className });
+        studentMsg.innerText = "تم حفظ الطالب بنجاح";
+        studentMsg.className = "text-sm font-medium text-center text-green-600";
+        document.getElementById("studentName").value = "";
+        document.getElementById("studentCode").value = "";
+        document.getElementById("studentClass").value = "";
+        await loadStudents();
+      } catch (e) {
+        studentMsg.innerText = "حدث خطأ أثناء حفظ الطالب";
+        studentMsg.className = "text-sm font-medium text-center text-red-600";
+        console.error(e);
+      }
+    });
+
+    document.getElementById("filterKgStudents").addEventListener("change", renderStudents);
+    document.getElementById("searchStudent").addEventListener("input", renderStudents);
+    document.getElementById("refreshBtn").addEventListener("click", loadAll);
+
+    loadAll().catch(err => {
+      topStatus.innerText = "تعذر الاتصال بـ Firebase";
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
