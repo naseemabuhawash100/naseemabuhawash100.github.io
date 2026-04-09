@@ -35,7 +35,7 @@
   <section class="hero-gradient text-white py-16 md:py-24">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl md:text-5xl font-bold mb-5">اختر الروضة وطريقة الدخول</h2>
-      <p class="text-lg md:text-xl opacity-90 leading-9">من هذه الصفحة يمكن للأهالي الوصول إلى صفحة الروضة الخاصة بهم، كما يمكن للمعلمة الوصول إلى صفحة النتائج الخاصة بنفس الروضة والمادة.</p>
+      <p class="text-lg md:text-xl opacity-90 leading-9">يتم الآن التحقق من دخول المعلمات من جدول المعلمات نفسه، بحيث تدخل كل معلمة فقط إلى مادتها داخل روضتها.</p>
       <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري تحميل الروضات من Firebase...</p>
     </div>
   </section>
@@ -63,17 +63,21 @@
               <label class="border border-gray-300 rounded-xl p-4 cursor-pointer hover:border-blue-900 transition">
                 <input type="radio" name="entryType" value="teacher" class="ml-2">
                 <span class="font-semibold text-gray-800">دخول المعلمة</span>
-                <p class="text-sm text-gray-500 mt-2">الانتقال إلى صفحة النتائج الخاصة بالروضة والمادة</p>
+                <p class="text-sm text-gray-500 mt-2">الانتقال إلى نتائج نفس الروضة ونفس المادة فقط</p>
               </label>
             </div>
           </div>
 
           <div id="teacherLoginBox" class="hidden-box bg-gray-50 rounded-2xl p-5 border border-gray-200">
             <h4 class="text-xl font-bold text-blue-900 mb-4">بيانات دخول المعلمة</h4>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label for="teacherName" class="block mb-2 font-medium text-gray-700">اسم المعلمة</label>
+                <input id="teacherName" type="text" placeholder="اكتب اسم المعلمة" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+              </div>
               <div>
                 <label for="teacherEmail" class="block mb-2 font-medium text-gray-700">البريد أو اسم المستخدم</label>
-                <input id="teacherEmail" type="text" placeholder="اكتب البريد أو اسم المستخدم" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
+                <input id="teacherEmail" type="text" placeholder="اكتب اليوزر أو البريد" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-900 focus:outline-none">
               </div>
               <div>
                 <label for="teacherPassword" class="block mb-2 font-medium text-gray-700">كلمة المرور</label>
@@ -89,12 +93,13 @@
                 </select>
               </div>
             </div>
-            <p class="text-xs text-gray-500 mt-3">سيتم عرض نتائج هذه المادة فقط بعد الدخول.</p>
+            <p class="text-xs text-gray-500 mt-3">لن يتم الدخول إلا إذا كانت بيانات المعلمة والمادة مطابقة للسجل المحفوظ في لوحة التحكم.</p>
           </div>
 
           <div class="text-center pt-2">
             <button id="continueBtn" class="bg-blue-900 text-white px-10 py-3 rounded-full font-medium hover:bg-blue-800 btn-hover">متابعة</button>
           </div>
+
           <p id="message" class="text-center font-medium mt-4 text-red-600"></p>
         </div>
       </div>
@@ -150,7 +155,7 @@
       });
     });
 
-    document.getElementById("continueBtn").addEventListener("click", function () {
+    document.getElementById("continueBtn").addEventListener("click", async function () {
       const kindergartenId = select.value;
       const entryType = document.querySelector('input[name="entryType"]:checked');
       message.innerText = "";
@@ -171,31 +176,43 @@
       }
 
       if (entryType.value === "teacher") {
-        const email = document.getElementById("teacherEmail").value.trim();
-        const password = document.getElementById("teacherPassword").value.trim();
-        const teacherSubject = document.getElementById("teacherSubject").value;
+        const teacherName = document.getElementById("teacherName").value.trim();
+        const user = document.getElementById("teacherEmail").value.trim();
+        const pass = document.getElementById("teacherPassword").value.trim();
+        const subject = document.getElementById("teacherSubject").value;
 
-        if (!email || !password) {
-          message.innerText = "يرجى إدخال بيانات دخول المعلمة أولًا";
-          return;
-        }
-        if (!teacherSubject) {
-          message.innerText = "يرجى اختيار المادة أولًا";
+        if (!teacherName || !user || !pass || !subject) {
+          message.innerText = "يرجى تعبئة كل بيانات المعلمة أولًا";
           return;
         }
         if (!kg.active) {
           window.location.href = "not-active.html";
           return;
         }
-        if (email !== (kg.teacherUser || "") || password !== (kg.teacherPass || "")) {
-          message.innerText = "بيانات الدخول غير صحيحة";
-          return;
-        }
 
-        sessionStorage.setItem("teacherLoggedIn", "true");
-        sessionStorage.setItem("teacherKindergarten", kindergartenId);
-        sessionStorage.setItem("teacherSubject", teacherSubject);
-        window.location.href = teacherRoute(kg.active);
+        try {
+          const teacherSnap = await db.collection("teachers")
+            .where("kindergartenId", "==", kindergartenId)
+            .where("name", "==", teacherName)
+            .where("user", "==", user)
+            .where("pass", "==", pass)
+            .where("subject", "==", subject)
+            .get();
+
+          if (teacherSnap.empty) {
+            message.innerText = "بيانات المعلمة أو المادة غير صحيحة";
+            return;
+          }
+
+          sessionStorage.setItem("teacherLoggedIn", "true");
+          sessionStorage.setItem("teacherKindergarten", kindergartenId);
+          sessionStorage.setItem("teacherSubject", subject);
+          sessionStorage.setItem("teacherName", teacherName);
+          window.location.href = teacherRoute(kg.active);
+        } catch (error) {
+          console.error(error);
+          message.innerText = "حدث خطأ أثناء التحقق من بيانات المعلمة";
+        }
         return;
       }
 
