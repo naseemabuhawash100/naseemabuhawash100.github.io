@@ -32,7 +32,7 @@
   <section class="hero-gradient text-white py-14 md:py-20">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-4xl md:text-5xl font-bold mb-5">نتائج الطلاب</h2>
-      <p id="heroText" class="text-lg md:text-xl opacity-90 leading-9">يتم الآن عرض نتائج مادة واحدة فقط حسب اختيار المعلمة عند الدخول.</p>
+      <p id="heroText" class="text-lg md:text-xl opacity-90 leading-9">يتم عرض نتائج نفس الروضة ونفس المادة فقط حسب سجل المعلمة.</p>
     </div>
   </section>
 
@@ -87,7 +87,8 @@
     const teacherLoggedIn = sessionStorage.getItem("teacherLoggedIn");
     const teacherKindergarten = sessionStorage.getItem("teacherKindergarten");
     const teacherSubject = sessionStorage.getItem("teacherSubject");
-    if (teacherLoggedIn !== "true" || !teacherKindergarten || !teacherSubject) {
+    const teacherName = sessionStorage.getItem("teacherName");
+    if (teacherLoggedIn !== "true" || !teacherKindergarten || !teacherSubject || !teacherName) {
       window.location.href = "kindergartens.html";
     }
   </script>
@@ -193,9 +194,9 @@
       }
       const kg = snap.data();
       document.getElementById("pageTitle").innerText = `نتائج ${kg.name}`;
-      document.getElementById("pageSubtitle").innerText = `صفحة المعلمة الخاصة بمادة ${formatSubject(teacherSubject)}`;
+      document.getElementById("pageSubtitle").innerText = `المعلمة: ${teacherName} | المادة: ${formatSubject(teacherSubject)}`;
       document.getElementById("heroTitle").innerText = `نتائج ${kg.name} - ${formatSubject(teacherSubject)}`;
-      document.getElementById("heroText").innerText = "يتم عرض نتائج هذه المادة فقط حسب اختيار المعلمة عند الدخول.";
+      document.getElementById("heroText").innerText = "يتم عرض نتائج نفس الروضة ونفس المادة فقط حسب سجل المعلمة.";
       return kg;
     }
     async function loadResults() {
@@ -226,6 +227,7 @@
       sessionStorage.removeItem("teacherLoggedIn");
       sessionStorage.removeItem("teacherKindergarten");
       sessionStorage.removeItem("teacherSubject");
+      sessionStorage.removeItem("teacherName");
       window.location.href = "kindergartens.html";
     });
 
