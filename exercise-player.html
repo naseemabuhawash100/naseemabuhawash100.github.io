@@ -9,11 +9,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background:#f8fafc; margin:0; }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-right">
+<body class="min-h-screen text-right">
+
   <header class="sticky top-0 z-40 bg-white shadow-md">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
@@ -39,6 +40,7 @@
       <div id="statusBox" class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 text-center">
         <p id="statusText" class="text-lg font-bold text-gray-700">جاري تحميل التمرين...</p>
       </div>
+
       <div id="playerBox" class="mt-6 hidden">
         <iframe id="exerciseFrame" class="w-full min-h-[900px] bg-white rounded-2xl shadow-lg border border-gray-200" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
       </div>
@@ -46,124 +48,131 @@
   </section>
 
   <script>
-    const familyKindergarten = sessionStorage.getItem("familyKindergarten");
-    if (!familyKindergarten) {
-      window.location.href = "kindergartens.html";
-    }
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
-      authDomain: "interactive-book-37270.firebaseapp.com",
-      projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.appspot.com",
-      messagingSenderId: "350364566140",
-      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
-      measurementId: "G-QM0TNEN9XJ"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-
-    const db = firebase.firestore();
-    const params = new URLSearchParams(window.location.search);
-    const stage = params.get("stage") || "";
-    const subject = params.get("subject") || "";
-    const page = params.get("page") || "";
-
-    const statusText = document.getElementById("statusText");
-    const statusBox = document.getElementById("statusBox");
-    const playerBox = document.getElementById("playerBox");
-    const frame = document.getElementById("exerciseFrame");
-
-    function stageLabel(v) {
-      if (v === "tamheedi") return "التمهيدي";
-      if (v === "tahdiri") return "التحضيري";
-      return v;
-    }
-
-    function subjectLabel(v) {
-      if (v === "math") return "الرياضيات";
-      if (v === "arabic") return "العربي";
-      if (v === "english") return "الإنجليزي";
-      return v;
-    }
-
-    function pageDocId(kindergartenId, stageValue, subjectValue, pageValue) {
-      return kindergartenId + "__" + stageValue + "__" + subjectValue + "__p" + String(pageValue).padStart(2, "0");
-    }
-
-    function wrapCode(code, title) {
-      const trimmed = String(code || "").trim();
-      if (!trimmed) return "";
-
-      const lower = trimmed.toLowerCase();
-      if (lower.includes("<html") || lower.includes("<body") || lower.includes("<head")) {
-        return trimmed;
+    (function () {
+      var familyKindergarten = sessionStorage.getItem("familyKindergarten");
+      if (!familyKindergarten) {
+        window.location.href = "kindergartens.html";
+        return;
       }
 
-      return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title || "تمرين تفاعلي"}</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background:#f8fafc; margin:0; padding:24px; }
-  </style>
-</head>
-<body>
-${trimmed}
-</body>
-</html>`;
-    }
+      var firebaseConfig = {
+        apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+        authDomain: "interactive-book-37270.firebaseapp.com",
+        projectId: "interactive-book-37270",
+        storageBucket: "interactive-book-37270.appspot.com",
+        messagingSenderId: "350364566140",
+        appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+        measurementId: "G-QM0TNEN9XJ"
+      };
 
-    async function loadExercise() {
-      try {
-        if (!stage || !subject || !page) {
-          statusText.innerText = "بيانات الصفحة غير مكتملة";
-          return;
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      var db = firebase.firestore();
+      var params = new URLSearchParams(window.location.search);
+      var stage = params.get("stage") || "";
+      var subject = params.get("subject") || "";
+      var page = params.get("page") || "";
+
+      var statusText = document.getElementById("statusText");
+      var statusBox = document.getElementById("statusBox");
+      var playerBox = document.getElementById("playerBox");
+      var frame = document.getElementById("exerciseFrame");
+
+      function stageLabel(v) {
+        if (v === "tamheedi") return "التمهيدي";
+        if (v === "tahdiri") return "التحضيري";
+        return v;
+      }
+
+      function subjectLabel(v) {
+        if (v === "math") return "الرياضيات";
+        if (v === "arabic") return "العربي";
+        if (v === "english") return "الإنجليزي";
+        return v;
+      }
+
+      function pageDocId(kindergartenId, stageValue, subjectValue, pageValue) {
+        return kindergartenId + "__" + stageValue + "__" + subjectValue + "__p" + String(pageValue).padStart(2, "0");
+      }
+
+      function wrapCode(code, title) {
+        var trimmed = String(code || "").trim();
+        if (!trimmed) return "";
+
+        var lower = trimmed.toLowerCase();
+        if (lower.indexOf("<html") !== -1 || lower.indexOf("<body") !== -1 || lower.indexOf("<head") !== -1) {
+          return trimmed;
         }
 
-        const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
-        if (!kgSnap.exists) {
-          window.location.href = "kindergartens.html";
-          return;
-        }
+        var parts = [];
+        parts.push("<!DOCTYPE html>");
+        parts.push('<html lang="ar" dir="rtl">');
+        parts.push("<head>");
+        parts.push('<meta charset="UTF-8" />');
+        parts.push('<meta name="viewport" content="width=device-width, initial-scale=1.0" />');
+        parts.push("<title>" + (title || "تمرين تفاعلي") + "</title>");
+        parts.push('<script src="https://cdn.tailwindcss.com"><' + '/script>');
+        parts.push('<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">');
+        parts.push("<style>body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background:#f8fafc; margin:0; padding:24px; }</style>");
+        parts.push("</head>");
+        parts.push("<body>");
+        parts.push(trimmed);
+        parts.push("</body>");
+        parts.push("</html>");
+        return parts.join("");
+      }
 
-        const kg = kgSnap.data();
-        document.getElementById("pageTitle").innerText = "تمرين " + kg.name;
+      function setHeader(kgName) {
+        document.getElementById("pageTitle").innerText = "تمرين " + kgName;
         document.getElementById("pageSubtitle").innerText = stageLabel(stage) + " - " + subjectLabel(subject) + " - صفحة " + page;
-        document.getElementById("heroTitle").innerText = kg.name + " | " + subjectLabel(subject);
+        document.getElementById("heroTitle").innerText = kgName + " | " + subjectLabel(subject);
         document.getElementById("heroText").innerText = "المرحلة: " + stageLabel(stage) + " | الصفحة: " + page;
-
-        const docId = pageDocId(familyKindergarten, stage, subject, page);
-        const pageSnap = await db.collection("interactive_pages").doc(docId).get();
-
-        if (!pageSnap.exists) {
-          statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
-          return;
-        }
-
-        const data = pageSnap.data();
-        if (!data.code || !String(data.code).trim()) {
-          statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي كود تمرين بعد";
-          return;
-        }
-
-        const finalCode = wrapCode(data.code, data.title || "تمرين تفاعلي");
-        frame.srcdoc = finalCode;
-        statusBox.classList.add("hidden");
-        playerBox.classList.remove("hidden");
-      } catch (error) {
-        console.error(error);
-        statusText.innerText = "حدث خطأ أثناء تحميل التمرين";
       }
-    }
 
-    loadExercise();
+      async function loadExercise() {
+        try {
+          if (!stage || !subject || !page) {
+            statusText.innerText = "بيانات الصفحة غير مكتملة";
+            return;
+          }
+
+          var kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
+          if (!kgSnap.exists) {
+            window.location.href = "kindergartens.html";
+            return;
+          }
+
+          var kg = kgSnap.data();
+          setHeader(kg.name);
+
+          var docId = pageDocId(familyKindergarten, stage, subject, page);
+          var pageSnap = await db.collection("interactive_pages").doc(docId).get();
+
+          if (!pageSnap.exists) {
+            statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
+            return;
+          }
+
+          var data = pageSnap.data();
+          if (!data.code || !String(data.code).trim()) {
+            statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي كود تمرين بعد";
+            return;
+          }
+
+          var finalCode = wrapCode(data.code, data.title || "تمرين تفاعلي");
+          frame.srcdoc = finalCode;
+          statusBox.classList.add("hidden");
+          playerBox.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+          statusText.innerText = "حدث خطأ أثناء تحميل التمرين";
+        }
+      }
+
+      loadExercise();
+    })();
   </script>
 </body>
 </html>
