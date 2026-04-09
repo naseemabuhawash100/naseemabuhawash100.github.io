@@ -104,8 +104,8 @@
     const topStatus = document.getElementById("topStatus");
     let kindergartens = [];
 
-    function familyRoute(kgId, isActive) {
-      return isActive ? `rawdah-${kgId}.html` : "not-active.html";
+    function familyRoute(isActive) {
+      return isActive ? "kindergarten-home.html" : "not-active.html";
     }
     function teacherRoute(isActive) {
       return isActive ? "results.html" : "not-active.html";
@@ -138,6 +138,7 @@
       const kindergartenId = select.value;
       const entryType = document.querySelector('input[name="entryType"]:checked');
       message.innerText = "";
+
       if (!kindergartenId) {
         message.innerText = "يرجى اختيار الروضة أولًا";
         return;
@@ -174,7 +175,8 @@
         return;
       }
 
-      window.location.href = familyRoute(kindergartenId, kg.active);
+      sessionStorage.setItem("familyKindergarten", kindergartenId);
+      window.location.href = familyRoute(kg.active);
     });
 
     loadKindergartens().catch(err => {
