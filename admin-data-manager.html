@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة الإدارة - Firebase</title>
+  <title>لوحة إدارة الروضات والطلاب</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -20,8 +20,9 @@
         <h1 class="text-2xl font-bold text-blue-900">لوحة إدارة الروضات والطلاب</h1>
         <p class="text-sm text-gray-600">مرتبطة مباشرة بـ Firebase Firestore</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-wrap gap-3">
         <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300">العودة للرئيسية</a>
+        <a href="exercise-admin.html" class="bg-purple-600 text-white px-5 py-2 rounded-full font-medium hover:bg-purple-700">إدارة التمارين التفاعلية</a>
         <button id="refreshBtn" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800">تحديث</button>
       </div>
     </div>
@@ -72,7 +73,10 @@
 
       <div class="xl:col-span-2 space-y-6">
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">الروضات المعتمدة</h3>
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+            <h3 class="text-2xl font-bold text-blue-900">الروضات المعتمدة</h3>
+            <a href="exercise-admin.html" class="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700">فتح إدارة التمارين</a>
+          </div>
           <div id="kindergartensList" class="space-y-4"></div>
         </div>
 
@@ -100,6 +104,14 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">الخطوة التالية</h3>
+          <p class="text-gray-700 leading-8">
+            من زر <strong>إدارة التمارين التفاعلية</strong> يمكنك فتح صفحة مستقلة تحفظ كود كل تمرين حسب:
+            الروضة، المرحلة، المادة، ورقم الصفحة.
+          </p>
         </div>
       </div>
 
@@ -137,16 +149,13 @@
     function renderKindergartenSelects() {
       const studentSelect = document.getElementById("studentKgSelect");
       const filterSelect = document.getElementById("filterKgStudents");
-
       studentSelect.innerHTML = "";
       filterSelect.innerHTML = '<option value="">كل الروضات</option>';
-
       kindergartens.forEach(kg => {
         const opt1 = document.createElement("option");
         opt1.value = kg.id;
         opt1.textContent = kg.name;
         studentSelect.appendChild(opt1);
-
         const opt2 = document.createElement("option");
         opt2.value = kg.id;
         opt2.textContent = kg.name;
@@ -161,7 +170,6 @@
         box.innerHTML = '<p class="text-gray-500">لا توجد روضات بعد.</p>';
         return;
       }
-
       kindergartens.forEach(kg => {
         const div = document.createElement("div");
         div.className = "border border-gray-200 rounded-2xl p-5 bg-gray-50";
@@ -176,8 +184,7 @@
             <div class="flex gap-3">
               <button class="delete-kg bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(kg.id)}">حذف</button>
             </div>
-          </div>
-        `;
+          </div>`;
         box.appendChild(div);
       });
 
@@ -187,8 +194,10 @@
           if (!confirm("هل تريد حذف هذه الروضة وكل طلابها؟")) return;
           try {
             const studentsSnap = await db.collection("students").where("kindergartenId", "==", id).get();
+            const pagesSnap = await db.collection("interactive_pages").where("kindergartenId", "==", id).get();
             const batch = db.batch();
             studentsSnap.forEach(doc => batch.delete(doc.ref));
+            pagesSnap.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
             await db.collection("kindergartens").doc(id).delete();
             await loadAll();
@@ -228,8 +237,7 @@
           <td class="p-3 border">${escapeHtml(student.className || "")}</td>
           <td class="p-3 border">
             <button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(student.docId)}">حذف</button>
-          </td>
-        `;
+          </td>`;
         tbody.appendChild(tr);
       });
 
