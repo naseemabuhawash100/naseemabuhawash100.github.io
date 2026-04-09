@@ -107,7 +107,7 @@
         <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
           <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">3</div>
           <h4 class="text-xl font-bold text-blue-900 mb-3">اختيار الصفحة</h4>
-          <p class="text-gray-600 leading-8">كل صفحة تذهب إلى ملف مستقل مطابق لها.</p>
+          <p class="text-gray-600 leading-8">كل صفحة ستفتح في عارض تمرين موحد يسحب محتواها من Firebase.</p>
         </div>
       </div>
     </div>
@@ -143,11 +143,6 @@
       document.getElementById("pageTitle").innerText = `تمارين ${kg.name}`;
       document.getElementById("pageSubtitle").innerText = "اختر المرحلة والكتاب للانتقال إلى التمارين";
       document.getElementById("heroTitle").innerText = `تمارين ${kg.name}`;
-      document.getElementById("heroText").innerText = "من هنا يمكنكم الوصول إلى الصفحة التفاعلية المطابقة للصفحة الموجودة في الكتاب المطبوع.";
-    }
-
-    function padPage(num) {
-      return String(num).padStart(2, "0");
     }
 
     document.getElementById("continueBtn").addEventListener("click", function () {
@@ -177,8 +172,13 @@
         return;
       }
 
-      const targetPage = `${familyKindergarten}-${stage}-${subject}-p${padPage(page)}.html`;
-      window.location.href = targetPage;
+      const params = new URLSearchParams({
+        stage,
+        subject,
+        page: String(page)
+      });
+
+      window.location.href = `exercise-player.html?${params.toString()}`;
     });
 
     loadKindergarten().catch(function(error) {
