@@ -76,15 +76,19 @@
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
       measurementId: "G-QM0TNEN9XJ"
     };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
     const params = new URLSearchParams(window.location.search);
     const stage = params.get("stage") || "";
     const subject = params.get("subject") || "";
     const page = params.get("page") || "";
 
     const statusText = document.getElementById("statusText");
+    const statusBox = document.getElementById("statusBox");
     const playerBox = document.getElementById("playerBox");
     const frame = document.getElementById("exerciseFrame");
 
@@ -166,7 +170,7 @@ ${trimmed}
 
       const finalCode = wrapCode(data.code, data.title || "تمرين تفاعلي");
       frame.srcdoc = finalCode;
-      document.getElementById("statusBox").classList.add("hidden");
+      statusBox.classList.add("hidden");
       playerBox.classList.remove("hidden");
     }
 
