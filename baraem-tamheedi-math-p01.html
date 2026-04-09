@@ -6,6 +6,8 @@
   <title>رياضيات التمهيدي - صفحة 01</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
@@ -37,8 +39,9 @@
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl md:text-5xl font-bold mb-5">الصفحة التفاعلية الأولى</h2>
       <p class="text-lg md:text-xl opacity-90 leading-9">
-        هذه الصفحة تمثل نسخة رقمية لصفحة من الكتاب المطبوع، ويمكن عبرها حل التمارين وحفظ النتيجة لتظهر في صفحة المعلمة الخاصة بروضة البراعم.
+        هذه الصفحة تقرأ الطلاب والأكواد مباشرة من Firebase.
       </p>
+      <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري تحميل بيانات الطلاب...</p>
     </div>
   </section>
 
@@ -110,8 +113,6 @@
     </div>
   </section>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
@@ -125,23 +126,34 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     const db = firebase.firestore();
+    const topStatus = document.getElementById("topStatus");
     const answers = { q1: null, q2: null, q3: null };
     let qrScanner = null;
     let isScanning = false;
-
-    const allowedStudents = {
-      "AHMAD-001": "أحمد هواش",
-      "LAYAN-002": "ليان خالد"
-    };
+    let allowedStudents = {};
 
     function normalizeArabicName(name) {
       return String(name || "")
         .trim()
-        .replace(/أ|إ|آ/g, "ا")
+        .replace(/[أإآ]/g, "ا")
         .replace(/ى/g, "ي")
         .replace(/ة/g, "ه")
         .replace(/\s+/g, " ")
         .toLowerCase();
+    }
+
+    async function loadStudents() {
+      topStatus.innerText = "جاري تحميل بيانات الطلاب من Firebase...";
+      const snap = await db.collection("students").where("kindergartenId", "==", "baraem").get();
+      allowedStudents = {};
+      snap.forEach(doc => {
+        const s = doc.data();
+        allowedStudents[String(s.code || "").toUpperCase()] = {
+          name: s.name || "",
+          className: s.className || ""
+        };
+      });
+      topStatus.innerText = "تم تحميل بيانات الطلاب بنجاح";
     }
 
     function activateChoice(groupClass, selectedButton) {
@@ -186,8 +198,19 @@
           { facingMode: "environment" },
           { fps: 10, qrbox: 220 },
           async (decodedText) => {
-            document.getElementById("studentCode").value = decodedText;
-            scanMessage.innerText = "تم مسح الكود بنجاح";
+            const code = String(decodedText || "").trim().toUpperCase();
+            document.getElementById("studentCode").value = code;
+
+            const student = allowedStudents[code];
+            if (student) {
+              document.getElementById("studentName").value = student.name;
+              if (!document.getElementById("className").value && student.className) {
+                document.getElementById("className").value = student.className;
+              }
+              scanMessage.innerText = "تم مسح الكود بنجاح";
+            } else {
+              scanMessage.innerText = "تم مسح الكود لكنه غير معتمد";
+            }
             await stopScanner();
           },
           () => {}
@@ -202,6 +225,17 @@
     document.getElementById("stopScanBtn").addEventListener("click", async function() {
       await stopScanner();
       document.getElementById("scanMessage").innerText = "تم إيقاف المسح";
+    });
+
+    document.getElementById("studentCode").addEventListener("input", function() {
+      const code = this.value.trim().toUpperCase();
+      const student = allowedStudents[code];
+      if (student) {
+        document.getElementById("studentName").value = student.name;
+        if (!document.getElementById("className").value && student.className) {
+          document.getElementById("className").value = student.className;
+        }
+      }
     });
 
     document.getElementById("submitBtn").addEventListener("click", function() {
@@ -226,11 +260,11 @@
         return;
       }
 
-      const expectedName = normalizeArabicName(allowedStudents[studentCode]);
+      const expectedName = normalizeArabicName(allowedStudents[studentCode].name);
       const enteredName = normalizeArabicName(studentName);
 
       if (enteredName !== expectedName) {
-        resultMessage.innerText = "الاسم لا يطابق الكود الممسوح";
+        resultMessage.innerText = "الاسم لا يطابق الكود المخصص له";
         resultMessage.className = "mt-5 text-lg font-bold text-red-600";
         return;
       }
@@ -266,7 +300,7 @@
           return db.collection("results").add({
             studentName: studentName,
             studentCode: studentCode,
-            className: className || "",
+            className: className || allowedStudents[studentCode].className || "",
             score: score,
             total: total,
             exercise: "math-page-01",
@@ -288,6 +322,11 @@
           resultMessage.innerText = "حدث خطأ أثناء حفظ النتيجة";
           resultMessage.className = "mt-5 text-lg font-bold text-red-600";
         });
+    });
+
+    loadStudents().catch(err => {
+      console.error(err);
+      topStatus.innerText = "تعذر تحميل بيانات الطلاب من Firebase";
     });
   </script>
 
