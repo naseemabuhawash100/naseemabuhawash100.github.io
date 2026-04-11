@@ -3,18 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم الرئيسية</title>
+  <title>لوحة التحكم - Supabase</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
-    .tab-btn.active { background:#1e3a8a; color:white; }
-    .tab-panel { display:none; }
-    .tab-panel.active { display:block; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-right">
@@ -22,206 +19,67 @@
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-blue-900">لوحة التحكم الرئيسية</h1>
-        <p class="text-sm text-gray-600">إدارة الروضات والطلاب والمعلمات والتمارين من مكان واحد</p>
+        <p class="text-sm text-gray-600">الخطوة الأولى: ربط رفع ملفات التمارين مع Supabase</p>
       </div>
-      <div class="flex flex-wrap gap-3">
+      <div class="flex gap-3">
         <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300">العودة للرئيسية</a>
-        <button id="refreshBtn" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800">تحديث</button>
       </div>
     </div>
   </header>
 
-  <section class="hero-gradient text-white py-12 md:py-16">
+  <section class="hero-gradient text-white py-12">
     <div class="max-w-5xl mx-auto px-4 text-center">
-      <h2 class="text-4xl md:text-5xl font-bold mb-4">لوحة تحكم مرتبة بالتبويبات</h2>
-      <p class="text-lg md:text-xl opacity-90 leading-9">اختاري القسم المطلوب من الأعلى: الروضات، الطلاب، المعلمات، أو التمارين.</p>
-      <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري تحميل البيانات من Firebase...</p>
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">رفع ملفات التمرين</h2>
+      <p class="text-lg opacity-90 leading-9">ارفعي HTML وCSS وJS والصور أو ZIP، وسيتم حفظ الروابط في Firestore.</p>
     </div>
   </section>
 
   <section class="py-8">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 mb-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button class="tab-btn active px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="kgs">إدارة الروضات</button>
-          <button class="tab-btn px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="students">إدارة الطلاب</button>
-          <button class="tab-btn px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="teachers">إدارة المعلمات</button>
-          <button class="tab-btn px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="pages">إدارة التمارين</button>
-        </div>
-      </div>
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة / تعديل تمرين</h3>
 
-      <div id="tab-kgs" class="tab-panel active space-y-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة روضة جديدة</h3>
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <input id="kgName" type="text" placeholder="اسم الروضة" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="kgId" type="text" placeholder="المعرف الداخلي مثل zahraa" class="px-4 py-3 rounded-xl border border-gray-300">
-            <select id="kgActive" class="px-4 py-3 rounded-xl border border-gray-300">
-              <option value="true">مفعلة</option>
-              <option value="false">غير مفعلة</option>
-            </select>
-            <input id="kgTeacherUser" type="text" placeholder="يوزر افتراضي للروضة" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="kgTeacherPass" type="text" placeholder="باسورد افتراضي للروضة" class="px-4 py-3 rounded-xl border border-gray-300">
-          </div>
-          <div class="mt-4 flex gap-3">
-            <button id="addKgBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800">حفظ الروضة</button>
-          </div>
-          <p id="kgMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <input id="pageKgSelect" type="text" placeholder="معرف الروضة مثل zahraa" class="px-4 py-3 rounded-xl border border-gray-300">
+          <select id="pageStage" class="px-4 py-3 rounded-xl border border-gray-300">
+            <option value="">اختر المرحلة</option>
+            <option value="tamheedi">التمهيدي</option>
+            <option value="tahdiri">التحضيري</option>
+          </select>
+          <select id="pageSubject" class="px-4 py-3 rounded-xl border border-gray-300">
+            <option value="">اختر المادة</option>
+            <option value="math">الرياضيات</option>
+            <option value="arabic">العربي</option>
+            <option value="english">الإنجليزي</option>
+          </select>
+          <input id="pageNumber" type="number" min="1" max="50" placeholder="رقم الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
+          <input id="pageTitleInput" type="text" placeholder="عنوان الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
         </div>
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">قائمة الروضات</h3>
-          <div id="kindergartensList" class="space-y-4"></div>
-        </div>
-      </div>
 
-      <div id="tab-students" class="tab-panel space-y-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة طالب</h3>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <select id="studentKgSelect" class="px-4 py-3 rounded-xl border border-gray-300"></select>
-            <input id="studentName" type="text" placeholder="اسم الطالب" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="studentCode" type="text" placeholder="كود الطالب" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="studentClass" type="text" placeholder="الشعبة / الصف" class="px-4 py-3 rounded-xl border border-gray-300">
+        <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="border rounded-2xl p-4 bg-gray-50">
+            <h4 class="font-bold text-blue-900 mb-3">الخيار 1: رفع ملف ZIP كامل</h4>
+            <input id="zipFile" type="file" accept=".zip" class="w-full px-3 py-3 rounded-xl border border-gray-300 bg-white">
+            <p class="text-xs text-gray-500 mt-2">ارفعي مشروع التمرين كاملًا كملف zip.</p>
           </div>
-          <div class="mt-4">
-            <button id="addStudentBtn" class="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700">حفظ الطالب</button>
-          </div>
-          <p id="studentMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
-        </div>
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
-            <h3 class="text-2xl font-bold text-blue-900">قائمة الطلاب</h3>
-            <div class="flex flex-col md:flex-row gap-3">
-              <select id="filterKgStudents" class="px-4 py-2 rounded-xl border border-gray-300"></select>
-              <input id="searchStudent" type="text" placeholder="ابحث باسم الطالب أو الكود" class="px-4 py-2 rounded-xl border border-gray-300">
+          <div class="border rounded-2xl p-4 bg-gray-50">
+            <h4 class="font-bold text-blue-900 mb-3">الخيار 2: رفع ملفات منفصلة</h4>
+            <div class="space-y-3">
+              <input id="htmlFile" type="file" accept=".html,.htm" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+              <input id="cssFile" type="file" accept=".css" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+              <input id="jsFile" type="file" accept=".js" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+              <input id="imageFiles" type="file" accept="image/*" multiple class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
             </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-center border-collapse">
-              <thead>
-                <tr class="bg-blue-900 text-white">
-                  <th class="p-3 border">الروضة</th>
-                  <th class="p-3 border">اسم الطالب</th>
-                  <th class="p-3 border">الكود</th>
-                  <th class="p-3 border">الشعبة</th>
-                  <th class="p-3 border">إجراء</th>
-                </tr>
-              </thead>
-              <tbody id="studentsTable"></tbody>
-            </table>
-          </div>
         </div>
+
+        <textarea id="exerciseCode" rows="8" placeholder="اختياري: الصقي كود HTML مباشر هنا إذا أردت..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300 font-mono text-sm"></textarea>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button id="savePageBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700">حفظ الصفحة</button>
+        </div>
+        <p id="pageMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
       </div>
-
-      <div id="tab-teachers" class="tab-panel space-y-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة معلمة</h3>
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <select id="teacherKgSelect" class="px-4 py-3 rounded-xl border border-gray-300"></select>
-            <input id="teacherName" type="text" placeholder="اسم المعلمة" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="teacherUser" type="text" placeholder="اسم المستخدم / البريد" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="teacherPass" type="text" placeholder="كلمة المرور" class="px-4 py-3 rounded-xl border border-gray-300">
-            <select id="teacherSubject" class="px-4 py-3 rounded-xl border border-gray-300">
-              <option value="">اختر المادة</option>
-              <option value="arabic">العربي</option>
-              <option value="math">الرياضيات</option>
-              <option value="english">الإنجليزي</option>
-            </select>
-          </div>
-          <div class="mt-4">
-            <button id="addTeacherBtn" class="bg-amber-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-amber-700">حفظ المعلمة</button>
-          </div>
-          <p id="teacherMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
-        </div>
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
-            <h3 class="text-2xl font-bold text-blue-900">قائمة المعلمات</h3>
-            <select id="filterKgTeachers" class="px-4 py-2 rounded-xl border border-gray-300"></select>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-center border-collapse">
-              <thead>
-                <tr class="bg-blue-900 text-white">
-                  <th class="p-3 border">الروضة</th>
-                  <th class="p-3 border">اسم المعلمة</th>
-                  <th class="p-3 border">اليوزر</th>
-                  <th class="p-3 border">المادة</th>
-                  <th class="p-3 border">إجراء</th>
-                </tr>
-              </thead>
-              <tbody id="teachersTable"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-pages" class="tab-panel space-y-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة / تعديل تمرين</h3>
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <select id="pageKgSelect" class="px-4 py-3 rounded-xl border border-gray-300"></select>
-            <select id="pageStage" class="px-4 py-3 rounded-xl border border-gray-300">
-              <option value="">اختر المرحلة</option>
-              <option value="tamheedi">التمهيدي</option>
-              <option value="tahdiri">التحضيري</option>
-            </select>
-            <select id="pageSubject" class="px-4 py-3 rounded-xl border border-gray-300">
-              <option value="">اختر المادة</option>
-              <option value="math">الرياضيات</option>
-              <option value="arabic">العربي</option>
-              <option value="english">الإنجليزي</option>
-            </select>
-            <input id="pageNumber" type="number" min="1" max="50" placeholder="رقم الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
-            <input id="pageTitleInput" type="text" placeholder="عنوان الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
-          </div>
-
-          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border rounded-2xl p-4 bg-gray-50">
-              <h4 class="font-bold text-blue-900 mb-3">الخيار 1: رفع ملف ZIP كامل</h4>
-              <input id="zipFile" type="file" accept=".zip" class="w-full px-3 py-3 rounded-xl border border-gray-300 bg-white">
-              <p class="text-xs text-gray-500 mt-2">ارفعي مشروع التمرين كاملًا كملف zip.</p>
-            </div>
-            <div class="border rounded-2xl p-4 bg-gray-50">
-              <h4 class="font-bold text-blue-900 mb-3">الخيار 2: رفع ملفات منفصلة</h4>
-              <div class="space-y-3">
-                <input id="htmlFile" type="file" accept=".html,.htm" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
-                <input id="cssFile" type="file" accept=".css" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
-                <input id="jsFile" type="file" accept=".js" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
-                <input id="imageFiles" type="file" accept="image/*" multiple class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
-              </div>
-            </div>
-          </div>
-
-          <textarea id="exerciseCode" rows="8" placeholder="اختياري: الصقي كود HTML مباشر هنا إذا أردت..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300 font-mono text-sm"></textarea>
-
-          <div class="mt-4 flex flex-wrap gap-3">
-            <button id="loadPageBtn" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900">تحميل الصفحة</button>
-            <button id="savePageBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700">حفظ الصفحة</button>
-          </div>
-          <p id="pageMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 class="text-2xl font-bold text-blue-900 mb-5">التمارين المحفوظة</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-center border-collapse">
-              <thead>
-                <tr class="bg-blue-900 text-white">
-                  <th class="p-3 border">الروضة</th>
-                  <th class="p-3 border">المرحلة</th>
-                  <th class="p-3 border">المادة</th>
-                  <th class="p-3 border">الصفحة</th>
-                  <th class="p-3 border">العنوان</th>
-                  <th class="p-3 border">النوع</th>
-                  <th class="p-3 border">إجراء</th>
-                </tr>
-              </thead>
-              <tbody id="pagesTable"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -237,174 +95,23 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
-    const topStatus = document.getElementById("topStatus");
-    let kindergartens = [];
-    let students = [];
-    let teachers = [];
-    let pages = [];
+    const SUPABASE_URL = "https://sdmjyxtvubwhbtzhbsop.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_PtGbXmQR-7sLcGnGfypM_Q_nF3xX2dC";
+    const SUPABASE_BUCKET = "interactive-exercises";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function escapeHtml(text) {
-      return String(text ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-    }
-    function stageLabel(v){ return v==="tamheedi"?"التمهيدي":v==="tahdiri"?"التحضيري":v; }
-    function subjectLabel(v){ return v==="math"?"الرياضيات":v==="arabic"?"العربي":v==="english"?"الإنجليزي":v; }
     function pageDocId(k,s,sub,p){ return k+"__"+s+"__"+sub+"__p"+String(p).padStart(2,"0"); }
-    function pageStorageBase(k,s,sub,p){ return "interactive_pages/"+pageDocId(k,s,sub,p); }
+    function pageStorageBase(k,s,sub,p){ return k+"/"+s+"/"+sub+"/p"+String(p).padStart(2,"0"); }
 
-    function setupTabs() {
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", function() {
-          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-          document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-          this.classList.add("active");
-          document.getElementById("tab-" + this.dataset.tab).classList.add("active");
-        });
-      });
+    async function uploadToSupabase(path, file) {
+      const { error } = await supabaseClient.storage.from(SUPABASE_BUCKET).upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data } = supabaseClient.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+      return { path, name: file.name, url: data.publicUrl, size: file.size || 0, type: file.type || "" };
     }
 
-    function renderKgSelects() {
-      ["studentKgSelect","teacherKgSelect","pageKgSelect"].forEach(id => {
-        const el = document.getElementById(id);
-        el.innerHTML = '<option value="">اختر الروضة</option>';
-        kindergartens.forEach(kg => {
-          const opt = document.createElement("option");
-          opt.value = kg.id; opt.textContent = kg.name; el.appendChild(opt);
-        });
-      });
-      const studentFilter = document.getElementById("filterKgStudents");
-      const teacherFilter = document.getElementById("filterKgTeachers");
-      studentFilter.innerHTML = '<option value="">كل الروضات</option>';
-      teacherFilter.innerHTML = '<option value="">كل الروضات</option>';
-      kindergartens.forEach(kg => {
-        let o1=document.createElement("option"); o1.value=kg.id; o1.textContent=kg.name; studentFilter.appendChild(o1);
-        let o2=document.createElement("option"); o2.value=kg.id; o2.textContent=kg.name; teacherFilter.appendChild(o2);
-      });
-    }
-
-    function renderKindergartens() {
-      const box = document.getElementById("kindergartensList");
-      box.innerHTML = "";
-      if (!kindergartens.length) { box.innerHTML = '<p class="text-gray-500">لا توجد روضات بعد.</p>'; return; }
-      kindergartens.forEach(kg => {
-        const div = document.createElement("div");
-        div.className = "border border-gray-200 rounded-2xl p-5 bg-gray-50";
-        div.innerHTML = '<div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h4 class="text-xl font-bold text-blue-900">'+escapeHtml(kg.name)+'</h4><p class="text-sm text-gray-600">المعرف: '+escapeHtml(kg.id)+'</p><p class="text-sm text-gray-600">الحالة: '+(kg.active?'مفعلة':'غير مفعلة')+'</p></div><button class="delete-kg bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(kg.id)+'">حذف</button></div>';
-        box.appendChild(div);
-      });
-      document.querySelectorAll(".delete-kg").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          const id = this.dataset.id;
-          if (!confirm("هل تريد حذف هذه الروضة وكل بياناتها؟")) return;
-          try {
-            const batch = db.batch();
-            (await db.collection("students").where("kindergartenId","==",id).get()).forEach(d=>batch.delete(d.ref));
-            (await db.collection("teachers").where("kindergartenId","==",id).get()).forEach(d=>batch.delete(d.ref));
-            (await db.collection("interactive_pages").where("kindergartenId","==",id).get()).forEach(d=>batch.delete(d.ref));
-            await batch.commit();
-            await db.collection("kindergartens").doc(id).delete();
-            await loadAll();
-          } catch(e) { alert("حدث خطأ أثناء الحذف"); console.error(e); }
-        });
-      });
-    }
-
-    function renderStudents() {
-      const tbody = document.getElementById("studentsTable");
-      const filterKg = document.getElementById("filterKgStudents").value;
-      const search = document.getElementById("searchStudent").value.trim().toLowerCase();
-      tbody.innerHTML = "";
-      const filtered = students.filter(s => {
-        const kgMatch = !filterKg || s.kindergartenId === filterKg;
-        const txt = (s.name||"")+" "+(s.code||"")+" "+(s.className||"");
-        return kgMatch && (!search || txt.toLowerCase().includes(search));
-      });
-      if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 border">لا توجد بيانات مطابقة</td></tr>'; return; }
-      filtered.forEach(s => {
-        const kg = kindergartens.find(k=>k.id===s.kindergartenId);
-        const tr = document.createElement("tr");
-        tr.innerHTML = '<td class="p-3 border">'+escapeHtml(kg?kg.name:s.kindergartenId)+'</td><td class="p-3 border">'+escapeHtml(s.name)+'</td><td class="p-3 border">'+escapeHtml(s.code)+'</td><td class="p-3 border">'+escapeHtml(s.className||"")+'</td><td class="p-3 border"><button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(s.docId)+'">حذف</button></td>';
-        tbody.appendChild(tr);
-      });
-      document.querySelectorAll(".delete-student").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          if (!confirm("هل تريد حذف هذا الطالب؟")) return;
-          await db.collection("students").doc(this.dataset.id).delete();
-          await loadStudents();
-        });
-      });
-    }
-
-    function renderTeachers() {
-      const tbody = document.getElementById("teachersTable");
-      const filterKg = document.getElementById("filterKgTeachers").value;
-      tbody.innerHTML = "";
-      const filtered = teachers.filter(t => !filterKg || t.kindergartenId===filterKg);
-      if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 border">لا توجد معلمات بعد</td></tr>'; return; }
-      filtered.forEach(t => {
-        const kg = kindergartens.find(k=>k.id===t.kindergartenId);
-        const tr = document.createElement("tr");
-        tr.innerHTML = '<td class="p-3 border">'+escapeHtml(kg?kg.name:t.kindergartenId)+'</td><td class="p-3 border">'+escapeHtml(t.name)+'</td><td class="p-3 border">'+escapeHtml(t.user)+'</td><td class="p-3 border">'+escapeHtml(subjectLabel(t.subject))+'</td><td class="p-3 border"><button class="delete-teacher bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(t.docId)+'">حذف</button></td>';
-        tbody.appendChild(tr);
-      });
-      document.querySelectorAll(".delete-teacher").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          if (!confirm("هل تريد حذف هذه المعلمة؟")) return;
-          await db.collection("teachers").doc(this.dataset.id).delete();
-          await loadTeachers();
-        });
-      });
-    }
-
-    function pageTypeLabel(page) {
-      if (page.uploadMode === "zip") return "ZIP";
-      if (page.uploadMode === "files") return "ملفات منفصلة";
-      return "كود مباشر";
-    }
-
-    function renderPages() {
-      const tbody = document.getElementById("pagesTable");
-      tbody.innerHTML = "";
-      if (!pages.length) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد تمارين محفوظة بعد</td></tr>'; return; }
-      pages.forEach(p => {
-        const kg = kindergartens.find(k=>k.id===p.kindergartenId);
-        const tr = document.createElement("tr");
-        tr.innerHTML = '<td class="p-3 border">'+escapeHtml(kg?kg.name:p.kindergartenId)+'</td><td class="p-3 border">'+escapeHtml(stageLabel(p.stage))+'</td><td class="p-3 border">'+escapeHtml(subjectLabel(p.subject))+'</td><td class="p-3 border">'+escapeHtml(p.pageNumber)+'</td><td class="p-3 border">'+escapeHtml(p.title||"-")+'</td><td class="p-3 border">'+escapeHtml(pageTypeLabel(p))+'</td><td class="p-3 border"><div class="flex gap-2 justify-center"><button class="edit-page bg-blue-900 text-white px-3 py-2 rounded-xl hover:bg-blue-800" data-id="'+escapeHtml(p.docId)+'">فتح</button><button class="delete-page bg-red-600 text-white px-3 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(p.docId)+'">حذف</button></div></td>';
-        tbody.appendChild(tr);
-      });
-      document.querySelectorAll(".edit-page").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          const snap = await db.collection("interactive_pages").doc(this.dataset.id).get();
-          if (!snap.exists) return;
-          const d = snap.data();
-          document.querySelector('[data-tab="pages"]').click();
-          document.getElementById("pageKgSelect").value = d.kindergartenId || "";
-          document.getElementById("pageStage").value = d.stage || "";
-          document.getElementById("pageSubject").value = d.subject || "";
-          document.getElementById("pageNumber").value = d.pageNumber || "";
-          document.getElementById("pageTitleInput").value = d.title || "";
-          document.getElementById("exerciseCode").value = d.code || "";
-          document.getElementById("pageMsg").innerText = "تم تحميل بيانات التمرين داخل النموذج";
-        });
-      });
-      document.querySelectorAll(".delete-page").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          if (!confirm("هل تريد حذف هذا التمرين؟")) return;
-          await db.collection("interactive_pages").doc(this.dataset.id).delete();
-          await loadPages();
-        });
-      });
-    }
-
-    async function uploadFile(path, file) {
-      const ref = storage.ref().child(path);
-      await ref.put(file);
-      const url = await ref.getDownloadURL();
-      return { path, name: file.name, url, size: file.size || 0, type: file.type || "" };
-    }
-
-    async function uploadFilesToStorage(basePath) {
+    async function uploadFilesToSupabase(basePath) {
       const zipFile = document.getElementById("zipFile").files[0];
       const htmlFile = document.getElementById("htmlFile").files[0];
       const cssFile = document.getElementById("cssFile").files[0];
@@ -415,17 +122,17 @@
 
       if (zipFile) {
         payload.uploadMode = "zip";
-        payload.files.zip = await uploadFile(basePath + "/bundle/" + zipFile.name, zipFile);
+        payload.files.zip = await uploadToSupabase(basePath + "/bundle/" + zipFile.name, zipFile);
         return payload;
       }
 
       if (htmlFile || cssFile || jsFile || imageFiles.length) {
         payload.uploadMode = "files";
-        if (htmlFile) payload.files.html = await uploadFile(basePath + "/html/" + htmlFile.name, htmlFile);
-        if (cssFile) payload.files.css = await uploadFile(basePath + "/css/" + cssFile.name, cssFile);
-        if (jsFile) payload.files.js = await uploadFile(basePath + "/js/" + jsFile.name, jsFile);
+        if (htmlFile) payload.files.html = await uploadToSupabase(basePath + "/html/" + htmlFile.name, htmlFile);
+        if (cssFile) payload.files.css = await uploadToSupabase(basePath + "/css/" + cssFile.name, cssFile);
+        if (jsFile) payload.files.js = await uploadToSupabase(basePath + "/js/" + jsFile.name, jsFile);
         for (const img of imageFiles) {
-          const uploaded = await uploadFile(basePath + "/images/" + img.name, img);
+          const uploaded = await uploadToSupabase(basePath + "/images/" + img.name, img);
           payload.images.push(uploaded);
         }
       }
@@ -433,85 +140,8 @@
       return payload;
     }
 
-    async function loadKindergartens() {
-      const snap = await db.collection("kindergartens").get();
-      kindergartens = snap.docs.map(doc => ({docId:doc.id, ...doc.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));
-    }
-    async function loadStudents() {
-      const snap = await db.collection("students").get();
-      students = snap.docs.map(doc => ({docId:doc.id, ...doc.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));
-      renderStudents();
-    }
-    async function loadTeachers() {
-      const snap = await db.collection("teachers").get();
-      teachers = snap.docs.map(doc => ({docId:doc.id, ...doc.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));
-      renderTeachers();
-    }
-    async function loadPages() {
-      const snap = await db.collection("interactive_pages").get();
-      pages = snap.docs.map(doc => ({docId:doc.id, ...doc.data()}));
-      renderPages();
-    }
-    async function loadAll() {
-      topStatus.innerText = "جاري تحميل البيانات من Firebase...";
-      await loadKindergartens();
-      await Promise.all([loadStudents(), loadTeachers(), loadPages()]);
-      renderKgSelects();
-      renderKindergartens();
-      renderStudents();
-      renderTeachers();
-      renderPages();
-      topStatus.innerText = "تم تحميل البيانات بنجاح";
-    }
-
-    document.getElementById("addKgBtn").addEventListener("click", async function() {
-      const name = document.getElementById("kgName").value.trim();
-      const id = document.getElementById("kgId").value.trim().toLowerCase();
-      const active = document.getElementById("kgActive").value === "true";
-      const teacherUser = document.getElementById("kgTeacherUser").value.trim();
-      const teacherPass = document.getElementById("kgTeacherPass").value.trim();
-      const msg = document.getElementById("kgMsg");
-      if (!name || !id) { msg.innerText = "يرجى إدخال اسم الروضة والمعرف"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      await db.collection("kindergartens").doc(id).set({id,name,active,teacherUser,teacherPass});
-      msg.innerText = "تم حفظ الروضة بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
-      ["kgName","kgId","kgTeacherUser","kgTeacherPass"].forEach(x=>document.getElementById(x).value="");
-      await loadAll();
-    });
-
-    document.getElementById("addStudentBtn").addEventListener("click", async function() {
-      const kindergartenId = document.getElementById("studentKgSelect").value;
-      const name = document.getElementById("studentName").value.trim();
-      const code = document.getElementById("studentCode").value.trim().toUpperCase();
-      const className = document.getElementById("studentClass").value.trim();
-      const msg = document.getElementById("studentMsg");
-      if (!kindergartenId || !name || !code) { msg.innerText = "يرجى تعبئة الروضة واسم الطالب والكود"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      const existing = await db.collection("students").where("code","==",code).get();
-      if (!existing.empty) { msg.innerText = "هذا الكود مستخدم بالفعل"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      await db.collection("students").add({kindergartenId,name,code,className});
-      msg.innerText = "تم حفظ الطالب بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
-      ["studentName","studentCode","studentClass"].forEach(x=>document.getElementById(x).value="");
-      await loadStudents();
-    });
-
-    document.getElementById("addTeacherBtn").addEventListener("click", async function() {
-      const kindergartenId = document.getElementById("teacherKgSelect").value;
-      const name = document.getElementById("teacherName").value.trim();
-      const user = document.getElementById("teacherUser").value.trim();
-      const pass = document.getElementById("teacherPass").value.trim();
-      const subject = document.getElementById("teacherSubject").value;
-      const msg = document.getElementById("teacherMsg");
-      if (!kindergartenId || !name || !user || !pass || !subject) { msg.innerText = "يرجى تعبئة كل بيانات المعلمة"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      const existing = await db.collection("teachers").where("kindergartenId","==",kindergartenId).where("user","==",user).where("subject","==",subject).get();
-      if (!existing.empty) { msg.innerText = "يوجد سجل معلمة بهذه المادة واليوزر"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      await db.collection("teachers").add({kindergartenId,name,user,pass,subject});
-      msg.innerText = "تم حفظ المعلمة بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
-      ["teacherName","teacherUser","teacherPass"].forEach(x=>document.getElementById(x).value="");
-      document.getElementById("teacherSubject").value="";
-      await loadTeachers();
-    });
-
     document.getElementById("savePageBtn").addEventListener("click", async function() {
-      const kindergartenId = document.getElementById("pageKgSelect").value;
+      const kindergartenId = document.getElementById("pageKgSelect").value.trim().toLowerCase();
       const stage = document.getElementById("pageStage").value;
       const subject = document.getElementById("pageSubject").value;
       const pageNumber = document.getElementById("pageNumber").value.trim();
@@ -537,7 +167,7 @@
         msg.className = "mt-4 text-sm font-medium text-blue-700";
 
         const basePath = pageStorageBase(kindergartenId, stage, subject, p);
-        const uploadData = await uploadFilesToStorage(basePath);
+        const uploadData = await uploadFilesToSupabase(basePath);
 
         await db.collection("interactive_pages").doc(pageDocId(kindergartenId,stage,subject,p)).set({
           kindergartenId, stage, subject, pageNumber:p, title, code,
@@ -549,47 +179,12 @@
 
         msg.innerText = "تم حفظ التمرين ورفع ملفاته بنجاح";
         msg.className = "mt-4 text-sm font-medium text-green-600";
-        await loadPages();
       } catch (error) {
         console.error(error);
-        msg.innerText = "حدث خطأ أثناء رفع الملفات أو حفظ التمرين";
+        msg.innerText = "حدث خطأ أثناء رفع الملفات أو حفظ التمرين: " + (error.message || "خطأ غير معروف");
         msg.className = "mt-4 text-sm font-medium text-red-600";
       }
     });
-
-    document.getElementById("loadPageBtn").addEventListener("click", async function() {
-      const kindergartenId = document.getElementById("pageKgSelect").value;
-      const stage = document.getElementById("pageStage").value;
-      const subject = document.getElementById("pageSubject").value;
-      const pageNumber = document.getElementById("pageNumber").value.trim();
-      const msg = document.getElementById("pageMsg");
-      if (!kindergartenId || !stage || !subject || !pageNumber) {
-        msg.innerText = "اختري الروضة والمرحلة والمادة ورقم الصفحة أولًا";
-        msg.className = "mt-4 text-sm font-medium text-red-600";
-        return;
-      }
-      const snap = await db.collection("interactive_pages").doc(pageDocId(kindergartenId,stage,subject,pageNumber)).get();
-      if (!snap.exists) {
-        msg.innerText = "لا يوجد تمرين محفوظ بهذه البيانات";
-        msg.className = "mt-4 text-sm font-medium text-red-600";
-        document.getElementById("pageTitleInput").value="";
-        document.getElementById("exerciseCode").value="";
-        return;
-      }
-      const d = snap.data();
-      document.getElementById("pageTitleInput").value = d.title || "";
-      document.getElementById("exerciseCode").value = d.code || "";
-      msg.innerText = "تم تحميل بيانات التمرين. الملفات المرفوعة محفوظة في Firebase Storage.";
-      msg.className = "mt-4 text-sm font-medium text-green-600";
-    });
-
-    document.getElementById("filterKgStudents").addEventListener("change", renderStudents);
-    document.getElementById("searchStudent").addEventListener("input", renderStudents);
-    document.getElementById("filterKgTeachers").addEventListener("change", renderTeachers);
-    document.getElementById("refreshBtn").addEventListener("click", loadAll);
-
-    setupTabs();
-    loadAll().catch(err => { topStatus.innerText = "تعذر تحميل البيانات"; console.error(err); });
   </script>
 </body>
 </html>
