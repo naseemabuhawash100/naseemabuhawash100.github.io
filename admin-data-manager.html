@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
@@ -173,13 +174,33 @@
             <input id="pageNumber" type="number" min="1" max="50" placeholder="رقم الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
             <input id="pageTitleInput" type="text" placeholder="عنوان الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
           </div>
-          <textarea id="exerciseCode" rows="12" placeholder="الصقي كود التمرين هنا..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300 font-mono text-sm"></textarea>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded-2xl p-4 bg-gray-50">
+              <h4 class="font-bold text-blue-900 mb-3">الخيار 1: رفع ملف ZIP كامل</h4>
+              <input id="zipFile" type="file" accept=".zip" class="w-full px-3 py-3 rounded-xl border border-gray-300 bg-white">
+              <p class="text-xs text-gray-500 mt-2">ارفعي مشروع التمرين كاملًا كملف zip.</p>
+            </div>
+            <div class="border rounded-2xl p-4 bg-gray-50">
+              <h4 class="font-bold text-blue-900 mb-3">الخيار 2: رفع ملفات منفصلة</h4>
+              <div class="space-y-3">
+                <input id="htmlFile" type="file" accept=".html,.htm" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+                <input id="cssFile" type="file" accept=".css" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+                <input id="jsFile" type="file" accept=".js" class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+                <input id="imageFiles" type="file" accept="image/*" multiple class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-white">
+              </div>
+            </div>
+          </div>
+
+          <textarea id="exerciseCode" rows="8" placeholder="اختياري: الصقي كود HTML مباشر هنا إذا أردت..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300 font-mono text-sm"></textarea>
+
           <div class="mt-4 flex flex-wrap gap-3">
             <button id="loadPageBtn" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900">تحميل الصفحة</button>
             <button id="savePageBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700">حفظ الصفحة</button>
           </div>
           <p id="pageMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
         </div>
+
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
           <h3 class="text-2xl font-bold text-blue-900 mb-5">التمارين المحفوظة</h3>
           <div class="overflow-x-auto">
@@ -191,6 +212,7 @@
                   <th class="p-3 border">المادة</th>
                   <th class="p-3 border">الصفحة</th>
                   <th class="p-3 border">العنوان</th>
+                  <th class="p-3 border">النوع</th>
                   <th class="p-3 border">إجراء</th>
                 </tr>
               </thead>
@@ -199,6 +221,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
@@ -214,6 +237,7 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const topStatus = document.getElementById("topStatus");
     let kindergartens = [];
@@ -227,6 +251,7 @@
     function stageLabel(v){ return v==="tamheedi"?"التمهيدي":v==="tahdiri"?"التحضيري":v; }
     function subjectLabel(v){ return v==="math"?"الرياضيات":v==="arabic"?"العربي":v==="english"?"الإنجليزي":v; }
     function pageDocId(k,s,sub,p){ return k+"__"+s+"__"+sub+"__p"+String(p).padStart(2,"0"); }
+    function pageStorageBase(k,s,sub,p){ return "interactive_pages/"+pageDocId(k,s,sub,p); }
 
     function setupTabs() {
       document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -332,14 +357,20 @@
       });
     }
 
+    function pageTypeLabel(page) {
+      if (page.uploadMode === "zip") return "ZIP";
+      if (page.uploadMode === "files") return "ملفات منفصلة";
+      return "كود مباشر";
+    }
+
     function renderPages() {
       const tbody = document.getElementById("pagesTable");
       tbody.innerHTML = "";
-      if (!pages.length) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 border">لا توجد تمارين محفوظة بعد</td></tr>'; return; }
+      if (!pages.length) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد تمارين محفوظة بعد</td></tr>'; return; }
       pages.forEach(p => {
         const kg = kindergartens.find(k=>k.id===p.kindergartenId);
         const tr = document.createElement("tr");
-        tr.innerHTML = '<td class="p-3 border">'+escapeHtml(kg?kg.name:p.kindergartenId)+'</td><td class="p-3 border">'+escapeHtml(stageLabel(p.stage))+'</td><td class="p-3 border">'+escapeHtml(subjectLabel(p.subject))+'</td><td class="p-3 border">'+escapeHtml(p.pageNumber)+'</td><td class="p-3 border">'+escapeHtml(p.title||"-")+'</td><td class="p-3 border"><div class="flex gap-2 justify-center"><button class="edit-page bg-blue-900 text-white px-3 py-2 rounded-xl hover:bg-blue-800" data-id="'+escapeHtml(p.docId)+'">فتح</button><button class="delete-page bg-red-600 text-white px-3 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(p.docId)+'">حذف</button></div></td>';
+        tr.innerHTML = '<td class="p-3 border">'+escapeHtml(kg?kg.name:p.kindergartenId)+'</td><td class="p-3 border">'+escapeHtml(stageLabel(p.stage))+'</td><td class="p-3 border">'+escapeHtml(subjectLabel(p.subject))+'</td><td class="p-3 border">'+escapeHtml(p.pageNumber)+'</td><td class="p-3 border">'+escapeHtml(p.title||"-")+'</td><td class="p-3 border">'+escapeHtml(pageTypeLabel(p))+'</td><td class="p-3 border"><div class="flex gap-2 justify-center"><button class="edit-page bg-blue-900 text-white px-3 py-2 rounded-xl hover:bg-blue-800" data-id="'+escapeHtml(p.docId)+'">فتح</button><button class="delete-page bg-red-600 text-white px-3 py-2 rounded-xl hover:bg-red-700" data-id="'+escapeHtml(p.docId)+'">حذف</button></div></td>';
         tbody.appendChild(tr);
       });
       document.querySelectorAll(".edit-page").forEach(btn => {
@@ -354,7 +385,7 @@
           document.getElementById("pageNumber").value = d.pageNumber || "";
           document.getElementById("pageTitleInput").value = d.title || "";
           document.getElementById("exerciseCode").value = d.code || "";
-          document.getElementById("pageMsg").innerText = "تم تحميل التمرين داخل النموذج";
+          document.getElementById("pageMsg").innerText = "تم تحميل بيانات التمرين داخل النموذج";
         });
       });
       document.querySelectorAll(".delete-page").forEach(btn => {
@@ -364,6 +395,42 @@
           await loadPages();
         });
       });
+    }
+
+    async function uploadFile(path, file) {
+      const ref = storage.ref().child(path);
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      return { path, name: file.name, url, size: file.size || 0, type: file.type || "" };
+    }
+
+    async function uploadFilesToStorage(basePath) {
+      const zipFile = document.getElementById("zipFile").files[0];
+      const htmlFile = document.getElementById("htmlFile").files[0];
+      const cssFile = document.getElementById("cssFile").files[0];
+      const jsFile = document.getElementById("jsFile").files[0];
+      const imageFiles = Array.from(document.getElementById("imageFiles").files || []);
+
+      let payload = { uploadMode: "code", files: {}, images: [] };
+
+      if (zipFile) {
+        payload.uploadMode = "zip";
+        payload.files.zip = await uploadFile(basePath + "/bundle/" + zipFile.name, zipFile);
+        return payload;
+      }
+
+      if (htmlFile || cssFile || jsFile || imageFiles.length) {
+        payload.uploadMode = "files";
+        if (htmlFile) payload.files.html = await uploadFile(basePath + "/html/" + htmlFile.name, htmlFile);
+        if (cssFile) payload.files.css = await uploadFile(basePath + "/css/" + cssFile.name, cssFile);
+        if (jsFile) payload.files.js = await uploadFile(basePath + "/js/" + jsFile.name, jsFile);
+        for (const img of imageFiles) {
+          const uploaded = await uploadFile(basePath + "/images/" + img.name, img);
+          payload.images.push(uploaded);
+        }
+      }
+
+      return payload;
     }
 
     async function loadKindergartens() {
@@ -451,12 +518,43 @@
       const title = document.getElementById("pageTitleInput").value.trim();
       const code = document.getElementById("exerciseCode").value;
       const msg = document.getElementById("pageMsg");
-      if (!kindergartenId || !stage || !subject || !pageNumber) { msg.innerText = "يرجى تعبئة الروضة والمرحلة والمادة ورقم الصفحة"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
+
+      if (!kindergartenId || !stage || !subject || !pageNumber) {
+        msg.innerText = "يرجى تعبئة الروضة والمرحلة والمادة ورقم الصفحة";
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        return;
+      }
+
       const p = Number(pageNumber);
-      if (isNaN(p) || p < 1 || p > 50) { msg.innerText = "رقم الصفحة يجب أن يكون بين 1 و 50"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
-      await db.collection("interactive_pages").doc(pageDocId(kindergartenId,stage,subject,p)).set({kindergartenId,stage,subject,pageNumber:p,title,code,updatedAt:new Date().toISOString()});
-      msg.innerText = "تم حفظ التمرين بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
-      await loadPages();
+      if (isNaN(p) || p < 1 || p > 50) {
+        msg.innerText = "رقم الصفحة يجب أن يكون بين 1 و 50";
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        return;
+      }
+
+      try {
+        msg.innerText = "جاري حفظ التمرين ورفع الملفات...";
+        msg.className = "mt-4 text-sm font-medium text-blue-700";
+
+        const basePath = pageStorageBase(kindergartenId, stage, subject, p);
+        const uploadData = await uploadFilesToStorage(basePath);
+
+        await db.collection("interactive_pages").doc(pageDocId(kindergartenId,stage,subject,p)).set({
+          kindergartenId, stage, subject, pageNumber:p, title, code,
+          uploadMode: uploadData.uploadMode,
+          files: uploadData.files || {},
+          images: uploadData.images || [],
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+
+        msg.innerText = "تم حفظ التمرين ورفع ملفاته بنجاح";
+        msg.className = "mt-4 text-sm font-medium text-green-600";
+        await loadPages();
+      } catch (error) {
+        console.error(error);
+        msg.innerText = "حدث خطأ أثناء رفع الملفات أو حفظ التمرين";
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+      }
     });
 
     document.getElementById("loadPageBtn").addEventListener("click", async function() {
@@ -465,13 +563,24 @@
       const subject = document.getElementById("pageSubject").value;
       const pageNumber = document.getElementById("pageNumber").value.trim();
       const msg = document.getElementById("pageMsg");
-      if (!kindergartenId || !stage || !subject || !pageNumber) { msg.innerText = "اختري الروضة والمرحلة والمادة ورقم الصفحة أولًا"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
+      if (!kindergartenId || !stage || !subject || !pageNumber) {
+        msg.innerText = "اختري الروضة والمرحلة والمادة ورقم الصفحة أولًا";
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        return;
+      }
       const snap = await db.collection("interactive_pages").doc(pageDocId(kindergartenId,stage,subject,pageNumber)).get();
-      if (!snap.exists) { msg.innerText = "لا يوجد تمرين محفوظ بهذه البيانات"; msg.className = "mt-4 text-sm font-medium text-red-600"; document.getElementById("pageTitleInput").value=""; document.getElementById("exerciseCode").value=""; return; }
+      if (!snap.exists) {
+        msg.innerText = "لا يوجد تمرين محفوظ بهذه البيانات";
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        document.getElementById("pageTitleInput").value="";
+        document.getElementById("exerciseCode").value="";
+        return;
+      }
       const d = snap.data();
       document.getElementById("pageTitleInput").value = d.title || "";
       document.getElementById("exerciseCode").value = d.code || "";
-      msg.innerText = "تم تحميل التمرين بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
+      msg.innerText = "تم تحميل بيانات التمرين. الملفات المرفوعة محفوظة في Firebase Storage.";
+      msg.className = "mt-4 text-sm font-medium text-green-600";
     });
 
     document.getElementById("filterKgStudents").addEventListener("change", renderStudents);
