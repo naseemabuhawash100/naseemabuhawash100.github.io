@@ -30,7 +30,7 @@
   <section class="hero-gradient text-white py-10">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">نسخة محسّنة لمعالجة الصور من HTML وCSS وJavaScript وحتى الصور التي تُنشأ أثناء التشغيل.</p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">هذه النسخة تشغّل الكود المباشر أو ملفات HTML/CSS/JS المنفصلة.</p>
     </div>
   </section>
 
@@ -134,6 +134,7 @@
     function helperScriptBlock() {
       return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
     }
+
     function buildDirectHtml(code, title) {
       const trimmed = String(code || "").trim();
       if (!trimmed) return "";
@@ -147,182 +148,56 @@
         "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" +
         trimmed + helper + "</body></html>";
     }
+
     async function fetchText(url) {
       const res = await fetch(url);
       if (!res.ok) throw new Error("تعذر قراءة الملف: " + url);
       return await res.text();
     }
+
     function escapeRegExp(str) {
       return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
-    function buildImageMap(images) {
-      const map = {};
-      const normalize = (value) => String(value || "").trim().replace(/\/g, "/").replace(/^\.\//, "").replace(/^\//, "");
-      const addKeys = (value, url) => {
-        const clean = normalize(value);
-        if (!clean || !url) return;
-        const fileOnly = clean.split("/").pop();
-        [
-          clean,
-          "images/" + clean,
-          "./images/" + clean,
-          "/images/" + clean,
-          "./" + clean,
-          "/" + clean,
-          fileOnly,
-          "images/" + fileOnly,
-          "./images/" + fileOnly,
-          "/images/" + fileOnly
-        ].forEach((key) => { if (key) map[key] = url; });
-      };
 
+    function rewriteImages(html, images) {
+      let updated = html;
       (images || []).forEach((img) => {
-        if (!img || !img.url) return;
-        addKeys(img.name || "", img.url);
-        addKeys(img.path || "", img.url);
-      });
-      return map;
-    }
-    function replaceTextPaths(text, imageMap) {
-      let updated = String(text || "");
-      Object.entries(imageMap || {}).forEach(([key, url]) => {
-        const safe = escapeRegExp(key);
-        updated = updated.replace(new RegExp(safe, "g"), url);
+        if (!img || !img.name || !img.url) return;
+        const safeName = escapeRegExp(img.name);
+        const patterns = [
+          new RegExp('src=["\\\']' + safeName + '["\\\']', 'g'),
+          new RegExp('src=["\\\']images/' + safeName + '["\\\']', 'g'),
+          new RegExp('src=["\\\']\\./images/' + safeName + '["\\\']', 'g'),
+          new RegExp('url\\(["\\\']?' + safeName + '["\\\']?\\)', 'g'),
+          new RegExp('url\\(["\\\']?images/' + safeName + '["\\\']?\\)', 'g'),
+          new RegExp('url\\(["\\\']?\\./images/' + safeName + '["\\\']?\\)', 'g')
+        ];
+        patterns.forEach((pattern) => {
+          updated = updated.replace(pattern, (match) => {
+            if (match.startsWith("src=")) return 'src="' + img.url + '"';
+            return 'url("' + img.url + '")';
+          });
+        });
       });
       return updated;
-    }
-    function buildRuntimeImageResolver(imageMap) {
-      const json = JSON.stringify(imageMap || {});
-      return `
-<script>
-(function(){
-  const IMAGE_MAP = ${json};
-
-  function normalizePath(path){
-    if(!path) return path;
-    if(IMAGE_MAP[path]) return IMAGE_MAP[path];
-    const clean = String(path).replace(/^https?:\\/\\/[^/]+\\//, '').replace(/^\\.\\//, '');
-    if(IMAGE_MAP[clean]) return IMAGE_MAP[clean];
-    if(IMAGE_MAP['./' + clean]) return IMAGE_MAP['./' + clean];
-    if(IMAGE_MAP['/' + clean]) return IMAGE_MAP['/' + clean];
-    return path;
-  }
-
-  window.__resolveExerciseAsset = normalizePath;
-
-  const originalSetAttribute = Element.prototype.setAttribute;
-  Element.prototype.setAttribute = function(name, value){
-    if(name === 'src' || name === 'href'){
-      value = normalizePath(value);
-    }
-    if(name === 'style' && typeof value === 'string'){
-      Object.keys(IMAGE_MAP).forEach(function(key){
-        value = value.split(key).join(IMAGE_MAP[key]);
-      });
-    }
-    return originalSetAttribute.call(this, name, value);
-  };
-
-  const imgSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
-  if(imgSrcDesc && imgSrcDesc.set){
-    Object.defineProperty(HTMLImageElement.prototype, 'src', {
-      get: imgSrcDesc.get,
-      set: function(value){
-        return imgSrcDesc.set.call(this, normalizePath(value));
-      }
-    });
-  }
-
-  const sourceSrcDesc = Object.getOwnPropertyDescriptor(HTMLSourceElement.prototype, 'src');
-  if(sourceSrcDesc && sourceSrcDesc.set){
-    Object.defineProperty(HTMLSourceElement.prototype, 'src', {
-      get: sourceSrcDesc.get,
-      set: function(value){
-        return sourceSrcDesc.set.call(this, normalizePath(value));
-      }
-    });
-  }
-
-  const originalFetch = window.fetch;
-  window.fetch = function(resource, init){
-    if(typeof resource === 'string'){
-      resource = normalizePath(resource);
-    } else if(resource && resource.url){
-      resource = normalizePath(resource.url);
-    }
-    return originalFetch.call(this, resource, init);
-  };
-
-  const OriginalImage = window.Image;
-  window.Image = function(width, height){
-    const img = new OriginalImage(width, height);
-    return img;
-  };
-  window.Image.prototype = OriginalImage.prototype;
-
-  function patchNodeImages(root){
-    if(!root || !root.querySelectorAll) return;
-    root.querySelectorAll('img, source').forEach(function(el){
-      const src = el.getAttribute('src');
-      if(src){
-        el.setAttribute('src', normalizePath(src));
-      }
-    });
-    root.querySelectorAll('[style]').forEach(function(el){
-      let style = el.getAttribute('style');
-      if(style){
-        Object.keys(IMAGE_MAP).forEach(function(key){
-          style = style.split(key).join(IMAGE_MAP[key]);
-        });
-        el.setAttribute('style', style);
-      }
-    });
-  }
-
-  const observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      m.addedNodes.forEach(function(node){
-        if(node.nodeType === 1){
-          patchNodeImages(node);
-        }
-      });
-    });
-  });
-
-  document.addEventListener('DOMContentLoaded', function(){
-    patchNodeImages(document);
-    observer.observe(document.body, { childList:true, subtree:true });
-  });
-
-  window.addEventListener('load', function(){
-    patchNodeImages(document);
-  });
-})();
-<\/script>`;
     }
 
     async function buildFilesHtml(pageData) {
       const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
       if (!htmlUrl) return "";
       let htmlText = await fetchText(htmlUrl);
-      let cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
-      let jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
-
-      const imageMap = buildImageMap(pageData.images || []);
+      const cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
+      const jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
 
       htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
       htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-
-      htmlText = replaceTextPaths(htmlText, imageMap);
-      cssText = replaceTextPaths(cssText, imageMap);
-      // keep JS logic untouched; image resolution happens at runtime
+      htmlText = rewriteImages(htmlText, pageData.images || []);
 
       let injectedHead = "";
       if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
       injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
       injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
       injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
-      injectedHead += buildRuntimeImageResolver(imageMap);
 
       let injectedBeforeBodyEnd = helperScriptBlock();
       if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
@@ -351,6 +226,7 @@
         className: document.getElementById("className").value.trim()
       };
     }
+
     function autofillStudentByCode() {
       const code = document.getElementById("studentCode").value.trim().toUpperCase();
       if (!code || !allowedStudents[code]) return;
@@ -359,6 +235,7 @@
         document.getElementById("className").value = allowedStudents[code].className;
       }
     }
+
     async function loadStudents() {
       const snap = await db.collection("students").where("kindergartenId", "==", familyKindergarten).get();
       allowedStudents = {};
@@ -480,7 +357,7 @@
         if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
           finalHtml = await buildFilesHtml(data);
         } else if (data.uploadMode === "zip" && data.files && data.files.zip) {
-          statusText.innerText = "تم رفع ملف ZIP، وسنضيف تشغيله لاحقًا. حاليًا استخدمي الملفات المنفصلة أو الكود المباشر.";
+          statusText.innerText = "تم رفع ملف ZIP، لكن تشغيل ZIP الكامل سنضيفه لاحقًا. استخدمي الملفات المنفصلة الآن.";
           return;
         } else if (data.code && String(data.code).trim()) {
           finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
