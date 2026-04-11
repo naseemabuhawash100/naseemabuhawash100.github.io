@@ -30,7 +30,7 @@
   <section class="hero-gradient text-white py-10">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">يدعم الآن الكود المباشر أو ملفات HTML/CSS/JS المرفوعة من لوحة التحكم.</p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">هذه النسخة تشغّل الكود المباشر أو ملفات HTML/CSS/JS المنفصلة.</p>
     </div>
   </section>
 
@@ -73,10 +73,13 @@
 
   <script>
   (function () {
-    var familyKindergarten = sessionStorage.getItem("familyKindergarten");
-    if (!familyKindergarten) { window.location.href = "kindergartens.html"; return; }
+    const familyKindergarten = sessionStorage.getItem("familyKindergarten");
+    if (!familyKindergarten) {
+      window.location.href = "kindergartens.html";
+      return;
+    }
 
-    var firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
       projectId: "interactive-book-37270",
@@ -86,72 +89,91 @@
       measurementId: "G-QM0TNEN9XJ"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    var db = firebase.firestore();
-    var params = new URLSearchParams(window.location.search);
-    var stage = params.get("stage") || "";
-    var subject = params.get("subject") || "";
-    var page = params.get("page") || "";
+    const params = new URLSearchParams(window.location.search);
+    const stage = params.get("stage") || "";
+    const subject = params.get("subject") || "";
+    const page = params.get("page") || "";
 
-    var statusText = document.getElementById("statusText");
-    var statusBox = document.getElementById("statusBox");
-    var playerBox = document.getElementById("playerBox");
-    var frame = document.getElementById("exerciseFrame");
-    var resultBox = document.getElementById("resultBox");
-    var resultText = document.getElementById("resultText");
-    var saveStatus = document.getElementById("saveStatus");
-    var studentMsg = document.getElementById("studentMsg");
+    const statusText = document.getElementById("statusText");
+    const statusBox = document.getElementById("statusBox");
+    const playerBox = document.getElementById("playerBox");
+    const frame = document.getElementById("exerciseFrame");
+    const resultBox = document.getElementById("resultBox");
+    const resultText = document.getElementById("resultText");
+    const saveStatus = document.getElementById("saveStatus");
+    const studentMsg = document.getElementById("studentMsg");
 
-    var currentKindergarten = null;
-    var currentExerciseTitle = "";
-    var allowedStudents = {};
-    var resultSaved = false;
+    let currentKindergarten = null;
+    let currentExerciseTitle = "";
+    let allowedStudents = {};
+    let resultSaved = false;
 
-    function stageLabel(v) { return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v; }
-    function subjectLabel(v) { return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v; }
-    function pageDocId(k, s, sub, p) { return k + "__" + s + "__" + sub + "__p" + String(p).padStart(2, "0"); }
-    function normalizeArabicName(name) {
-      return String(name || "").trim().replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ").toLowerCase();
+    function stageLabel(v) {
+      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v;
     }
-    function getTodayDateOnly() { return new Date().toISOString().slice(0, 10); }
-
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v;
+    }
+    function pageDocId(k, s, sub, p) {
+      return k + "__" + s + "__" + sub + "__p" + String(p).padStart(2, "0");
+    }
+    function normalizeArabicName(name) {
+      return String(name || "")
+        .trim()
+        .replace(/[أإآ]/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/ة/g, "ه")
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+    }
+    function getTodayDateOnly() {
+      return new Date().toISOString().slice(0, 10);
+    }
     function helperScriptBlock() {
       return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
     }
 
     function buildDirectHtml(code, title) {
-      var trimmed = String(code || "").trim();
+      const trimmed = String(code || "").trim();
       if (!trimmed) return "";
-      var helper = helperScriptBlock();
-      var lower = trimmed.toLowerCase();
-      if (lower.indexOf("<html") !== -1 || lower.indexOf("<body") !== -1 || lower.indexOf("<head") !== -1) {
+      const helper = helperScriptBlock();
+      const lower = trimmed.toLowerCase();
+      if (lower.includes("<html") || lower.includes("<body") || lower.includes("<head")) {
         return trimmed.replace("</body>", helper + "\n</body>");
       }
-      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8' /><meta name='viewport' content='width=device-width, initial-scale=1.0' /><title>" + (title || "تمرين تفاعلي") + "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" + trimmed + helper + "</body></html>";
+      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" +
+        (title || "تمرين تفاعلي") +
+        "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" +
+        trimmed + helper + "</body></html>";
     }
 
     async function fetchText(url) {
-      if (!url) return "";
-      var res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch file");
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("تعذر قراءة الملف: " + url);
       return await res.text();
     }
 
+    function escapeRegExp(str) {
+      return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
     function rewriteImages(html, images) {
-      var updated = html;
-      (images || []).forEach(function(img) {
+      let updated = html;
+      (images || []).forEach((img) => {
         if (!img || !img.name || !img.url) return;
-        var safeName = img.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        var patterns = [
+        const safeName = escapeRegExp(img.name);
+        const patterns = [
           new RegExp('src=["\\\']' + safeName + '["\\\']', 'g'),
           new RegExp('src=["\\\']images/' + safeName + '["\\\']', 'g'),
-          new RegExp('src=["\\\']\\.\\/images/' + safeName + '["\\\']', 'g'),
+          new RegExp('src=["\\\']\\./images/' + safeName + '["\\\']', 'g'),
           new RegExp('url\\(["\\\']?' + safeName + '["\\\']?\\)', 'g'),
           new RegExp('url\\(["\\\']?images/' + safeName + '["\\\']?\\)', 'g'),
-          new RegExp('url\\(["\\\']?\\.\\/images/' + safeName + '["\\\']?\\)', 'g')
+          new RegExp('url\\(["\\\']?\\./images/' + safeName + '["\\\']?\\)', 'g')
         ];
-        patterns.forEach(function(pattern) {
-          updated = updated.replace(pattern, function(match) {
+        patterns.forEach((pattern) => {
+          updated = updated.replace(pattern, (match) => {
             if (match.startsWith("src=")) return 'src="' + img.url + '"';
             return 'url("' + img.url + '")';
           });
@@ -161,33 +183,34 @@
     }
 
     async function buildFilesHtml(pageData) {
-      var htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
+      const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
       if (!htmlUrl) return "";
-      var htmlText = await fetchText(htmlUrl);
-      var cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
-      var jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
+      let htmlText = await fetchText(htmlUrl);
+      const cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
+      const jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
 
-      var finalHtml = String(htmlText || "");
-      finalHtml = finalHtml.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
-      finalHtml = finalHtml.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-      finalHtml = rewriteImages(finalHtml, pageData.images || []);
+      htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
+      htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
+      htmlText = rewriteImages(htmlText, pageData.images || []);
 
-      var injectedHead = "";
+      let injectedHead = "";
       if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
       injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
       injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
       injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
 
-      var injectedBeforeBodyEnd = helperScriptBlock();
+      let injectedBeforeBodyEnd = helperScriptBlock();
       if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
 
-      if (finalHtml.toLowerCase().indexOf("</head>") !== -1) {
+      let finalHtml = htmlText;
+      if (finalHtml.toLowerCase().includes("</head>")) {
         finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
       } else {
-        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" + injectedHead + "</head><body>" + finalHtml + "</body></html>";
+        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+          injectedHead + "</head><body>" + finalHtml + "</body></html>";
       }
 
-      if (finalHtml.toLowerCase().indexOf("</body>") !== -1) {
+      if (finalHtml.toLowerCase().includes("</body>")) {
         finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
       } else {
         finalHtml += injectedBeforeBodyEnd;
@@ -205,7 +228,7 @@
     }
 
     function autofillStudentByCode() {
-      var code = document.getElementById("studentCode").value.trim().toUpperCase();
+      const code = document.getElementById("studentCode").value.trim().toUpperCase();
       if (!code || !allowedStudents[code]) return;
       document.getElementById("studentName").value = allowedStudents[code].name || "";
       if (!document.getElementById("className").value && allowedStudents[code].className) {
@@ -214,18 +237,21 @@
     }
 
     async function loadStudents() {
-      var snap = await db.collection("students").where("kindergartenId", "==", familyKindergarten).get();
+      const snap = await db.collection("students").where("kindergartenId", "==", familyKindergarten).get();
       allowedStudents = {};
-      snap.forEach(function(doc) {
-        var s = doc.data();
-        allowedStudents[String(s.code || "").toUpperCase()] = { name: s.name || "", className: s.className || "" };
+      snap.forEach((doc) => {
+        const s = doc.data();
+        allowedStudents[String(s.code || "").toUpperCase()] = {
+          name: s.name || "",
+          className: s.className || ""
+        };
       });
     }
 
     async function saveResult(score, total, extraData) {
       if (resultSaved) return;
 
-      var inputs = studentInputs();
+      const inputs = studentInputs();
       studentMsg.innerText = "";
       saveStatus.innerText = "";
 
@@ -250,11 +276,11 @@
         return;
       }
 
-      var today = getTodayDateOnly();
+      const today = getTodayDateOnly();
       saveStatus.innerText = "جاري حفظ النتيجة...";
 
       try {
-        var existing = await db.collection("results")
+        const existing = await db.collection("results")
           .where("kindergarten", "==", familyKindergarten)
           .where("stage", "==", stage)
           .where("subject", "==", subject)
@@ -299,10 +325,16 @@
 
     async function loadExercise() {
       try {
-        if (!stage || !subject || !page) { statusText.innerText = "بيانات الصفحة غير مكتملة"; return; }
+        if (!stage || !subject || !page) {
+          statusText.innerText = "بيانات الصفحة غير مكتملة";
+          return;
+        }
 
-        var kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
-        if (!kgSnap.exists) { window.location.href = "kindergartens.html"; return; }
+        const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
+        if (!kgSnap.exists) {
+          window.location.href = "kindergartens.html";
+          return;
+        }
 
         currentKindergarten = kgSnap.data();
         document.getElementById("pageTitle").innerText = "تمرين " + currentKindergarten.name;
@@ -311,18 +343,21 @@
 
         await loadStudents();
 
-        var docId = pageDocId(familyKindergarten, stage, subject, page);
-        var pageSnap = await db.collection("interactive_pages").doc(docId).get();
-        if (!pageSnap.exists) { statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد"; return; }
+        const docId = pageDocId(familyKindergarten, stage, subject, page);
+        const pageSnap = await db.collection("interactive_pages").doc(docId).get();
+        if (!pageSnap.exists) {
+          statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
+          return;
+        }
 
-        var data = pageSnap.data();
+        const data = pageSnap.data();
         currentExerciseTitle = data.title || "تمرين تفاعلي";
 
-        var finalHtml = "";
+        let finalHtml = "";
         if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
           finalHtml = await buildFilesHtml(data);
         } else if (data.uploadMode === "zip" && data.files && data.files.zip) {
-          statusText.innerText = "تم رفع ملف ZIP لهذه الصفحة، لكن عرض ملفات ZIP تلقائيًا لم يُفعّل بعد. استخدمي رفع HTML/CSS/JS منفصلًا أو الكود المباشر.";
+          statusText.innerText = "تم رفع ملف ZIP، لكن تشغيل ZIP الكامل سنضيفه لاحقًا. استخدمي الملفات المنفصلة الآن.";
           return;
         } else if (data.code && String(data.code).trim()) {
           finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
@@ -346,8 +381,8 @@
 
     window.addEventListener("message", function(event) {
       if (!event.data || event.data.type !== "exerciseResult") return;
-      var score = Number(event.data.score || 0);
-      var total = Number(event.data.total || 0);
+      const score = Number(event.data.score || 0);
+      const total = Number(event.data.total || 0);
       resultText.innerText = "النتيجة: " + score + " / " + total;
       resultBox.classList.remove("hidden");
       saveResult(score, total, event.data.extraData || {});
