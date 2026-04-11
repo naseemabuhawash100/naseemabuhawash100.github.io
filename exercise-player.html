@@ -155,29 +155,86 @@
     function escapeRegExp(str) {
       return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
+    function normalizeAssetPath(path) {
+      if (!path) return "";
+      return String(path)
+        .replace(/\\/g, "/")
+        .replace(/^https?:\/\/[^/]+\//i, "")
+        .replace(/^\.\//, "")
+        .replace(/^\//, "")
+        .trim()
+        .toLowerCase();
+    }
     function buildImageMap(images) {
       const map = {};
       (images || []).forEach((img) => {
-        if (!img || !img.name || !img.url) return;
-        const names = [
-          img.name,
-          "images/" + img.name,
-          "./images/" + img.name,
-          "/images/" + img.name,
-          "./" + img.name,
-          "/" + img.name
-        ];
-        names.forEach((name) => { map[name] = img.url; });
+        if (!img || !img.url) return;
+
+        const rawName = String(img.name || "").trim();
+        const rawPath = String(img.path || "").trim();
+        const fileName = (rawName || rawPath).split("/").pop();
+
+        const candidates = new Set([
+          normalizeAssetPath(rawName),
+          normalizeAssetPath(rawPath),
+          normalizeAssetPath(fileName),
+          normalizeAssetPath("images/" + rawName),
+          normalizeAssetPath("images/" + rawPath),
+          normalizeAssetPath("images/" + fileName),
+          normalizeAssetPath("./images/" + rawName),
+          normalizeAssetPath("./images/" + rawPath),
+          normalizeAssetPath("./images/" + fileName),
+          normalizeAssetPath("/images/" + rawName),
+          normalizeAssetPath("/images/" + rawPath),
+          normalizeAssetPath("/images/" + fileName),
+          normalizeAssetPath("./" + rawName),
+          normalizeAssetPath("./" + fileName),
+          normalizeAssetPath("/" + rawName),
+          normalizeAssetPath("/" + fileName)
+        ]);
+
+        candidates.forEach((key) => {
+          if (key) map[key] = img.url;
+        });
       });
       return map;
     }
     function replaceTextPaths(text, imageMap) {
       let updated = String(text || "");
-      Object.entries(imageMap || {}).forEach(([key, url]) => {
+      const entries = Object.entries(imageMap || {}).sort((a, b) => b[0].length - a[0].length);
+
+      entries.forEach(([key, url]) => {
+        if (!key || !url) return;
         const safe = escapeRegExp(key);
-        updated = updated.replace(new RegExp(safe, "g"), url);
+
+        updated = updated.replace(new RegExp(`(["'\\\`])${safe}(["'\\\`])`, "gi"), `$1${url}$2`);
+        updated = updated.replace(new RegExp(`(["'\\\`])\\./${safe}(["'\\\`])`, "gi"), `$1${url}$2`);
+        updated = updated.replace(new RegExp(`(["'\\\`])/+${safe}(["'\\\`])`, "gi"), `$1${url}$2`);
+
+        updated = updated.replace(new RegExp(`url\\((\\s*["']?)${safe}(["']?\\s*)\\)`, "gi"), `url($1${url}$2)`);
+        updated = updated.replace(new RegExp(`url\\((\\s*["']?)\\./${safe}(["']?\\s*)\\)`, "gi"), `url($1${url}$2)`);
+        updated = updated.replace(new RegExp(`url\\((\\s*["']?)/+${safe}(["']?\\s*)\\)`, "gi"), `url($1${url}$2)`);
       });
+
       return updated;
+    }
+    function rewriteDomImages(docObj, imageMap) {
+      const allElements = docObj.querySelectorAll("*");
+      allElements.forEach((el) => {
+        ["src", "href", "poster", "data-src"].forEach((attr) => {
+          const value = el.getAttribute(attr);
+          if (!value) return;
+          const normalized = normalizeAssetPath(value);
+          if (imageMap[normalized]) {
+            el.setAttribute(attr, imageMap[normalized]);
+          }
+        });
+
+        const inlineStyle = el.getAttribute("style");
+        if (inlineStyle) {
+          el.setAttribute("style", replaceTextPaths(inlineStyle, imageMap));
+        }
+      });
     }
     function buildRuntimeImageResolver(imageMap) {
       const json = JSON.stringify(imageMap || {});
@@ -187,103 +244,144 @@
   const IMAGE_MAP = ${json};
 
   function normalizePath(path){
-    if(!path) return path;
-    if(IMAGE_MAP[path]) return IMAGE_MAP[path];
-    const clean = String(path).replace(/^https?:\\/\\/[^/]+\\//, '').replace(/^\\.\\//, '');
-    if(IMAGE_MAP[clean]) return IMAGE_MAP[clean];
-    if(IMAGE_MAP['./' + clean]) return IMAGE_MAP['./' + clean];
-    if(IMAGE_MAP['/' + clean]) return IMAGE_MAP['/' + clean];
-    return path;
+    if(!path) return "";
+    return String(path)
+      .replace(/\\\\/g, "/")
+      .replace(/^https?:\\/\\/[^/]+\\//i, "")
+      .replace(/^\\.\\//, "")
+      .replace(/^\\//, "")
+      .trim()
+      .toLowerCase();
   }
 
-  window.__resolveExerciseAsset = normalizePath;
+  function resolveAsset(path){
+    if(!path) return path;
+    const normalized = normalizePath(path);
+    return IMAGE_MAP[normalized] || path;
+  }
+
+  function escapeRegExp(value){
+    return String(value).replace(/[.*+?^{}$()|[\\]\\\\]/g, "\\\\$&");
+  }
+
+  function replaceInlineAssets(value){
+    let updated = String(value || "");
+    Object.keys(IMAGE_MAP).sort(function(a,b){ return b.length - a.length; }).forEach(function(key){
+      const url = IMAGE_MAP[key];
+      const safe = escapeRegExp(key);
+      updated = updated.replace(new RegExp('(["\\\\\'\\\\`])' + safe + '(["\\\\\'\\\\`])', 'gi'), '$1' + url + '$2');
+      updated = updated.replace(new RegExp('url\\\\((\\\\s*["\\\\\']?)' + safe + '(["\\\\\']?\\\\s*)\\\\)', 'gi'), 'url($1' + url + '$2)');
+    });
+    return updated;
+  }
+
+  function patchElement(el){
+    if(!el || !el.getAttribute) return;
+    ["src", "href", "poster", "data-src"].forEach(function(attr){
+      const current = el.getAttribute(attr);
+      if(!current) return;
+      const next = resolveAsset(current);
+      if(next !== current){
+        el.setAttribute(attr, next);
+      }
+    });
+
+    const inlineStyle = el.getAttribute("style");
+    if(inlineStyle){
+      const nextStyle = replaceInlineAssets(inlineStyle);
+      if(nextStyle !== inlineStyle){
+        el.setAttribute("style", nextStyle);
+      }
+    }
+
+    if(el.style && el.style.backgroundImage){
+      el.style.backgroundImage = el.style.backgroundImage.replace(/url\\((['"]?)(.*?)\\1\\)/gi, function(match, q, path){
+        return "url(" + (q || "") + resolveAsset(path) + (q || "") + ")";
+      });
+    }
+  }
+
+  function patchTree(root){
+    if(!root) return;
+    if(root.nodeType === 1) patchElement(root);
+    if(root.querySelectorAll){
+      root.querySelectorAll("*").forEach(patchElement);
+    }
+  }
+
+  window.__resolveExerciseAsset = resolveAsset;
+  window.__EXERCISE_IMAGE_MAP__ = IMAGE_MAP;
 
   const originalSetAttribute = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function(name, value){
-    if(name === 'src' || name === 'href'){
-      value = normalizePath(value);
+    const attrName = String(name || "").toLowerCase();
+    if(["src","href","poster","data-src"].includes(attrName)){
+      value = resolveAsset(value);
     }
-    if(name === 'style' && typeof value === 'string'){
-      Object.keys(IMAGE_MAP).forEach(function(key){
-        value = value.split(key).join(IMAGE_MAP[key]);
-      });
+    if(attrName === "style" && typeof value === "string"){
+      value = replaceInlineAssets(value);
     }
     return originalSetAttribute.call(this, name, value);
   };
 
-  const imgSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  const imgSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
   if(imgSrcDesc && imgSrcDesc.set){
-    Object.defineProperty(HTMLImageElement.prototype, 'src', {
-      get: imgSrcDesc.get,
-      set: function(value){
-        return imgSrcDesc.set.call(this, normalizePath(value));
-      }
+    Object.defineProperty(HTMLImageElement.prototype, "src", {
+      get: function(){ return imgSrcDesc.get.call(this); },
+      set: function(value){ return imgSrcDesc.set.call(this, resolveAsset(value)); }
     });
   }
 
-  const sourceSrcDesc = Object.getOwnPropertyDescriptor(HTMLSourceElement.prototype, 'src');
-  if(sourceSrcDesc && sourceSrcDesc.set){
-    Object.defineProperty(HTMLSourceElement.prototype, 'src', {
-      get: sourceSrcDesc.get,
-      set: function(value){
-        return sourceSrcDesc.set.call(this, normalizePath(value));
-      }
-    });
+  if(typeof HTMLSourceElement !== "undefined"){
+    const sourceSrcDesc = Object.getOwnPropertyDescriptor(HTMLSourceElement.prototype, "src");
+    if(sourceSrcDesc && sourceSrcDesc.set){
+      Object.defineProperty(HTMLSourceElement.prototype, "src", {
+        get: function(){ return sourceSrcDesc.get.call(this); },
+        set: function(value){ return sourceSrcDesc.set.call(this, resolveAsset(value)); }
+      });
+    }
   }
 
   const originalFetch = window.fetch;
   window.fetch = function(resource, init){
-    if(typeof resource === 'string'){
-      resource = normalizePath(resource);
-    } else if(resource && resource.url){
-      resource = normalizePath(resource.url);
+    if(typeof resource === "string"){
+      resource = resolveAsset(resource);
+    } else if(resource instanceof Request){
+      resource = new Request(resolveAsset(resource.url), resource);
     }
     return originalFetch.call(this, resource, init);
   };
 
-  const OriginalImage = window.Image;
-  window.Image = function(width, height){
-    const img = new OriginalImage(width, height);
-    return img;
+  const originalXHRopen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url){
+    const args = Array.from(arguments);
+    if(typeof url === "string") args[1] = resolveAsset(url);
+    return originalXHRopen.apply(this, args);
   };
-  window.Image.prototype = OriginalImage.prototype;
-
-  function patchNodeImages(root){
-    if(!root || !root.querySelectorAll) return;
-    root.querySelectorAll('img, source').forEach(function(el){
-      const src = el.getAttribute('src');
-      if(src){
-        el.setAttribute('src', normalizePath(src));
-      }
-    });
-    root.querySelectorAll('[style]').forEach(function(el){
-      let style = el.getAttribute('style');
-      if(style){
-        Object.keys(IMAGE_MAP).forEach(function(key){
-          style = style.split(key).join(IMAGE_MAP[key]);
-        });
-        el.setAttribute('style', style);
-      }
-    });
-  }
 
   const observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      m.addedNodes.forEach(function(node){
-        if(node.nodeType === 1){
-          patchNodeImages(node);
-        }
+    mutations.forEach(function(mutation){
+      mutation.addedNodes.forEach(function(node){
+        patchTree(node);
       });
+      if(mutation.type === "attributes" && mutation.target){
+        patchElement(mutation.target);
+      }
     });
   });
 
-  document.addEventListener('DOMContentLoaded', function(){
-    patchNodeImages(document);
-    observer.observe(document.body, { childList:true, subtree:true });
+  document.addEventListener("DOMContentLoaded", function(){
+    patchTree(document.documentElement);
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["src", "href", "poster", "data-src", "style"]
+    });
   });
 
-  window.addEventListener('load', function(){
-    patchNodeImages(document);
+  window.addEventListener("load", function(){
+    patchTree(document.documentElement);
   });
 })();
 <\/script>`;
@@ -305,31 +403,25 @@
       cssText = replaceTextPaths(cssText, imageMap);
       jsText = replaceTextPaths(jsText, imageMap);
 
+      const parser = new DOMParser();
+      const parsedDoc = parser.parseFromString(htmlText, "text/html");
+      rewriteDomImages(parsedDoc, imageMap);
+
       let injectedHead = "";
       if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
       injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
       injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
-      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
+      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}<\/style>";
       injectedHead += buildRuntimeImageResolver(imageMap);
 
       let injectedBeforeBodyEnd = helperScriptBlock();
       if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
 
-      let finalHtml = htmlText;
-      if (finalHtml.toLowerCase().includes("</head>")) {
-        finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
-      } else {
-        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
-          injectedHead + "</head><body>" + finalHtml + "</body></html>";
-      }
+      const bodyHtml = parsedDoc.body ? parsedDoc.body.innerHTML : htmlText;
+      const headHtml = parsedDoc.head ? parsedDoc.head.innerHTML : "";
 
-      if (finalHtml.toLowerCase().includes("</body>")) {
-        finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
-      } else {
-        finalHtml += injectedBeforeBodyEnd;
-      }
-
-      return finalHtml;
+      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+        headHtml + injectedHead + "</head><body>" + bodyHtml + injectedBeforeBodyEnd + "</body></html>";
     }
 
     function studentInputs() {
