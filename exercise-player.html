@@ -157,18 +157,21 @@
     }
     function buildImageMap(images) {
       const map = {};
-      const normalize = (value) => String(value || "")
-        .trim()
-        .replace(/\/g, "/")
-        .replace(/^\.\//, "")
-        .replace(/^\//, "");
 
-      const addKeys = (rawValue, url) => {
-        const clean = normalize(rawValue);
+      function normalizePath(value) {
+        return String(value || "")
+          .trim()
+          .replace(/\\/g, "/")
+          .replace(/^\.\//, "")
+          .replace(/^\//, "");
+      }
+
+      function addKeys(value, url) {
+        const clean = normalizePath(value);
         if (!clean || !url) return;
 
         const fileOnly = clean.split("/").pop();
-        const keys = [
+        [
           clean,
           "./" + clean,
           "/" + clean,
@@ -176,12 +179,10 @@
           "images/" + fileOnly,
           "./images/" + fileOnly,
           "/images/" + fileOnly
-        ];
-
-        keys.forEach((key) => {
-          if (key) map[key] = url;
+        ].forEach((key) => {
+          map[key] = url;
         });
-      };
+      }
 
       (images || []).forEach((img) => {
         if (!img || !img.url) return;
@@ -189,8 +190,6 @@
         addKeys(img.path, img.url);
       });
 
-      return map;
-    });
       return map;
     }
     function replaceTextPaths(text, imageMap) {
