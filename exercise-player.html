@@ -30,7 +30,7 @@
   <section class="hero-gradient text-white py-10">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">هذه النسخة تشغّل الكود المباشر أو ملفات HTML/CSS/JS المنفصلة، مع معالجة صور HTML وCSS وJS.</p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">نسخة محسّنة لمعالجة الصور من HTML وCSS وJavaScript وحتى الصور التي تُنشأ أثناء التشغيل.</p>
     </div>
   </section>
 
@@ -159,14 +159,19 @@
       const map = {};
       (images || []).forEach((img) => {
         if (!img || !img.name || !img.url) return;
-        map[img.name] = img.url;
-        map["images/" + img.name] = img.url;
-        map["./images/" + img.name] = img.url;
-        map["/images/" + img.name] = img.url;
+        const names = [
+          img.name,
+          "images/" + img.name,
+          "./images/" + img.name,
+          "/images/" + img.name,
+          "./" + img.name,
+          "/" + img.name
+        ];
+        names.forEach((name) => { map[name] = img.url; });
       });
       return map;
     }
-    function replacePathVariants(text, imageMap) {
+    function replaceTextPaths(text, imageMap) {
       let updated = String(text || "");
       Object.entries(imageMap || {}).forEach(([key, url]) => {
         const safe = escapeRegExp(key);
@@ -174,33 +179,114 @@
       });
       return updated;
     }
-    function rewriteHtmlImages(html, imageMap) {
-      let updated = replacePathVariants(html, imageMap);
-      Object.values(imageMap || {}).forEach((url) => {
-        const safeUrl = escapeRegExp(url);
-        updated = updated.replace(new RegExp('src=["\']' + safeUrl + '["\']', 'g'), 'src="' + url + '"');
-      });
-      return updated;
+    function buildRuntimeImageResolver(imageMap) {
+      const json = JSON.stringify(imageMap || {});
+      return `
+<script>
+(function(){
+  const IMAGE_MAP = ${json};
+
+  function normalizePath(path){
+    if(!path) return path;
+    if(IMAGE_MAP[path]) return IMAGE_MAP[path];
+    const clean = String(path).replace(/^https?:\\/\\/[^/]+\\//, '').replace(/^\\.\\//, '');
+    if(IMAGE_MAP[clean]) return IMAGE_MAP[clean];
+    if(IMAGE_MAP['./' + clean]) return IMAGE_MAP['./' + clean];
+    if(IMAGE_MAP['/' + clean]) return IMAGE_MAP['/' + clean];
+    return path;
+  }
+
+  window.__resolveExerciseAsset = normalizePath;
+
+  const originalSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function(name, value){
+    if(name === 'src' || name === 'href'){
+      value = normalizePath(value);
     }
-    function rewriteCssImages(css, imageMap) {
-      let updated = replacePathVariants(css, imageMap);
-      Object.entries(imageMap || {}).forEach(([key, url]) => {
-        const variants = [key];
-        variants.forEach((variant) => {
-          const safe = escapeRegExp(variant);
-          updated = updated.replace(new RegExp('url\\((["\'])?' + safe + '\\1?\\)', 'g'), 'url("' + url + '")');
+    if(name === 'style' && typeof value === 'string'){
+      Object.keys(IMAGE_MAP).forEach(function(key){
+        value = value.split(key).join(IMAGE_MAP[key]);
+      });
+    }
+    return originalSetAttribute.call(this, name, value);
+  };
+
+  const imgSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  if(imgSrcDesc && imgSrcDesc.set){
+    Object.defineProperty(HTMLImageElement.prototype, 'src', {
+      get: imgSrcDesc.get,
+      set: function(value){
+        return imgSrcDesc.set.call(this, normalizePath(value));
+      }
+    });
+  }
+
+  const sourceSrcDesc = Object.getOwnPropertyDescriptor(HTMLSourceElement.prototype, 'src');
+  if(sourceSrcDesc && sourceSrcDesc.set){
+    Object.defineProperty(HTMLSourceElement.prototype, 'src', {
+      get: sourceSrcDesc.get,
+      set: function(value){
+        return sourceSrcDesc.set.call(this, normalizePath(value));
+      }
+    });
+  }
+
+  const originalFetch = window.fetch;
+  window.fetch = function(resource, init){
+    if(typeof resource === 'string'){
+      resource = normalizePath(resource);
+    } else if(resource && resource.url){
+      resource = normalizePath(resource.url);
+    }
+    return originalFetch.call(this, resource, init);
+  };
+
+  const OriginalImage = window.Image;
+  window.Image = function(width, height){
+    const img = new OriginalImage(width, height);
+    return img;
+  };
+  window.Image.prototype = OriginalImage.prototype;
+
+  function patchNodeImages(root){
+    if(!root || !root.querySelectorAll) return;
+    root.querySelectorAll('img, source').forEach(function(el){
+      const src = el.getAttribute('src');
+      if(src){
+        el.setAttribute('src', normalizePath(src));
+      }
+    });
+    root.querySelectorAll('[style]').forEach(function(el){
+      let style = el.getAttribute('style');
+      if(style){
+        Object.keys(IMAGE_MAP).forEach(function(key){
+          style = style.split(key).join(IMAGE_MAP[key]);
         });
+        el.setAttribute('style', style);
+      }
+    });
+  }
+
+  const observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      m.addedNodes.forEach(function(node){
+        if(node.nodeType === 1){
+          patchNodeImages(node);
+        }
       });
-      return updated;
-    }
-    function rewriteJsImages(js, imageMap) {
-      let updated = String(js || "");
-      Object.entries(imageMap || {}).forEach(([key, url]) => {
-        const safe = escapeRegExp(key);
-        updated = updated.replace(new RegExp('([\'"])' + safe + '\\1', 'g'), (m, q) => q + url + q);
-      });
-      updated = replacePathVariants(updated, imageMap);
-      return updated;
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    patchNodeImages(document);
+    observer.observe(document.body, { childList:true, subtree:true });
+  });
+
+  window.addEventListener('load', function(){
+    patchNodeImages(document);
+  });
+})();
+<\/script>`;
     }
 
     async function buildFilesHtml(pageData) {
@@ -215,15 +301,16 @@
       htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
       htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
 
-      htmlText = rewriteHtmlImages(htmlText, imageMap);
-      cssText = rewriteCssImages(cssText, imageMap);
-      jsText = rewriteJsImages(jsText, imageMap);
+      htmlText = replaceTextPaths(htmlText, imageMap);
+      cssText = replaceTextPaths(cssText, imageMap);
+      jsText = replaceTextPaths(jsText, imageMap);
 
       let injectedHead = "";
       if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
       injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
       injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
       injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
+      injectedHead += buildRuntimeImageResolver(imageMap);
 
       let injectedBeforeBodyEnd = helperScriptBlock();
       if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
