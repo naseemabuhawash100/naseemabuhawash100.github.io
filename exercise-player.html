@@ -30,7 +30,7 @@
   <section class="hero-gradient text-white py-10">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">أدخلي بيانات الطالب ثم حلي التمرين. عند إنهاء التمرين سيتم حفظ النتيجة للمعلمة.</p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">يدعم الآن الكود المباشر أو ملفات HTML/CSS/JS المرفوعة من لوحة التحكم.</p>
     </div>
   </section>
 
@@ -115,15 +115,85 @@
     }
     function getTodayDateOnly() { return new Date().toISOString().slice(0, 10); }
 
-    function wrapCode(code, title) {
+    function helperScriptBlock() {
+      return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
+    }
+
+    function buildDirectHtml(code, title) {
       var trimmed = String(code || "").trim();
       if (!trimmed) return "";
-      var helper = "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
+      var helper = helperScriptBlock();
       var lower = trimmed.toLowerCase();
       if (lower.indexOf("<html") !== -1 || lower.indexOf("<body") !== -1 || lower.indexOf("<head") !== -1) {
         return trimmed.replace("</body>", helper + "\n</body>");
       }
       return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8' /><meta name='viewport' content='width=device-width, initial-scale=1.0' /><title>" + (title || "تمرين تفاعلي") + "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" + trimmed + helper + "</body></html>";
+    }
+
+    async function fetchText(url) {
+      if (!url) return "";
+      var res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch file");
+      return await res.text();
+    }
+
+    function rewriteImages(html, images) {
+      var updated = html;
+      (images || []).forEach(function(img) {
+        if (!img || !img.name || !img.url) return;
+        var safeName = img.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        var patterns = [
+          new RegExp('src=["\\\']' + safeName + '["\\\']', 'g'),
+          new RegExp('src=["\\\']images/' + safeName + '["\\\']', 'g'),
+          new RegExp('src=["\\\']\\.\\/images/' + safeName + '["\\\']', 'g'),
+          new RegExp('url\\(["\\\']?' + safeName + '["\\\']?\\)', 'g'),
+          new RegExp('url\\(["\\\']?images/' + safeName + '["\\\']?\\)', 'g'),
+          new RegExp('url\\(["\\\']?\\.\\/images/' + safeName + '["\\\']?\\)', 'g')
+        ];
+        patterns.forEach(function(pattern) {
+          updated = updated.replace(pattern, function(match) {
+            if (match.startsWith("src=")) return 'src="' + img.url + '"';
+            return 'url("' + img.url + '")';
+          });
+        });
+      });
+      return updated;
+    }
+
+    async function buildFilesHtml(pageData) {
+      var htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
+      if (!htmlUrl) return "";
+      var htmlText = await fetchText(htmlUrl);
+      var cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
+      var jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
+
+      var finalHtml = String(htmlText || "");
+      finalHtml = finalHtml.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
+      finalHtml = finalHtml.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
+      finalHtml = rewriteImages(finalHtml, pageData.images || []);
+
+      var injectedHead = "";
+      if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
+      injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
+      injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
+      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
+
+      var injectedBeforeBodyEnd = helperScriptBlock();
+      if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
+
+      if (finalHtml.toLowerCase().indexOf("</head>") !== -1) {
+        finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
+      } else {
+        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" + injectedHead + "</head><body>" + finalHtml + "</body></html>";
+      }
+
+      if (finalHtml.toLowerCase().indexOf("</body>") !== -1) {
+        finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
+      } else {
+        finalHtml += injectedBeforeBodyEnd;
+      }
+
+      return finalHtml;
     }
 
     function studentInputs() {
@@ -247,9 +317,23 @@
 
         var data = pageSnap.data();
         currentExerciseTitle = data.title || "تمرين تفاعلي";
-        if (!data.code || !String(data.code).trim()) { statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي كود تمرين بعد"; return; }
 
-        frame.srcdoc = wrapCode(data.code, currentExerciseTitle);
+        var finalHtml = "";
+        if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
+          finalHtml = await buildFilesHtml(data);
+        } else if (data.uploadMode === "zip" && data.files && data.files.zip) {
+          statusText.innerText = "تم رفع ملف ZIP لهذه الصفحة، لكن عرض ملفات ZIP تلقائيًا لم يُفعّل بعد. استخدمي رفع HTML/CSS/JS منفصلًا أو الكود المباشر.";
+          return;
+        } else if (data.code && String(data.code).trim()) {
+          finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
+        }
+
+        if (!finalHtml) {
+          statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي ملفات أو كودًا صالحًا للعرض";
+          return;
+        }
+
+        frame.srcdoc = finalHtml;
         statusBox.classList.add("hidden");
         playerBox.classList.remove("hidden");
       } catch (error) {
