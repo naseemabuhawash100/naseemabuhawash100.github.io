@@ -7,18 +7,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Tajawal', Arial, sans-serif;
-      direction: rtl;
-      background: #f8fafc;
-      margin: 0;
-    }
-    .hero-gradient {
-      background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
-    }
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background:#f8fafc; margin:0; }
+    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
   </style>
 </head>
 <body class="min-h-screen text-right">
@@ -38,9 +30,7 @@
   <section class="hero-gradient text-white py-10">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">
-        نسخة محسّنة لمعالجة الصور والملفات داخل HTML وCSS وJavaScript.
-      </p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">نسخة محسّنة لمعالجة الصور من HTML وCSS وJavaScript وحتى الصور التي تُنشأ أثناء التشغيل.</p>
     </div>
   </section>
 
@@ -70,11 +60,7 @@
       </div>
 
       <div id="playerBox" class="mt-6 hidden">
-        <iframe
-          id="exerciseFrame"
-          class="w-full min-h-[900px] bg-white rounded-2xl shadow-lg border border-gray-200"
-          sandbox="allow-scripts allow-forms allow-same-origin">
-        </iframe>
+        <iframe id="exerciseFrame" class="w-full min-h-[900px] bg-white rounded-2xl shadow-lg border border-gray-200" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
       </div>
 
       <div id="resultBox" class="mt-6 hidden bg-white rounded-2xl shadow-lg p-6 border border-gray-100 text-center">
@@ -86,233 +72,135 @@
   </section>
 
   <script>
-    (function () {
-      const familyKindergarten = sessionStorage.getItem("familyKindergarten");
-      if (!familyKindergarten) {
-        window.location.href = "kindergartens.html";
-        return;
-      }
+  (function () {
+    const familyKindergarten = sessionStorage.getItem("familyKindergarten");
+    if (!familyKindergarten) {
+      window.location.href = "kindergartens.html";
+      return;
+    }
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
-        authDomain: "interactive-book-37270.firebaseapp.com",
-        projectId: "interactive-book-37270",
-        storageBucket: "interactive-book-37270.appspot.com",
-        messagingSenderId: "350364566140",
-        appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
-        measurementId: "G-QM0TNEN9XJ"
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.appspot.com",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const params = new URLSearchParams(window.location.search);
+    const stage = params.get("stage") || "";
+    const subject = params.get("subject") || "";
+    const page = params.get("page") || "";
+
+    const statusText = document.getElementById("statusText");
+    const statusBox = document.getElementById("statusBox");
+    const playerBox = document.getElementById("playerBox");
+    const frame = document.getElementById("exerciseFrame");
+    const resultBox = document.getElementById("resultBox");
+    const resultText = document.getElementById("resultText");
+    const saveStatus = document.getElementById("saveStatus");
+    const studentMsg = document.getElementById("studentMsg");
+
+    let currentKindergarten = null;
+    let currentExerciseTitle = "";
+    let allowedStudents = {};
+    let resultSaved = false;
+
+    function stageLabel(v) {
+      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v;
+    }
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v;
+    }
+    function pageDocId(k, s, sub, p) {
+      return k + "__" + s + "__" + sub + "__p" + String(p).padStart(2, "0");
+    }
+    function normalizeArabicName(name) {
+      return String(name || "")
+        .trim()
+        .replace(/[أإآ]/g, "ا")
+        .replace(/ى/g, "ي")
+        .replace(/ة/g, "ه")
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+    }
+    function getTodayDateOnly() {
+      return new Date().toISOString().slice(0, 10);
+    }
+    function helperScriptBlock() {
+      return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
+    }
+    function buildDirectHtml(code, title) {
+      const trimmed = String(code || "").trim();
+      if (!trimmed) return "";
+      const helper = helperScriptBlock();
+      const lower = trimmed.toLowerCase();
+      if (lower.includes("<html") || lower.includes("<body") || lower.includes("<head")) {
+        return trimmed.replace("</body>", helper + "\n</body>");
+      }
+      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" +
+        (title || "تمرين تفاعلي") +
+        "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" +
+        trimmed + helper + "</body></html>";
+    }
+    async function fetchText(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("تعذر قراءة الملف: " + url);
+      return await res.text();
+    }
+    function escapeRegExp(str) {
+      return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+    function buildImageMap(images) {
+      const map = {};
+      const add = (key, url) => {
+        if (!key || !url) return;
+        const variants = new Set();
+        const raw = String(key).trim();
+        if (!raw) return;
+        const clean = raw.replace(/\\/g, "/").replace(/^\.\//, "");
+        const noLead = clean.replace(/^\/+/, "");
+        const fileName = noLead.split("/").pop();
+        [raw, raw.toLowerCase(), clean, clean.toLowerCase(), noLead, noLead.toLowerCase(), "./" + noLead, "./" + noLead.toLowerCase(), "/" + noLead, "/" + noLead.toLowerCase()].forEach(v => variants.add(v));
+        if (fileName) {
+          [fileName, fileName.toLowerCase(), "images/" + fileName, "images/" + fileName.toLowerCase(), "./images/" + fileName, "./images/" + fileName.toLowerCase(), "/images/" + fileName, "/images/" + fileName.toLowerCase(), "assets/" + fileName, "assets/" + fileName.toLowerCase(), "./assets/" + fileName, "./assets/" + fileName.toLowerCase(), "../images/" + fileName, "../images/" + fileName.toLowerCase(), "../assets/" + fileName, "../assets/" + fileName.toLowerCase()].forEach(v => variants.add(v));
+        }
+        variants.forEach(v => { map[v] = url; });
       };
 
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-
-      const db = firebase.firestore();
-
-      const params = new URLSearchParams(window.location.search);
-      const stage = params.get("stage") || "";
-      const subject = params.get("subject") || "";
-      const page = params.get("page") || "";
-
-      const statusText = document.getElementById("statusText");
-      const statusBox = document.getElementById("statusBox");
-      const playerBox = document.getElementById("playerBox");
-      const frame = document.getElementById("exerciseFrame");
-      const resultBox = document.getElementById("resultBox");
-      const resultText = document.getElementById("resultText");
-      const saveStatus = document.getElementById("saveStatus");
-      const studentMsg = document.getElementById("studentMsg");
-
-      let currentKindergarten = null;
-      let currentExerciseTitle = "";
-      let allowedStudents = {};
-      let resultSaved = false;
-
-      function stageLabel(v) {
-        return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v;
-      }
-
-      function subjectLabel(v) {
-        return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v;
-      }
-
-      function pageDocId(k, s, sub, p) {
-        return k + "__" + s + "__" + sub + "__p" + String(p).padStart(2, "0");
-      }
-
-      function normalizeArabicName(name) {
-        return String(name || "")
-          .trim()
-          .replace(/[أإآ]/g, "ا")
-          .replace(/ى/g, "ي")
-          .replace(/ة/g, "ه")
-          .replace(/\s+/g, " ")
-          .toLowerCase();
-      }
-
-      function getTodayDateOnly() {
-        return new Date().toISOString().slice(0, 10);
-      }
-
-      function helperScriptBlock() {
-        return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\/script>";
-      }
-
-      function buildDirectHtml(code, title) {
-        const trimmed = String(code || "").trim();
-        if (!trimmed) return "";
-
-        const helper = helperScriptBlock();
-        const lower = trimmed.toLowerCase();
-
-        if (lower.includes("<html") || lower.includes("<body") || lower.includes("<head")) {
-          if (trimmed.includes("</body>")) {
-            return trimmed.replace("</body>", helper + "\n</body>");
-          }
-          return trimmed + helper;
-        }
-
-        return `
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title || "تمرين تفاعلي"}</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: Tajawal, Arial, sans-serif;
-      direction: rtl;
-      background: #f8fafc;
-      margin: 0;
-      padding: 24px;
+      (images || []).forEach((img) => {
+        if (!img || !img.url) return;
+        add(img.name, img.url);
+        add(img.path, img.url);
+      });
+      return map;
     }
-  </style>
-</head>
-<body>
-  ${trimmed}
-  ${helper}
-</body>
-</html>`;
-      }
-
-      async function fetchText(url) {
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("تعذر قراءة الملف: " + url);
-        }
-        return await res.text();
-      }
-
-      function escapeRegExp(str) {
-        return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      }
-
-      function getBaseFolderFromFileUrl(fileUrl) {
-        if (!fileUrl) return "";
-        return fileUrl.substring(0, fileUrl.lastIndexOf("/") + 1);
-      }
-
-      function getExerciseRootFromHtmlUrl(htmlUrl) {
-        if (!htmlUrl) return "";
-        const marker = "/html/";
-        const index = htmlUrl.indexOf(marker);
-
-        if (index !== -1) {
-          return htmlUrl.substring(0, index + 1);
-        }
-
-        return getBaseFolderFromFileUrl(htmlUrl);
-      }
-
-      function buildImageMap(images) {
-        const map = {};
-
-        (images || []).forEach((img) => {
-          if (!img || !img.name || !img.url) return;
-
-          const fileName = img.name.split("/").pop();
-
-          const names = [
-            img.name,
-            fileName,
-            "./" + fileName,
-            "/" + fileName,
-
-            "images/" + fileName,
-            "./images/" + fileName,
-            "/images/" + fileName,
-
-            "img/" + fileName,
-            "./img/" + fileName,
-            "/img/" + fileName,
-
-            "assets/" + fileName,
-            "./assets/" + fileName,
-            "/assets/" + fileName,
-
-            "assets/images/" + fileName,
-            "./assets/images/" + fileName,
-            "/assets/images/" + fileName
-          ];
-
-          names.forEach((name) => {
-            map[name] = img.url;
-          });
-        });
-
-        return map;
-      }
-
-      function replaceTextPaths(text, imageMap) {
-        let updated = String(text || "");
-
-        Object.entries(imageMap || {}).forEach(([key, url]) => {
-          const safe = escapeRegExp(key);
-          updated = updated.replace(new RegExp(safe, "g"), url);
-        });
-
-        return updated;
-      }
-
-      async function fileToDataUrl(file) {
-        const blob = await file.async("blob");
-        return await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      }
-
-      function buildRuntimeImageResolver(imageMap) {
-        const json = JSON.stringify(imageMap || {});
-
-        return `
+    function replaceTextPaths(text, imageMap) {
+      let updated = String(text || "");
+      Object.entries(imageMap || {}).forEach(([key, url]) => {
+        const safe = escapeRegExp(key);
+        updated = updated.replace(new RegExp(safe, "g"), url);
+      });
+      return updated;
+    }
+    function buildRuntimeImageResolver(imageMap) {
+      const json = JSON.stringify(imageMap || {});
+      return `
 <script>
 (function(){
   const IMAGE_MAP = ${json};
 
   function normalizePath(path){
     if(!path) return path;
-
-    if (String(path).startsWith("data:")) return path;
-    if (String(path).startsWith("blob:")) return path;
-    if (String(path).startsWith("http://")) return path;
-    if (String(path).startsWith("https://")) return path;
-
     if(IMAGE_MAP[path]) return IMAGE_MAP[path];
-
-    const clean = String(path)
-      .replace(/^\\.\\//, '')
-      .replace(/^\\//, '');
-
+    const clean = String(path).replace(/^https?:\\/\\/[^/]+\\//, '').replace(/^\\.\\//, '');
     if(IMAGE_MAP[clean]) return IMAGE_MAP[clean];
     if(IMAGE_MAP['./' + clean]) return IMAGE_MAP['./' + clean];
     if(IMAGE_MAP['/' + clean]) return IMAGE_MAP['/' + clean];
-
     return path;
   }
 
@@ -320,21 +208,19 @@
 
   const originalSetAttribute = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function(name, value){
-    if ((name === 'src' || name === 'href') && typeof value === 'string') {
+    if(name === 'src' || name === 'href'){
       value = normalizePath(value);
     }
-
-    if (name === 'style' && typeof value === 'string') {
+    if(name === 'style' && typeof value === 'string'){
       Object.keys(IMAGE_MAP).forEach(function(key){
         value = value.split(key).join(IMAGE_MAP[key]);
       });
     }
-
     return originalSetAttribute.call(this, name, value);
   };
 
   const imgSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
-  if (imgSrcDesc && imgSrcDesc.set) {
+  if(imgSrcDesc && imgSrcDesc.set){
     Object.defineProperty(HTMLImageElement.prototype, 'src', {
       get: imgSrcDesc.get,
       set: function(value){
@@ -344,7 +230,7 @@
   }
 
   const sourceSrcDesc = Object.getOwnPropertyDescriptor(HTMLSourceElement.prototype, 'src');
-  if (sourceSrcDesc && sourceSrcDesc.set) {
+  if(sourceSrcDesc && sourceSrcDesc.set){
     Object.defineProperty(HTMLSourceElement.prototype, 'src', {
       get: sourceSrcDesc.get,
       set: function(value){
@@ -355,25 +241,32 @@
 
   const originalFetch = window.fetch;
   window.fetch = function(resource, init){
-    if (typeof resource === 'string') {
+    if(typeof resource === 'string'){
       resource = normalizePath(resource);
+    } else if(resource && resource.url){
+      resource = normalizePath(resource.url);
     }
     return originalFetch.call(this, resource, init);
   };
 
-  function patchNodeImages(root){
-    if (!root || !root.querySelectorAll) return;
+  const OriginalImage = window.Image;
+  window.Image = function(width, height){
+    const img = new OriginalImage(width, height);
+    return img;
+  };
+  window.Image.prototype = OriginalImage.prototype;
 
+  function patchNodeImages(root){
+    if(!root || !root.querySelectorAll) return;
     root.querySelectorAll('img, source').forEach(function(el){
       const src = el.getAttribute('src');
-      if (src) {
+      if(src){
         el.setAttribute('src', normalizePath(src));
       }
     });
-
     root.querySelectorAll('[style]').forEach(function(el){
       let style = el.getAttribute('style');
-      if (style) {
+      if(style){
         Object.keys(IMAGE_MAP).forEach(function(key){
           style = style.split(key).join(IMAGE_MAP[key]);
         });
@@ -385,7 +278,7 @@
   const observer = new MutationObserver(function(mutations){
     mutations.forEach(function(m){
       m.addedNodes.forEach(function(node){
-        if (node.nodeType === 1) {
+        if(node.nodeType === 1){
           patchNodeImages(node);
         }
       });
@@ -394,9 +287,7 @@
 
   document.addEventListener('DOMContentLoaded', function(){
     patchNodeImages(document);
-    if (document.body) {
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+    observer.observe(document.body, { childList:true, subtree:true });
   });
 
   window.addEventListener('load', function(){
@@ -404,355 +295,220 @@
   });
 })();
 <\/script>`;
+    }
+
+    async function buildFilesHtml(pageData) {
+      const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
+      if (!htmlUrl) return "";
+      let htmlText = await fetchText(htmlUrl);
+      let cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
+      let jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
+
+      const imageMap = buildImageMap(pageData.images || []);
+
+      htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
+      htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
+
+      htmlText = replaceTextPaths(htmlText, imageMap);
+      cssText = replaceTextPaths(cssText, imageMap);
+      jsText = replaceTextPaths(jsText, imageMap);
+
+      let injectedHead = "";
+      if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
+      injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
+      injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
+      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
+      injectedHead += buildRuntimeImageResolver(imageMap);
+
+      let injectedBeforeBodyEnd = helperScriptBlock();
+      if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
+
+      let finalHtml = htmlText;
+      if (finalHtml.toLowerCase().includes("</head>")) {
+        finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
+      } else {
+        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+          injectedHead + "</head><body>" + finalHtml + "</body></html>";
       }
 
-      async function buildZipHtml(zipUrl) {
-        const res = await fetch(zipUrl);
-        if (!res.ok) {
-          throw new Error("تعذر تحميل ملف ZIP");
-        }
-
-        const buffer = await res.arrayBuffer();
-        const zip = await JSZip.loadAsync(buffer);
-        const entries = Object.values(zip.files).filter(f => !f.dir);
-
-        if (!entries.length) {
-          throw new Error("ملف ZIP فارغ");
-        }
-
-        const htmlEntry = entries.find(f => /\.(html?|HTML?)$/.test(f.name));
-        if (!htmlEntry) {
-          throw new Error("لم يتم العثور على ملف HTML داخل ZIP");
-        }
-
-        const cssEntries = entries.filter(f => /\.css$/i.test(f.name));
-        const jsEntries = entries.filter(f => /\.js$/i.test(f.name));
-
-        const assetMap = {};
-
-        for (const entry of entries) {
-          const lower = entry.name.toLowerCase();
-
-          if (/\.(png|jpg|jpeg|webp|gif|svg|mp3|wav|ogg|mp4|webm)$/i.test(lower)) {
-            const dataUrl = await fileToDataUrl(entry);
-            const fileName = entry.name.split("/").pop();
-
-            const pathVariants = new Set([
-              entry.name,
-              "./" + entry.name,
-              "/" + entry.name,
-              fileName,
-              "./" + fileName,
-              "/" + fileName,
-              "images/" + fileName,
-              "./images/" + fileName,
-              "/images/" + fileName,
-              "img/" + fileName,
-              "./img/" + fileName,
-              "/img/" + fileName,
-              "assets/" + fileName,
-              "./assets/" + fileName,
-              "/assets/" + fileName,
-              "assets/images/" + fileName,
-              "./assets/images/" + fileName,
-              "/assets/images/" + fileName
-            ]);
-
-            pathVariants.forEach(key => {
-              assetMap[key] = dataUrl;
-            });
-          }
-        }
-
-        let htmlText = await htmlEntry.async("text");
-        let cssText = "";
-        let jsText = "";
-
-        for (const entry of cssEntries) {
-          cssText += "\n" + await entry.async("text");
-        }
-
-        for (const entry of jsEntries) {
-          jsText += "\n" + await entry.async("text");
-        }
-
-        htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
-        htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-
-        htmlText = replaceTextPaths(htmlText, assetMap);
-        cssText = replaceTextPaths(cssText, assetMap);
-        jsText = replaceTextPaths(jsText, assetMap);
-
-        let injectedHead = "";
-        if (cssText) injectedHead += "<style>" + cssText + "<\/style>";
-        injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
-        injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
-        injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}<\/style>";
-        injectedHead += buildRuntimeImageResolver(assetMap);
-
-        let injectedBeforeBodyEnd = helperScriptBlock();
-        if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
-
-        let finalHtml = htmlText;
-
-        if (finalHtml.toLowerCase().includes("</head>")) {
-          finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
-        } else {
-          finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" + injectedHead + "</head><body>" + finalHtml + "</body></html>";
-        }
-
-        if (finalHtml.toLowerCase().includes("</body>")) {
-          finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
-        } else {
-          finalHtml += injectedBeforeBodyEnd;
-        }
-
-        return finalHtml;
+      if (finalHtml.toLowerCase().includes("</body>")) {
+        finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
+      } else {
+        finalHtml += injectedBeforeBodyEnd;
       }
 
-      async function buildFilesHtml(pageData) {
-        const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
-        if (!htmlUrl) return "";
+      return finalHtml;
+    }
 
-        const exerciseRoot = getExerciseRootFromHtmlUrl(htmlUrl);
-
-        let htmlText = await fetchText(htmlUrl);
-        let cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
-        let jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
-
-        const imageMap = buildImageMap(pageData.images || []);
-
-        htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
-        htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-
-        htmlText = replaceTextPaths(htmlText, imageMap);
-        cssText = replaceTextPaths(cssText, imageMap);
-        jsText = replaceTextPaths(jsText, imageMap);
-
-        let injectedHead = "";
-
-        if (exerciseRoot) {
-          injectedHead += '<base href="' + exerciseRoot + '">';
-        }
-
-        if (cssText) {
-          injectedHead += "<style>" + cssText + "<\/style>";
-        }
-
-        injectedHead += "<script src='https://cdn.tailwindcss.com'><\/script>";
-        injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
-        injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
-        injectedHead += buildRuntimeImageResolver(imageMap);
-
-        let injectedBeforeBodyEnd = helperScriptBlock();
-        if (jsText) {
-          injectedBeforeBodyEnd += "<script>" + jsText + "<\/script>";
-        }
-
-        let finalHtml = htmlText;
-
-        if (finalHtml.toLowerCase().includes("</head>")) {
-          finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
-        } else {
-          finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" + injectedHead + "</head><body>" + finalHtml + "</body></html>";
-        }
-
-        if (finalHtml.toLowerCase().includes("</body>")) {
-          finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
-        } else {
-          finalHtml += injectedBeforeBodyEnd;
-        }
-
-        return finalHtml;
+    function studentInputs() {
+      return {
+        studentName: document.getElementById("studentName").value.trim(),
+        studentCode: document.getElementById("studentCode").value.trim().toUpperCase(),
+        className: document.getElementById("className").value.trim()
+      };
+    }
+    function autofillStudentByCode() {
+      const code = document.getElementById("studentCode").value.trim().toUpperCase();
+      if (!code || !allowedStudents[code]) return;
+      document.getElementById("studentName").value = allowedStudents[code].name || "";
+      if (!document.getElementById("className").value && allowedStudents[code].className) {
+        document.getElementById("className").value = allowedStudents[code].className;
       }
-
-      function studentInputs() {
-        return {
-          studentName: document.getElementById("studentName").value.trim(),
-          studentCode: document.getElementById("studentCode").value.trim().toUpperCase(),
-          className: document.getElementById("className").value.trim()
+    }
+    async function loadStudents() {
+      const snap = await db.collection("students").where("kindergartenId", "==", familyKindergarten).get();
+      allowedStudents = {};
+      snap.forEach((doc) => {
+        const s = doc.data();
+        allowedStudents[String(s.code || "").toUpperCase()] = {
+          name: s.name || "",
+          className: s.className || ""
         };
+      });
+    }
+
+    async function saveResult(score, total, extraData) {
+      if (resultSaved) return;
+
+      const inputs = studentInputs();
+      studentMsg.innerText = "";
+      saveStatus.innerText = "";
+
+      if (!inputs.studentName) {
+        studentMsg.innerText = "يرجى كتابة اسم الطالب أولًا";
+        studentMsg.className = "mt-4 text-center font-medium text-red-600";
+        return;
+      }
+      if (!inputs.studentCode) {
+        studentMsg.innerText = "يرجى إدخال كود الطالب أولًا";
+        studentMsg.className = "mt-4 text-center font-medium text-red-600";
+        return;
+      }
+      if (!allowedStudents[inputs.studentCode]) {
+        studentMsg.innerText = "هذا الكود غير معتمد لهذه الروضة";
+        studentMsg.className = "mt-4 text-center font-medium text-red-600";
+        return;
+      }
+      if (normalizeArabicName(inputs.studentName) !== normalizeArabicName(allowedStudents[inputs.studentCode].name)) {
+        studentMsg.innerText = "الاسم لا يطابق الكود الخاص بهذا الطالب";
+        studentMsg.className = "mt-4 text-center font-medium text-red-600";
+        return;
       }
 
-      function autofillStudentByCode() {
-        const code = document.getElementById("studentCode").value.trim().toUpperCase();
-        if (!code || !allowedStudents[code]) return;
+      const today = getTodayDateOnly();
+      saveStatus.innerText = "جاري حفظ النتيجة...";
 
-        document.getElementById("studentName").value = allowedStudents[code].name || "";
-
-        if (!document.getElementById("className").value && allowedStudents[code].className) {
-          document.getElementById("className").value = allowedStudents[code].className;
-        }
-      }
-
-      async function loadStudents() {
-        const snap = await db.collection("students")
-          .where("kindergartenId", "==", familyKindergarten)
+      try {
+        const existing = await db.collection("results")
+          .where("kindergarten", "==", familyKindergarten)
+          .where("stage", "==", stage)
+          .where("subject", "==", subject)
+          .where("pageNumber", "==", Number(page))
+          .where("studentCode", "==", inputs.studentCode)
+          .where("dateOnly", "==", today)
           .get();
 
-        allowedStudents = {};
-
-        snap.forEach((doc) => {
-          const s = doc.data();
-          allowedStudents[String(s.code || "").toUpperCase()] = {
-            name: s.name || "",
-            className: s.className || ""
-          };
-        });
-      }
-
-      async function saveResult(score, total, extraData) {
-        if (resultSaved) return;
-
-        const inputs = studentInputs();
-        studentMsg.innerText = "";
-        saveStatus.innerText = "";
-
-        if (!inputs.studentName) {
-          studentMsg.innerText = "يرجى كتابة اسم الطالب أولًا";
-          studentMsg.className = "mt-4 text-center font-medium text-red-600";
-          return;
-        }
-
-        if (!inputs.studentCode) {
-          studentMsg.innerText = "يرجى إدخال كود الطالب أولًا";
-          studentMsg.className = "mt-4 text-center font-medium text-red-600";
-          return;
-        }
-
-        if (!allowedStudents[inputs.studentCode]) {
-          studentMsg.innerText = "هذا الكود غير معتمد لهذه الروضة";
-          studentMsg.className = "mt-4 text-center font-medium text-red-600";
-          return;
-        }
-
-        if (normalizeArabicName(inputs.studentName) !== normalizeArabicName(allowedStudents[inputs.studentCode].name)) {
-          studentMsg.innerText = "الاسم لا يطابق الكود الخاص بهذا الطالب";
-          studentMsg.className = "mt-4 text-center font-medium text-red-600";
-          return;
-        }
-
-        const today = getTodayDateOnly();
-        saveStatus.innerText = "جاري حفظ النتيجة...";
-
-        try {
-          const existing = await db.collection("results")
-            .where("kindergarten", "==", familyKindergarten)
-            .where("stage", "==", stage)
-            .where("subject", "==", subject)
-            .where("pageNumber", "==", Number(page))
-            .where("studentCode", "==", inputs.studentCode)
-            .where("dateOnly", "==", today)
-            .get();
-
-          if (!existing.empty) {
-            saveStatus.innerText = "تم تسجيل نتيجة هذا الطالب لهذه الصفحة اليوم بالفعل";
-            saveStatus.className = "mt-4 font-medium text-red-600";
-            resultSaved = true;
-            return;
-          }
-
-          await db.collection("results").add({
-            studentName: inputs.studentName,
-            studentCode: inputs.studentCode,
-            className: inputs.className || allowedStudents[inputs.studentCode].className || "",
-            score: Number(score || 0),
-            total: Number(total || 0),
-            exerciseTitle: currentExerciseTitle || "",
-            kindergarten: familyKindergarten,
-            kindergartenName: currentKindergarten ? currentKindergarten.name : "",
-            stage: stage,
-            subject: subject,
-            pageNumber: Number(page),
-            createdAt: new Date().toISOString(),
-            dateOnly: today,
-            extraData: extraData || {}
-          });
-
-          saveStatus.innerText = "تم إرسال النتيجة للمعلمة وحفظها بنجاح";
-          saveStatus.className = "mt-4 font-medium text-green-600";
-          resultSaved = true;
-        } catch (error) {
-          console.error(error);
-          saveStatus.innerText = "حدث خطأ أثناء حفظ النتيجة";
+        if (!existing.empty) {
+          saveStatus.innerText = "تم تسجيل نتيجة هذا الطالب لهذه الصفحة اليوم بالفعل";
           saveStatus.className = "mt-4 font-medium text-red-600";
+          resultSaved = true;
+          return;
         }
+
+        await db.collection("results").add({
+          studentName: inputs.studentName,
+          studentCode: inputs.studentCode,
+          className: inputs.className || allowedStudents[inputs.studentCode].className || "",
+          score: Number(score || 0),
+          total: Number(total || 0),
+          exerciseTitle: currentExerciseTitle || "",
+          kindergarten: familyKindergarten,
+          kindergartenName: currentKindergarten ? currentKindergarten.name : "",
+          stage: stage,
+          subject: subject,
+          pageNumber: Number(page),
+          createdAt: new Date().toISOString(),
+          dateOnly: today,
+          extraData: extraData || {}
+        });
+
+        saveStatus.innerText = "تم إرسال النتيجة للمعلمة وحفظها بنجاح";
+        saveStatus.className = "mt-4 font-medium text-green-600";
+        resultSaved = true;
+      } catch (error) {
+        console.error(error);
+        saveStatus.innerText = "حدث خطأ أثناء حفظ النتيجة";
+        saveStatus.className = "mt-4 font-medium text-red-600";
       }
+    }
 
-      async function loadExercise() {
-        try {
-          if (!stage || !subject || !page) {
-            statusText.innerText = "بيانات الصفحة غير مكتملة";
-            return;
-          }
-
-          const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
-
-          if (!kgSnap.exists) {
-            window.location.href = "kindergartens.html";
-            return;
-          }
-
-          currentKindergarten = kgSnap.data();
-
-          document.getElementById("pageTitle").innerText = "تمرين " + currentKindergarten.name;
-          document.getElementById("pageSubtitle").innerText = stageLabel(stage) + " - " + subjectLabel(subject) + " - صفحة " + page;
-          document.getElementById("heroTitle").innerText = currentKindergarten.name + " | " + subjectLabel(subject);
-
-          await loadStudents();
-
-          const docId = pageDocId(familyKindergarten, stage, subject, page);
-          const pageSnap = await db.collection("interactive_pages").doc(docId).get();
-
-          if (!pageSnap.exists) {
-            statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
-            return;
-          }
-
-          const data = pageSnap.data();
-          currentExerciseTitle = data.title || "تمرين تفاعلي";
-
-          let finalHtml = "";
-
-          if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
-            finalHtml = await buildFilesHtml(data);
-          } else if (data.uploadMode === "zip" && data.files && data.files.zip && data.files.zip.url) {
-            statusText.innerText = "جاري تجهيز التمرين من ملف ZIP...";
-            finalHtml = await buildZipHtml(data.files.zip.url);
-          } else if (data.code && String(data.code).trim()) {
-            finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
-          }
-
-          if (!finalHtml) {
-            statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي ملفات أو كودًا صالحًا للعرض";
-            return;
-          }
-
-          frame.srcdoc = finalHtml;
-          statusBox.classList.add("hidden");
-          playerBox.classList.remove("hidden");
-        } catch (error) {
-          console.error(error);
-          statusText.innerText = "حدث خطأ أثناء تحميل التمرين";
+    async function loadExercise() {
+      try {
+        if (!stage || !subject || !page) {
+          statusText.innerText = "بيانات الصفحة غير مكتملة";
+          return;
         }
+
+        const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
+        if (!kgSnap.exists) {
+          window.location.href = "kindergartens.html";
+          return;
+        }
+
+        currentKindergarten = kgSnap.data();
+        document.getElementById("pageTitle").innerText = "تمرين " + currentKindergarten.name;
+        document.getElementById("pageSubtitle").innerText = stageLabel(stage) + " - " + subjectLabel(subject) + " - صفحة " + page;
+        document.getElementById("heroTitle").innerText = currentKindergarten.name + " | " + subjectLabel(subject);
+
+        await loadStudents();
+
+        const docId = pageDocId(familyKindergarten, stage, subject, page);
+        const pageSnap = await db.collection("interactive_pages").doc(docId).get();
+        if (!pageSnap.exists) {
+          statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
+          return;
+        }
+
+        const data = pageSnap.data();
+        currentExerciseTitle = data.title || "تمرين تفاعلي";
+
+        let finalHtml = "";
+        if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
+          finalHtml = await buildFilesHtml(data);
+        } else if (data.uploadMode === "zip" && data.files && data.files.zip) {
+          statusText.innerText = "تم رفع ملف ZIP، وسنضيف تشغيله لاحقًا. حاليًا استخدمي الملفات المنفصلة أو الكود المباشر.";
+          return;
+        } else if (data.code && String(data.code).trim()) {
+          finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
+        }
+
+        if (!finalHtml) {
+          statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي ملفات أو كودًا صالحًا للعرض";
+          return;
+        }
+
+        frame.srcdoc = finalHtml;
+        statusBox.classList.add("hidden");
+        playerBox.classList.remove("hidden");
+      } catch (error) {
+        console.error(error);
+        statusText.innerText = "حدث خطأ أثناء تحميل التمرين";
       }
+    }
 
-      document.getElementById("studentCode").addEventListener("input", autofillStudentByCode);
+    document.getElementById("studentCode").addEventListener("input", autofillStudentByCode);
 
-      window.addEventListener("message", function(event) {
-        if (!event.data || event.data.type !== "exerciseResult") return;
+    window.addEventListener("message", function(event) {
+      if (!event.data || event.data.type !== "exerciseResult") return;
+      const score = Number(event.data.score || 0);
+      const total = Number(event.data.total || 0);
+      resultText.innerText = "النتيجة: " + score + " / " + total;
+      resultBox.classList.remove("hidden");
+      saveResult(score, total, event.data.extraData || {});
+    });
 
-        const score = Number(event.data.score || 0);
-        const total = Number(event.data.total || 0);
-
-        resultText.innerText = "النتيجة: " + score + " / " + total;
-        resultBox.classList.remove("hidden");
-
-        saveResult(score, total, event.data.extraData || {});
-      });
-
-      loadExercise();
-    })();
+    loadExercise();
+  })();
   </script>
 </body>
 </html>
