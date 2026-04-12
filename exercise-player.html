@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>عارض التمرين الذكي</title>
+  <title>عارض التمرين</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -11,13 +11,18 @@
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background:#f8fafc; margin:0; }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+    .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+    .gallery-card { border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; background:#fff; }
+    .gallery-card img { width:100%; height:160px; object-fit:contain; background:#f8fafc; }
+    .gallery-card .meta { padding:12px; font-size:13px; color:#475569; word-break:break-word; }
+    iframe { width:100%; min-height:900px; border:0; background:#fff; border-radius:1rem; }
   </style>
 </head>
 <body class="min-h-screen text-right">
   <header class="sticky top-0 z-40 bg-white shadow-md">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <h1 id="pageTitle" class="text-2xl font-bold text-blue-900">عارض التمرين الذكي</h1>
+        <h1 id="pageTitle" class="text-2xl font-bold text-blue-900">عارض التمرين</h1>
         <p id="pageSubtitle" class="text-sm text-gray-600">جاري تحميل الصفحة...</p>
       </div>
       <div class="flex gap-3 flex-wrap justify-center">
@@ -28,11 +33,9 @@
   </header>
 
   <section class="hero-gradient text-white py-10">
-    <div class="max-w-5xl mx-auto px-4 text-center">
+    <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-bold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">
-        هذه الصفحة تقرأ التمرين مباشرة من Firebase وتربط الصور المرفوعة من Supabase سواء كانت داخل الملفات المنفصلة أو مذكورة داخل الكود نفسه.
-      </p>
+      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">هذه الصفحة تعرض التمرين نفسه، وتربط الصور المرفوعة من Firebase وSupabase تلقائيًا سواء كان التمرين ملفات منفصلة أو كود مباشر.</p>
     </div>
   </section>
 
@@ -61,31 +64,22 @@
         <p id="statusText" class="text-lg font-bold text-gray-700">جاري تحميل التمرين...</p>
       </div>
 
-      <div id="infoBox" class="hidden mt-6 bg-blue-50 rounded-2xl shadow p-5 border border-blue-100">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-blue-900">
-          <div><span class="font-bold">طريقة الرفع:</span> <span id="uploadModeText">-</span></div>
-          <div><span class="font-bold">عدد الصور:</span> <span id="imagesCountText">0</span></div>
-          <div><span class="font-bold">عدد الملفات:</span> <span id="filesCountText">0</span></div>
-          <div><span class="font-bold">عنوان التمرين:</span> <span id="exerciseTitleText">-</span></div>
-        </div>
-      </div>
-
       <div id="playerBox" class="mt-6 hidden">
-        <iframe id="exerciseFrame" class="w-full min-h-[950px] bg-white rounded-2xl shadow-lg border border-gray-200" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
-      </div>
-
-      <div id="imagesPanel" class="hidden mt-6 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div class="flex items-center justify-between gap-3 flex-wrap mb-5">
-          <h3 class="text-2xl font-bold text-blue-900">الصور المرفوعة لهذا التمرين</h3>
-          <span id="imagesPanelCount" class="bg-blue-100 text-blue-900 px-4 py-2 rounded-full text-sm font-bold">0 صورة</span>
-        </div>
-        <div id="imagesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <iframe id="exerciseFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-modals allow-popups"></iframe>
       </div>
 
       <div id="resultBox" class="mt-6 hidden bg-white rounded-2xl shadow-lg p-6 border border-gray-100 text-center">
         <h3 class="text-2xl font-bold text-blue-900 mb-4">نتيجة الطالب</h3>
         <p id="resultText" class="text-xl font-bold text-gray-800"></p>
         <p id="saveStatus" class="mt-4 font-medium text-gray-700"></p>
+      </div>
+
+      <div id="imagesPanel" class="mt-6 hidden bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-5">
+          <h3 class="text-2xl font-bold text-blue-900">الصور المرتبطة بالتمرين</h3>
+          <span id="imagesCount" class="bg-blue-50 text-blue-800 px-4 py-2 rounded-full text-sm font-bold"></span>
+        </div>
+        <div id="imagesGallery" class="gallery-grid"></div>
       </div>
     </div>
   </section>
@@ -114,7 +108,7 @@
     const stage = params.get("stage") || "";
     const subject = params.get("subject") || "";
     const page = params.get("page") || "";
-    const pageId = params.get("id") || "";
+    const directId = params.get("id") || "";
 
     const statusText = document.getElementById("statusText");
     const statusBox = document.getElementById("statusBox");
@@ -124,15 +118,14 @@
     const resultText = document.getElementById("resultText");
     const saveStatus = document.getElementById("saveStatus");
     const studentMsg = document.getElementById("studentMsg");
-    const infoBox = document.getElementById("infoBox");
     const imagesPanel = document.getElementById("imagesPanel");
-    const imagesGrid = document.getElementById("imagesGrid");
+    const imagesGallery = document.getElementById("imagesGallery");
+    const imagesCount = document.getElementById("imagesCount");
 
     let currentKindergarten = null;
     let currentExerciseTitle = "";
     let allowedStudents = {};
     let resultSaved = false;
-    let currentPageData = null;
 
     function stageLabel(v) {
       return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v;
@@ -155,382 +148,6 @@
     function getTodayDateOnly() {
       return new Date().toISOString().slice(0, 10);
     }
-    function helperScriptBlock() {
-      return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\\/script>";
-    }
-    function escapeHtml(v) {
-      return String(v || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-    function fileNameFromPath(path) {
-      const clean = String(path || "").split("?")[0].split("#")[0];
-      const parts = clean.split("/").filter(Boolean);
-      return parts.length ? parts[parts.length - 1] : clean;
-    }
-    function stripLeadingVariants(path) {
-      return String(path || "")
-        .replace(/^https?:\/\/[^/]+\//i, "")
-        .replace(/^\.\//, "")
-        .replace(/^\//, "")
-        .replace(/^(\.\.\/)+/, "");
-    }
-    function getImageCandidates(path) {
-      const source = String(path || "").trim();
-      if (!source) return [];
-      const noHash = source.split("#")[0];
-      const noQuery = noHash.split("?")[0];
-      const stripped = stripLeadingVariants(noQuery);
-      const fileName = fileNameFromPath(noQuery);
-      const lower = stripped.toLowerCase();
-      const lowerFile = fileName.toLowerCase();
-      const dirs = ["", "images/", "image/", "img/", "imgs/", "assets/", "assets/images/", "media/", "uploads/"];
-      const set = new Set([
-        source,
-        noHash,
-        noQuery,
-        stripped,
-        fileName,
-        lower,
-        lowerFile,
-        "./" + stripped,
-        "/" + stripped,
-        "../" + stripped,
-        "./" + fileName,
-        "/" + fileName,
-        "../" + fileName
-      ]);
-      dirs.forEach((dir) => {
-        if (fileName) {
-          set.add(dir + fileName);
-          set.add("./" + dir + fileName);
-          set.add("/" + dir + fileName);
-          set.add("../" + dir + fileName);
-          set.add((dir + fileName).toLowerCase());
-        }
-      });
-      return Array.from(set).filter(Boolean);
-    }
-    function buildImageMap(images) {
-      const map = {};
-      const lowerMap = {};
-      (images || []).forEach((img) => {
-        if (!img || !img.url) return;
-        const mainName = img.name || fileNameFromPath(img.path || img.url);
-        getImageCandidates(mainName).concat(getImageCandidates(img.path || "")).forEach((key) => {
-          map[key] = img.url;
-          lowerMap[String(key).toLowerCase()] = img.url;
-        });
-      });
-      return { map, lowerMap };
-    }
-    function resolvePathFactory(imageMaps) {
-      const exactMap = imageMaps.map || {};
-      const lowerMap = imageMaps.lowerMap || {};
-      return function resolvePath(path) {
-        if (!path) return path;
-        const original = String(path).trim();
-        if (!original) return original;
-        if (/^data:/i.test(original)) return original;
-        if (/^https?:\/\//i.test(original)) return original;
-        if (exactMap[original]) return exactMap[original];
-        const stripped = stripLeadingVariants(original);
-        if (exactMap[stripped]) return exactMap[stripped];
-        const fileName = fileNameFromPath(original);
-        if (exactMap[fileName]) return exactMap[fileName];
-        const lowerCandidates = getImageCandidates(original).map((v) => String(v).toLowerCase());
-        for (const candidate of lowerCandidates) {
-          if (lowerMap[candidate]) return lowerMap[candidate];
-        }
-        return original;
-      };
-    }
-    function replaceTextPaths(text, resolver) {
-      let updated = String(text || "");
-      const matches = updated.match(/(['"`])(.*?)(\.(png|jpe?g|gif|svg|webp|bmp|ico))(\?[^'"`)]*)?\1/gi) || [];
-      matches.forEach((fullMatch) => {
-        const quote = fullMatch[0];
-        const inner = fullMatch.slice(1, -1);
-        const resolved = resolver(inner);
-        if (resolved && resolved !== inner) {
-          updated = updated.split(fullMatch).join(quote + resolved + quote);
-        }
-      });
-
-      updated = updated.replace(/url\(([^)]+)\)/gi, function(_, inside) {
-        const cleaned = inside.trim().replace(/^['"]|['"]$/g, "");
-        const resolved = resolver(cleaned);
-        if (resolved && resolved !== cleaned) {
-          return "url('" + resolved + "')";
-        }
-        return _;
-      });
-
-      return updated;
-    }
-    function buildRuntimeImageResolver(imageMaps) {
-      const jsonMap = JSON.stringify(imageMaps.map || {});
-      const jsonLowerMap = JSON.stringify(imageMaps.lowerMap || {});
-      return `
-<script>
-(function(){
-  const IMAGE_MAP = ${jsonMap};
-  const IMAGE_MAP_LOWER = ${jsonLowerMap};
-
-  function fileNameFromPath(path){
-    const clean = String(path || '').split('?')[0].split('#')[0];
-    const parts = clean.split('/').filter(Boolean);
-    return parts.length ? parts[parts.length - 1] : clean;
-  }
-
-  function stripLeadingVariants(path){
-    return String(path || '')
-      .replace(/^https?:\\/\\/[^/]+\\//i, '')
-      .replace(/^\\.\\//, '')
-      .replace(/^\\//, '')
-      .replace(/^(\\.\\.\\/)+/, '');
-  }
-
-  function getImageCandidates(path){
-    const source = String(path || '').trim();
-    if(!source) return [];
-    const noHash = source.split('#')[0];
-    const noQuery = noHash.split('?')[0];
-    const stripped = stripLeadingVariants(noQuery);
-    const fileName = fileNameFromPath(noQuery);
-    const dirs = ['', 'images/', 'image/', 'img/', 'imgs/', 'assets/', 'assets/images/', 'media/', 'uploads/'];
-    const set = new Set([source, noHash, noQuery, stripped, fileName, stripped.toLowerCase(), fileName.toLowerCase(), './'+stripped, '/'+stripped, '../'+stripped, './'+fileName, '/'+fileName, '../'+fileName]);
-    dirs.forEach(function(dir){
-      if(fileName){
-        set.add(dir + fileName);
-        set.add('./' + dir + fileName);
-        set.add('/' + dir + fileName);
-        set.add('../' + dir + fileName);
-        set.add((dir + fileName).toLowerCase());
-      }
-    });
-    return Array.from(set).filter(Boolean);
-  }
-
-  function normalizePath(path){
-    if(!path) return path;
-    const original = String(path).trim();
-    if(!original) return original;
-    if(/^data:/i.test(original)) return original;
-    if(/^https?:\\/\\//i.test(original)) return original;
-    if(IMAGE_MAP[original]) return IMAGE_MAP[original];
-    const candidates = getImageCandidates(original);
-    for(const candidate of candidates){
-      if(IMAGE_MAP[candidate]) return IMAGE_MAP[candidate];
-      const lower = String(candidate).toLowerCase();
-      if(IMAGE_MAP_LOWER[lower]) return IMAGE_MAP_LOWER[lower];
-    }
-    return original;
-  }
-
-  window.__resolveExerciseAsset = normalizePath;
-
-  const originalSetAttribute = Element.prototype.setAttribute;
-  Element.prototype.setAttribute = function(name, value){
-    if(name === 'src' || name === 'href' || name === 'poster'){
-      value = normalizePath(value);
-    }
-    if(name === 'style' && typeof value === 'string'){
-      value = value.replace(/url\(([^)]+)\)/gi, function(match, inside){
-        const cleaned = String(inside).trim().replace(/^['"]|['"]$/g, '');
-        const resolved = normalizePath(cleaned);
-        return resolved !== cleaned ? "url('" + resolved + "')" : match;
-      });
-    }
-    return originalSetAttribute.call(this, name, value);
-  };
-
-  function patchNodeImages(root){
-    if(!root || !root.querySelectorAll) return;
-    root.querySelectorAll('img, source, video').forEach(function(el){
-      ['src','poster'].forEach(function(attr){
-        const val = el.getAttribute && el.getAttribute(attr);
-        if(val){
-          el.setAttribute(attr, normalizePath(val));
-        }
-      });
-      const srcset = el.getAttribute && el.getAttribute('srcset');
-      if(srcset){
-        const patched = srcset.split(',').map(function(part){
-          const trimmed = part.trim();
-          if(!trimmed) return trimmed;
-          const bits = trimmed.split(/\s+/);
-          bits[0] = normalizePath(bits[0]);
-          return bits.join(' ');
-        }).join(', ');
-        el.setAttribute('srcset', patched);
-      }
-    });
-    root.querySelectorAll('[style]').forEach(function(el){
-      let style = el.getAttribute('style');
-      if(style){
-        style = style.replace(/url\(([^)]+)\)/gi, function(match, inside){
-          const cleaned = String(inside).trim().replace(/^['"]|['"]$/g, '');
-          const resolved = normalizePath(cleaned);
-          return resolved !== cleaned ? "url('" + resolved + "')" : match;
-        });
-        el.setAttribute('style', style);
-      }
-    });
-  }
-
-  const originalFetch = window.fetch;
-  if (originalFetch) {
-    window.fetch = function(resource, init){
-      if(typeof resource === 'string'){
-        resource = normalizePath(resource);
-      } else if(resource && resource.url) {
-        try {
-          resource = new Request(normalizePath(resource.url), resource);
-        } catch (e) {}
-      }
-      return originalFetch.call(this, resource, init);
-    };
-  }
-
-  const observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      m.addedNodes.forEach(function(node){
-        if(node.nodeType === 1){
-          patchNodeImages(node);
-        }
-      });
-    });
-  });
-
-  document.addEventListener('DOMContentLoaded', function(){
-    patchNodeImages(document);
-    if(document.body){
-      observer.observe(document.body, { childList:true, subtree:true });
-    }
-  });
-  window.addEventListener('load', function(){ patchNodeImages(document); });
-})();
-<\\/script>`;
-    }
-    async function fetchText(url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("تعذر قراءة الملف: " + url);
-      return await res.text();
-    }
-    function safeWrapHtml(inner, title) {
-      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" +
-        escapeHtml(title || "تمرين تفاعلي") +
-        "</title><script src='https://cdn.tailwindcss.com'><\\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style></head><body>" +
-        inner + "</body></html>";
-    }
-    function buildDirectHtml(code, title, pageData) {
-      const trimmed = String(code || "").trim();
-      if (!trimmed) return "";
-      const imageMaps = buildImageMap(pageData.images || []);
-      const resolver = resolvePathFactory(imageMaps);
-      let finalHtml = replaceTextPaths(trimmed, resolver);
-      const helper = helperScriptBlock() + buildRuntimeImageResolver(imageMaps);
-      const lower = finalHtml.toLowerCase();
-
-      if (!(lower.includes("<html") || lower.includes("<body") || lower.includes("<head"))) {
-        finalHtml = safeWrapHtml(finalHtml, title || "تمرين تفاعلي");
-      }
-
-      if (finalHtml.toLowerCase().includes("</head>")) {
-        finalHtml = finalHtml.replace(/<\/head>/i, "<script src='https://cdn.tailwindcss.com'><\\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>" + buildRuntimeImageResolver(imageMaps) + "</head>");
-      }
-
-      if (finalHtml.toLowerCase().includes("</body>")) {
-        finalHtml = finalHtml.replace(/<\/body>/i, helperScriptBlock() + "</body>");
-      } else {
-        finalHtml += helperScriptBlock();
-      }
-
-      return finalHtml;
-    }
-    async function buildFilesHtml(pageData) {
-      const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
-      if (!htmlUrl) return "";
-
-      let htmlText = await fetchText(htmlUrl);
-      let cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
-      let jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
-
-      const imageMaps = buildImageMap(pageData.images || []);
-      const resolver = resolvePathFactory(imageMaps);
-
-      htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
-      htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-
-      htmlText = replaceTextPaths(htmlText, resolver);
-      cssText = replaceTextPaths(cssText, resolver);
-      jsText = replaceTextPaths(jsText, resolver);
-
-      let injectedHead = "";
-      if (cssText) injectedHead += "<style>" + cssText + "<\\/style>";
-      injectedHead += "<script src='https://cdn.tailwindcss.com'><\\/script>";
-      injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
-      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
-      injectedHead += buildRuntimeImageResolver(imageMaps);
-
-      let injectedBeforeBodyEnd = helperScriptBlock();
-      if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\\/script>";
-
-      let finalHtml = htmlText;
-      if (finalHtml.toLowerCase().includes("</head>")) {
-        finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
-      } else {
-        finalHtml = safeWrapHtml(finalHtml, pageData.title || "تمرين تفاعلي").replace(/<\/head>/i, injectedHead + "</head>");
-      }
-
-      if (finalHtml.toLowerCase().includes("</body>")) {
-        finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
-      } else {
-        finalHtml += injectedBeforeBodyEnd;
-      }
-
-      return finalHtml;
-    }
-    function renderImagesPanel(images) {
-      const list = Array.isArray(images) ? images : [];
-      document.getElementById("imagesCountText").innerText = String(list.length);
-      document.getElementById("imagesPanelCount").innerText = list.length + (list.length === 1 ? " صورة" : " صور");
-      imagesGrid.innerHTML = "";
-      if (!list.length) {
-        imagesPanel.classList.add("hidden");
-        return;
-      }
-      imagesPanel.classList.remove("hidden");
-      list.forEach((img) => {
-        const card = document.createElement("div");
-        card.className = "border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-gray-50";
-        card.innerHTML = `
-          <div class="h-48 bg-white flex items-center justify-center p-3">
-            <img src="${escapeHtml(img.url || "")}" alt="${escapeHtml(img.name || "صورة")}" class="max-h-full max-w-full object-contain" />
-          </div>
-          <div class="p-4 text-sm space-y-2">
-            <div><span class="font-bold text-gray-800">الاسم:</span> <span class="text-gray-700 break-all">${escapeHtml(img.name || "-")}</span></div>
-            <div><span class="font-bold text-gray-800">المسار:</span> <span class="text-gray-700 break-all">${escapeHtml(img.path || "-")}</span></div>
-            <div><span class="font-bold text-gray-800">الرابط:</span> <a href="${escapeHtml(img.url || "#")}" target="_blank" class="text-blue-700 underline break-all">فتح الصورة</a></div>
-          </div>
-        `;
-        imagesGrid.appendChild(card);
-      });
-    }
-    function renderInfo(pageData) {
-      currentPageData = pageData || {};
-      const files = currentPageData.files || {};
-      const fileCount = [files.html, files.css, files.js, files.zip].filter(Boolean).length;
-      document.getElementById("uploadModeText").innerText = currentPageData.uploadMode || (currentPageData.code ? "code" : "غير محدد");
-      document.getElementById("filesCountText").innerText = String(fileCount);
-      document.getElementById("exerciseTitleText").innerText = currentPageData.title || "تمرين بدون عنوان";
-      infoBox.classList.remove("hidden");
-      renderImagesPanel(currentPageData.images || []);
-    }
     function studentInputs() {
       return {
         studentName: document.getElementById("studentName").value.trim(),
@@ -546,6 +163,316 @@
         document.getElementById("className").value = allowedStudents[code].className;
       }
     }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function helperScriptBlock() {
+      return "<script>window.completeExercise=function(score,total,extraData){window.parent.postMessage({type:'exerciseResult',score:Number(score||0),total:Number(total||0),extraData:extraData||{}},'*');};<\\/script>";
+    }
+
+    async function fetchText(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("تعذر قراءة الملف: " + url);
+      return await res.text();
+    }
+
+    function normalizeKeyVariants(rawPath) {
+      const original = String(rawPath || "").trim();
+      if (!original) return [];
+      const variants = new Set([original]);
+
+      const noQuery = original.split("?")[0].split("#")[0];
+      variants.add(noQuery);
+
+      const strippedOrigin = noQuery.replace(/^https?:\/\/[^/]+/i, "");
+      variants.add(strippedOrigin);
+      variants.add(strippedOrigin.replace(/^\//, ""));
+
+      const noDot = strippedOrigin.replace(/^\.\//, "").replace(/^\//, "");
+      variants.add(noDot);
+      variants.add("./" + noDot);
+      variants.add("/" + noDot);
+
+      const filename = noDot.split("/").pop();
+      if (filename) {
+        variants.add(filename);
+        variants.add("images/" + filename);
+        variants.add("./images/" + filename);
+        variants.add("/images/" + filename);
+        variants.add("assets/" + filename);
+        variants.add("./assets/" + filename);
+        variants.add("/assets/" + filename);
+        variants.add("img/" + filename);
+        variants.add("./img/" + filename);
+        variants.add("/img/" + filename);
+      }
+
+      return Array.from(variants).filter(Boolean);
+    }
+
+    function buildImageMap(images) {
+      const map = {};
+      (images || []).forEach((img) => {
+        if (!img || !img.url) return;
+        const baseName = img.name || (img.path ? String(img.path).split('/').pop() : "");
+        const candidateKeys = new Set();
+        normalizeKeyVariants(baseName).forEach(v => candidateKeys.add(v));
+        normalizeKeyVariants(img.path || "").forEach(v => candidateKeys.add(v));
+        if (img.originalPath) normalizeKeyVariants(img.originalPath).forEach(v => candidateKeys.add(v));
+        candidateKeys.forEach((key) => { map[key] = img.url; });
+      });
+      return map;
+    }
+
+    function resolveAssetPath(path, imageMap) {
+      const raw = String(path || "").trim();
+      if (!raw) return raw;
+      const variants = normalizeKeyVariants(raw);
+      for (const key of variants) {
+        if (imageMap[key]) return imageMap[key];
+      }
+      return raw;
+    }
+
+    function escapeRegExp(str) {
+      return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function replaceTextPaths(text, imageMap) {
+      let updated = String(text || "");
+      const keys = Object.keys(imageMap || {}).sort((a, b) => b.length - a.length);
+      keys.forEach((key) => {
+        updated = updated.replace(new RegExp(escapeRegExp(key), "g"), imageMap[key]);
+      });
+      return updated;
+    }
+
+    function buildRuntimeImageResolver(imageMap) {
+      const json = JSON.stringify(imageMap || {});
+      return `
+<script>
+(function(){
+  const IMAGE_MAP = ${json};
+
+  function variants(path){
+    const original = String(path || '').trim();
+    if(!original) return [];
+    const set = new Set([original]);
+    const noQuery = original.split('?')[0].split('#')[0];
+    set.add(noQuery);
+    const strippedOrigin = noQuery.replace(/^https?:\\/\\/[^/]+/i, '');
+    set.add(strippedOrigin);
+    set.add(strippedOrigin.replace(/^\//, ''));
+    const noDot = strippedOrigin.replace(/^\.\//, '').replace(/^\//, '');
+    set.add(noDot);
+    set.add('./' + noDot);
+    set.add('/' + noDot);
+    const file = noDot.split('/').pop();
+    if(file){
+      ['','images/','./images/','/images/','assets/','./assets/','/assets/','img/','./img/','/img/'].forEach(function(prefix){
+        set.add(prefix + file);
+      });
+    }
+    return Array.from(set).filter(Boolean);
+  }
+
+  function normalizePath(path){
+    if(!path) return path;
+    const vars = variants(path);
+    for(const key of vars){
+      if(IMAGE_MAP[key]) return IMAGE_MAP[key];
+    }
+    return path;
+  }
+
+  window.__resolveExerciseAsset = normalizePath;
+
+  const originalSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function(name, value){
+    if((name === 'src' || name === 'href' || name === 'poster') && typeof value === 'string'){
+      value = normalizePath(value);
+    }
+    if((name === 'style' || name === 'srcset') && typeof value === 'string'){
+      Object.keys(IMAGE_MAP).sort((a,b)=>b.length-a.length).forEach(function(key){
+        value = value.split(key).join(IMAGE_MAP[key]);
+      });
+    }
+    return originalSetAttribute.call(this, name, value);
+  };
+
+  const patchProp = function(proto, prop){
+    const desc = Object.getOwnPropertyDescriptor(proto, prop);
+    if(desc && desc.set && desc.configurable){
+      Object.defineProperty(proto, prop, {
+        get: desc.get,
+        set: function(value){ return desc.set.call(this, normalizePath(value)); }
+      });
+    }
+  };
+
+  try { patchProp(HTMLImageElement.prototype, 'src'); } catch(e){}
+  try { patchProp(HTMLSourceElement.prototype, 'src'); } catch(e){}
+  try { patchProp(HTMLIFrameElement.prototype, 'src'); } catch(e){}
+
+  const originalFetch = window.fetch;
+  if(originalFetch){
+    window.fetch = function(resource, init){
+      if(typeof resource === 'string') {
+        resource = normalizePath(resource);
+      } else if(resource && resource.url) {
+        resource = normalizePath(resource.url);
+      }
+      return originalFetch.call(this, resource, init);
+    };
+  }
+
+  const OriginalXHRopen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url){
+    try { url = normalizePath(url); } catch(e){}
+    return OriginalXHRopen.apply(this, arguments.length > 2 ? [method, url, arguments[2], arguments[3], arguments[4]] : [method, url]);
+  };
+
+  function patchNode(root){
+    if(!root) return;
+    const scope = root.querySelectorAll ? root : document;
+    if(root.nodeType === 1 && root.matches && root.matches('img, source, video, audio, iframe')){
+      ['src','poster'].forEach(function(attr){
+        const val = root.getAttribute && root.getAttribute(attr);
+        if(val) root.setAttribute(attr, normalizePath(val));
+      });
+      const srcset = root.getAttribute && root.getAttribute('srcset');
+      if(srcset) root.setAttribute('srcset', srcset);
+    }
+    if(scope.querySelectorAll){
+      scope.querySelectorAll('img, source, video, audio, iframe').forEach(function(el){
+        ['src','poster'].forEach(function(attr){
+          const val = el.getAttribute(attr);
+          if(val) el.setAttribute(attr, normalizePath(val));
+        });
+        const srcset = el.getAttribute('srcset');
+        if(srcset) el.setAttribute('srcset', srcset);
+      });
+      scope.querySelectorAll('[style]').forEach(function(el){
+        const style = el.getAttribute('style');
+        if(style) el.setAttribute('style', style);
+      });
+    }
+  }
+
+  const observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      m.addedNodes.forEach(function(node){
+        if(node.nodeType === 1) patchNode(node);
+      });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function(){
+    patchNode(document);
+    observer.observe(document.documentElement || document.body, {childList:true, subtree:true});
+  });
+
+  window.addEventListener('load', function(){ patchNode(document); setTimeout(function(){ patchNode(document); }, 300); });
+})();
+<\/script>`;
+    }
+
+    function buildDirectHtml(code, title, imageMap) {
+      const trimmed = String(code || "").trim();
+      if (!trimmed) return "";
+      const helper = helperScriptBlock();
+      const runtimeResolver = buildRuntimeImageResolver(imageMap);
+      const lower = trimmed.toLowerCase();
+
+      if (lower.includes("<html") || lower.includes("<body") || lower.includes("<head")) {
+        let html = replaceTextPaths(trimmed, imageMap);
+        if (html.toLowerCase().includes("</head>")) {
+          html = html.replace(/<\/head>/i, runtimeResolver + "</head>");
+        } else {
+          html = runtimeResolver + html;
+        }
+        if (html.toLowerCase().includes("</body>")) {
+          return html.replace(/<\/body>/i, helper + "</body>");
+        }
+        return html + helper;
+      }
+
+      const processedBody = replaceTextPaths(trimmed, imageMap);
+      return "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" +
+        escapeHtml(title || "تمرين تفاعلي") +
+        "</title><script src='https://cdn.tailwindcss.com'><\/script><link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'><style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;background:#f8fafc;margin:0;padding:24px;}</style>" +
+        runtimeResolver +
+        "</head><body>" + processedBody + helper + "</body></html>";
+    }
+
+    async function buildFilesHtml(pageData) {
+      const htmlUrl = pageData.files && pageData.files.html ? pageData.files.html.url : "";
+      if (!htmlUrl) return "";
+
+      let htmlText = await fetchText(htmlUrl);
+      let cssText = pageData.files && pageData.files.css ? await fetchText(pageData.files.css.url) : "";
+      let jsText = pageData.files && pageData.files.js ? await fetchText(pageData.files.js.url) : "";
+      const imageMap = buildImageMap(pageData.images || []);
+
+      htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
+      htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
+
+      htmlText = replaceTextPaths(htmlText, imageMap);
+      cssText = replaceTextPaths(cssText, imageMap);
+      jsText = replaceTextPaths(jsText, imageMap);
+
+      let injectedHead = "";
+      if (cssText) injectedHead += "<style>" + cssText + "<\\/style>";
+      injectedHead += "<script src='https://cdn.tailwindcss.com'><\\/script>";
+      injectedHead += "<link href='https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap' rel='stylesheet'>";
+      injectedHead += "<style>body{font-family:Tajawal,Arial,sans-serif;direction:rtl;}</style>";
+      injectedHead += buildRuntimeImageResolver(imageMap);
+
+      let injectedBeforeBodyEnd = helperScriptBlock();
+      if (jsText) injectedBeforeBodyEnd += "<script>" + jsText + "<\\/script>";
+
+      let finalHtml = htmlText;
+      if (finalHtml.toLowerCase().includes("</head>")) {
+        finalHtml = finalHtml.replace(/<\/head>/i, injectedHead + "</head>");
+      } else {
+        finalHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>" + injectedHead + "</head><body>" + finalHtml + "</body></html>";
+      }
+
+      if (finalHtml.toLowerCase().includes("</body>")) {
+        finalHtml = finalHtml.replace(/<\/body>/i, injectedBeforeBodyEnd + "</body>");
+      } else {
+        finalHtml += injectedBeforeBodyEnd;
+      }
+
+      return finalHtml;
+    }
+
+    function renderImages(images) {
+      const list = Array.isArray(images) ? images.filter(Boolean) : [];
+      if (!list.length) return;
+      imagesPanel.classList.remove("hidden");
+      imagesCount.textContent = list.length + " صورة";
+      imagesGallery.innerHTML = list.map((img, index) => {
+        const title = img.name || (img.path ? String(img.path).split('/').pop() : ('صورة ' + (index + 1)));
+        return `
+          <div class="gallery-card">
+            <img src="${escapeHtml(img.url || '')}" alt="${escapeHtml(title)}" loading="lazy">
+            <div class="meta">
+              <div class="font-bold text-slate-800 mb-1">${escapeHtml(title)}</div>
+              <div>المسار: ${escapeHtml(img.path || '-')}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
     async function loadStudents() {
       const snap = await db.collection("students").where("kindergartenId", "==", familyKindergarten).get();
       allowedStudents = {};
@@ -557,6 +484,7 @@
         };
       });
     }
+
     async function saveResult(score, total, extraData) {
       if (resultSaved) return;
 
@@ -591,8 +519,8 @@
       try {
         const existing = await db.collection("results")
           .where("kindergarten", "==", familyKindergarten)
-          .where("stage", "==", stage)
-          .where("subject", "==", subject)
+          .where("stage", "==", (stage || ""))
+          .where("subject", "==", (subject || ""))
           .where("pageNumber", "==", Number(page || 0))
           .where("studentCode", "==", inputs.studentCode)
           .where("dateOnly", "==", today)
@@ -614,10 +542,9 @@
           exerciseTitle: currentExerciseTitle || "",
           kindergarten: familyKindergarten,
           kindergartenName: currentKindergarten ? currentKindergarten.name : "",
-          stage: stage,
-          subject: subject,
+          stage: stage || "",
+          subject: subject || "",
           pageNumber: Number(page || 0),
-          interactivePageId: pageId || "",
           createdAt: new Date().toISOString(),
           dateOnly: today,
           extraData: extraData || {}
@@ -632,18 +559,18 @@
         saveStatus.className = "mt-4 font-medium text-red-600";
       }
     }
-    async function getPageSnapshot() {
-      if (pageId) {
-        return await db.collection("interactive_pages").doc(pageId).get();
-      }
-      if (!stage || !subject || !page) {
-        throw new Error("بيانات الصفحة غير مكتملة");
-      }
-      const docId = pageDocId(familyKindergarten, stage, subject, page);
-      return await db.collection("interactive_pages").doc(docId).get();
-    }
+
     async function loadExercise() {
       try {
+        let docId = directId;
+        if (!docId) {
+          if (!stage || !subject || !page) {
+            statusText.innerText = "بيانات الصفحة غير مكتملة";
+            return;
+          }
+          docId = pageDocId(familyKindergarten, stage, subject, page);
+        }
+
         const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
         if (!kgSnap.exists) {
           window.location.href = "kindergartens.html";
@@ -651,13 +578,9 @@
         }
 
         currentKindergarten = kgSnap.data();
-        document.getElementById("pageTitle").innerText = "تمرين " + currentKindergarten.name;
-        document.getElementById("pageSubtitle").innerText = pageId ? ("معرّف التمرين: " + pageId) : (stageLabel(stage) + " - " + subjectLabel(subject) + " - صفحة " + page);
-        document.getElementById("heroTitle").innerText = currentKindergarten.name + " | " + (subject ? subjectLabel(subject) : "تمرين تفاعلي");
-
         await loadStudents();
 
-        const pageSnap = await getPageSnapshot();
+        const pageSnap = await db.collection("interactive_pages").doc(docId).get();
         if (!pageSnap.exists) {
           statusText.innerText = "لا يوجد تمرين محفوظ لهذه الصفحة بعد";
           return;
@@ -665,35 +588,29 @@
 
         const data = pageSnap.data() || {};
         currentExerciseTitle = data.title || "تمرين تفاعلي";
-        renderInfo(data);
 
+        const effectiveStage = stage || data.stage || "";
+        const effectiveSubject = subject || data.subject || "";
+        const effectivePage = page || data.pageNumber || "";
+
+        document.getElementById("pageTitle").innerText = "تمرين " + (currentKindergarten.name || "الروضة");
+        document.getElementById("pageSubtitle").innerText = [stageLabel(effectiveStage), subjectLabel(effectiveSubject), effectivePage ? ("صفحة " + effectivePage) : ""].filter(Boolean).join(" - ");
+        document.getElementById("heroTitle").innerText = (currentKindergarten.name || "الروضة") + " | " + (data.title || subjectLabel(effectiveSubject) || "تمرين");
+
+        renderImages(data.images || []);
+
+        const imageMap = buildImageMap(data.images || []);
         let finalHtml = "";
+
         if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
           finalHtml = await buildFilesHtml(data);
         } else if (data.code && String(data.code).trim()) {
-          finalHtml = buildDirectHtml(data.code, currentExerciseTitle, data);
-        } else if (Array.isArray(data.images) && data.images.length) {
-          finalHtml = safeWrapHtml(`
-            <div class="max-w-5xl mx-auto">
-              <div class="bg-white rounded-2xl shadow p-6 mb-6 border border-gray-100 text-center">
-                <h1 class="text-3xl font-bold text-blue-900 mb-3">${escapeHtml(currentExerciseTitle)}</h1>
-                <p class="text-gray-600">تم العثور على صور مرفوعة لهذا التمرين، لكن لا يوجد HTML أو كود مباشر لتشغيله. لذلك نعرض الصور هنا مباشرة.</p>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${(data.images || []).map((img) => `
-                  <div class="bg-white rounded-2xl shadow border border-gray-100 p-4">
-                    <div class="h-48 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden mb-3">
-                      <img src="${escapeHtml(img.url || "")}" alt="${escapeHtml(img.name || "صورة")}" class="max-h-full max-w-full object-contain" />
-                    </div>
-                    <div class="text-center font-bold text-gray-800">${escapeHtml(img.name || "صورة")}</div>
-                  </div>
-                `).join("")}
-              </div>
-            </div>
-          `, currentExerciseTitle) + helperScriptBlock();
-        }
-
-        if (!finalHtml) {
+          finalHtml = buildDirectHtml(data.code, currentExerciseTitle, imageMap);
+        } else if (data.exerciseCode && String(data.exerciseCode).trim()) {
+          finalHtml = buildDirectHtml(data.exerciseCode, currentExerciseTitle, imageMap);
+        } else if (data.html && String(data.html).trim()) {
+          finalHtml = buildDirectHtml(data.html, currentExerciseTitle, imageMap);
+        } else {
           statusText.innerText = "هذه الصفحة موجودة ولكن لا تحتوي ملفات أو كودًا صالحًا للعرض";
           return;
         }
@@ -703,7 +620,7 @@
         playerBox.classList.remove("hidden");
       } catch (error) {
         console.error(error);
-        statusText.innerText = error && error.message ? error.message : "حدث خطأ أثناء تحميل التمرين";
+        statusText.innerText = "حدث خطأ أثناء تحميل التمرين: " + (error.message || "خطأ غير معروف");
       }
     }
 
