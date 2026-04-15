@@ -453,7 +453,6 @@
       const jsFile = document.getElementById("jsFile").files[0];
       const imageFiles = Array.from(document.getElementById("imageFiles").files || []);
       const audioFiles = Array.from(document.getElementById("audioFiles").files || []);
-      const audioFiles = Array.from(document.getElementById("audioFiles").files || []);
 
       let payload = { uploadMode: "code", files: {}, images: [], audioFiles: [] };
 
@@ -516,6 +515,7 @@
     }
 
     document.getElementById("imageFiles").addEventListener("change", updateImagesPreview);
+    document.getElementById("audioFiles").addEventListener("change", updateAudioPreview);
 
     document.getElementById("addKgBtn").addEventListener("click", async function() {
       const name = document.getElementById("kgName").value.trim();
