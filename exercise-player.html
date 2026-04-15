@@ -49,7 +49,7 @@
     <div class="max-w-5xl mx-auto px-4 text-center">
       <h2 id="heroTitle" class="text-3xl md:text-4xl font-extrabold mb-4">التمرين التفاعلي</h2>
       <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">
-        يتم هنا عرض التمرين مع ملفاته وصوره بشكل مباشر باستخدام الروابط الحقيقية.
+        يتم هنا عرض التمرين مع ملفاته وصوره وأصواته بشكل مباشر.
       </p>
     </div>
   </section>
@@ -164,9 +164,69 @@
         return new Date().toISOString().slice(0, 10);
       }
 
-      function helperScriptBlock() {
+      function getAudioUrls(audioFiles) {
+        const files = Array.isArray(audioFiles) ? audioFiles : [];
+
+        const findByKeywords = (keywords) => {
+          return files.find(file => {
+            const name = String(file?.name || "").toLowerCase();
+            return keywords.some(k => name.includes(k));
+          })?.url || "";
+        };
+
+        return {
+          correct: findByKeywords(["correct", "success", "right", "صح"]),
+          wrong: findByKeywords(["wrong", "error", "fail", "خطا", "خطأ"]),
+          intro: findByKeywords(["intro", "instruction", "start", "تعليمات", "بدايه", "بداية"])
+        };
+      }
+
+      function helperScriptBlock(audioUrls) {
+        const safeAudio = JSON.stringify(audioUrls || {});
         return `
 <script>
+window.EXERCISE_AUDIO = ${safeAudio};
+
+function ensureExerciseAudioElement(id, src) {
+  if (!src) return null;
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement('audio');
+    el.id = id;
+    el.preload = 'auto';
+    document.body.appendChild(el);
+  }
+  if (!el.src) el.src = src;
+  return el;
+}
+
+function playExerciseAudio(type) {
+  const src = window.EXERCISE_AUDIO && window.EXERCISE_AUDIO[type];
+  if (!src) return;
+  const el = ensureExerciseAudioElement('exercise-audio-' + type, src);
+  if (!el) return;
+  try {
+    el.currentTime = 0;
+    el.play();
+  } catch (e) {}
+}
+
+window.playCorrectSound = function() { playExerciseAudio('correct'); };
+window.playWrongSound = function() { playExerciseAudio('wrong'); };
+window.playIntroSound = function() { playExerciseAudio('intro'); };
+
+document.addEventListener('DOMContentLoaded', function() {
+  ensureExerciseAudioElement('exercise-audio-correct', window.EXERCISE_AUDIO?.correct);
+  ensureExerciseAudioElement('exercise-audio-wrong', window.EXERCISE_AUDIO?.wrong);
+  ensureExerciseAudioElement('exercise-audio-intro', window.EXERCISE_AUDIO?.intro);
+
+  const correctSound = document.getElementById('correctSound');
+  if (correctSound && window.EXERCISE_AUDIO?.correct) correctSound.src = window.EXERCISE_AUDIO.correct;
+
+  const wrongSound = document.getElementById('wrongSound');
+  if (wrongSound && window.EXERCISE_AUDIO?.wrong) wrongSound.src = window.EXERCISE_AUDIO.wrong;
+});
+
 window.completeExercise = function(score, total, extraData) {
   window.parent.postMessage({
     type: "exerciseResult",
@@ -351,11 +411,11 @@ window.completeExercise = function(score, total, extraData) {
 <\/script>`;
       }
 
-      function buildDirectHtml(code, title) {
+      function buildDirectHtml(code, title, audioUrls) {
         const trimmed = String(code || "").trim();
         if (!trimmed) return "";
 
-        const helper = helperScriptBlock();
+        const helper = helperScriptBlock(audioUrls);
 
         if (/<html|<head|<body/i.test(trimmed)) {
           if (/<\/body>/i.test(trimmed)) {
@@ -383,7 +443,7 @@ window.completeExercise = function(score, total, extraData) {
 </html>`;
       }
 
-      async function buildFilesHtml(pageData) {
+      async function buildFilesHtml(pageData, audioUrls) {
         const htmlUrl = pageData?.files?.html?.url || "";
         if (!htmlUrl) return "";
 
@@ -411,7 +471,7 @@ window.completeExercise = function(score, total, extraData) {
 `;
 
         const bodyExtra = `
-${helperScriptBlock()}
+${helperScriptBlock(audioUrls)}
 ${jsText ? `<script>${jsText}<\/script>` : ""}
 `;
 
@@ -585,12 +645,14 @@ ${jsText ? `<script>${jsText}<\/script>` : ""}
           const data = pageSnap.data();
           currentExerciseTitle = data.title || "تمرين تفاعلي";
 
+          const audioUrls = getAudioUrls(data.audioFiles || []);
+
           let finalHtml = "";
 
           if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
-            finalHtml = await buildFilesHtml(data);
+            finalHtml = await buildFilesHtml(data, audioUrls);
           } else if (data.code && String(data.code).trim()) {
-            finalHtml = buildDirectHtml(data.code, currentExerciseTitle);
+            finalHtml = buildDirectHtml(data.code, currentExerciseTitle, audioUrls);
           } else {
             statusText.textContent = "هذه الصفحة موجودة ولكن لا تحتوي ملفات قابلة للعرض";
             return;
