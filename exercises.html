@@ -114,8 +114,13 @@
   </section>
 
   <script>
-    const familyKindergarten = sessionStorage.getItem("familyKindergarten");
-    if (!familyKindergarten) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const kindergartenFromUrl = urlParams.get("kg");
+    const familyKindergarten = kindergartenFromUrl || sessionStorage.getItem("familyKindergarten");
+
+    if (familyKindergarten) {
+      sessionStorage.setItem("familyKindergarten", familyKindergarten);
+    } else {
       window.location.href = "kindergartens.html";
     }
   </script>
@@ -173,6 +178,7 @@
       }
 
       const params = new URLSearchParams({
+        kg: familyKindergarten,
         stage,
         subject,
         page: String(page)
