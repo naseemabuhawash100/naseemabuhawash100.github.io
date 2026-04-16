@@ -147,8 +147,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script>
-    const familyKindergarten = sessionStorage.getItem("familyKindergarten");
-    if (!familyKindergarten) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const kindergartenFromUrl = urlParams.get("kg");
+    const familyKindergarten = kindergartenFromUrl || sessionStorage.getItem("familyKindergarten");
+
+    if (familyKindergarten) {
+      sessionStorage.setItem("familyKindergarten", familyKindergarten);
+    } else {
       window.location.href = "kindergartens.html";
     }
   </script>
@@ -165,6 +170,13 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    function updateKindergartenLinks() {
+      const kgParam = encodeURIComponent(familyKindergarten);
+      const exercisesHref = `exercises.html?kg=${kgParam}`;
+      document.getElementById("exercisesBtn").href = exercisesHref;
+      document.getElementById("exercisesCard").href = exercisesHref;
+    }
 
     async function loadKindergarten() {
       const snap = await db.collection("kindergartens").doc(familyKindergarten).get();
@@ -191,6 +203,8 @@
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
+
+    updateKindergartenLinks();
 
     loadKindergarten().catch(function(error) {
       console.error(error);
