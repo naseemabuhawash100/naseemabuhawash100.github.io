@@ -16,6 +16,7 @@
     .btn-hover:hover { transform: scale(1.04); }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
     .hidden-box { display: none; }
+    .status-box { display:none; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-right">
@@ -100,6 +101,11 @@
             <button id="continueBtn" class="bg-blue-900 text-white px-10 py-3 rounded-full font-medium hover:bg-blue-800 btn-hover">متابعة</button>
           </div>
 
+          <div id="inactiveBox" class="status-box mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-center">
+            <p class="font-bold text-red-700">هذه الروضة غير مفعلة حاليًا</p>
+            <p id="inactiveText" class="mt-1 text-sm text-red-600">يرجى مراجعة الإدارة للمتابعة.</p>
+          </div>
+
           <p id="message" class="text-center font-medium mt-4 text-red-600"></p>
         </div>
       </div>
@@ -123,13 +129,20 @@
     const teacherLoginBox = document.getElementById("teacherLoginBox");
     const message = document.getElementById("message");
     const topStatus = document.getElementById("topStatus");
+    const inactiveBox = document.getElementById("inactiveBox");
+    const inactiveText = document.getElementById("inactiveText");
     let kindergartens = [];
 
-    function familyRoute(isActive) {
-      return isActive ? "kindergarten-home.html" : "not-active.html";
+    function showInactiveMessage(kindergartenName, entryType) {
+      const targetLabel = entryType === "teacher" ? "دخول المعلمة" : "دخول الأهالي";
+      inactiveText.innerText = `الروضة "${kindergartenName}" غير مفعلة حاليًا، لذلك لا يمكن إكمال ${targetLabel}. يرجى مراجعة الإدارة.`;
+      inactiveBox.style.display = "block";
+      inactiveBox.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-    function teacherRoute(isActive) {
-      return isActive ? "results.html" : "not-active.html";
+
+    function hideInactiveMessage() {
+      inactiveBox.style.display = "none";
+      inactiveText.innerText = "يرجى مراجعة الإدارة للمتابعة.";
     }
     function renderKindergartens() {
       select.innerHTML = '<option value="">-- اختر الروضة --</option>';
@@ -159,6 +172,7 @@
       const kindergartenId = select.value;
       const entryType = document.querySelector('input[name="entryType"]:checked');
       message.innerText = "";
+      hideInactiveMessage();
 
       if (!kindergartenId) {
         message.innerText = "يرجى اختيار الروضة أولًا";
@@ -186,7 +200,7 @@
           return;
         }
         if (!kg.active) {
-          window.location.href = "not-active.html";
+          showInactiveMessage(kg.name, "teacher");
           return;
         }
 
@@ -208,7 +222,7 @@
           sessionStorage.setItem("teacherKindergarten", kindergartenId);
           sessionStorage.setItem("teacherSubject", subject);
           sessionStorage.setItem("teacherName", teacherName);
-          window.location.href = teacherRoute(kg.active);
+          window.location.href = "results.html";
         } catch (error) {
           console.error(error);
           message.innerText = "حدث خطأ أثناء التحقق من بيانات المعلمة";
@@ -216,8 +230,13 @@
         return;
       }
 
+      if (!kg.active) {
+        showInactiveMessage(kg.name, "family");
+        return;
+      }
+
       sessionStorage.setItem("familyKindergarten", kindergartenId);
-      window.location.href = familyRoute(kg.active);
+      window.location.href = "kindergarten-home.html";
     });
 
     loadKindergartens().catch(err => {
