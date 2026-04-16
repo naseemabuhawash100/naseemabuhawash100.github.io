@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>روضة طلائع المبدعين</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    .hero-gradient { background: linear-gradient(135deg, #183153 0%, #24507b 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px) scale(1.01); box-shadow: 0 20px 25px -5px rgba(0,0,0,.12), 0 10px 10px -5px rgba(0,0,0,.06); }
+    .btn-hover { transition: all 0.25s ease; }
+    .btn-hover:hover { transform: scale(1.04); }
+    .nav-link { transition: all 0.25s ease; }
+    .nav-link:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-right">
+  <header class="sticky top-0 z-40 bg-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 id="pageTitle" class="text-2xl font-bold text-slate-800">روضة طلائع المبدعين</h1>
+        <p id="pageSubtitle" class="text-sm text-gray-600">الواجهة الخاصة بالروضة</p>
+      </div>
+
+      <nav class="w-full lg:w-auto">
+        <ul class="flex flex-wrap justify-center gap-4 text-center">
+          <li><a href="#home" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الرئيسية</a></li>
+          <li><a href="#sections" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الأقسام</a></li>
+          <li><a href="#about" class="nav-link text-gray-700 hover:text-blue-900 font-medium">التعريف بالروضة</a></li>
+          <li><a href="#gallery" class="nav-link text-gray-700 hover:text-blue-900 font-medium">المعرض</a></li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="#admin" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">خاص بالإدارة</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="home" class="hero-gradient text-white py-16 md:py-24">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-5">أهلًا بكم في روضة طلائع المبدعين</h2>
+      <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto">
+        هذه الصفحة مخصصة لروضة طلائع المبدعين، ويمكن من خلالها الوصول إلى التمارين التفاعلية وأوراق العمل والتعريف بالروضة والمعرض.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <button id="mainExercisesBtn" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">التمارين التفاعلية</button>
+        <a href="#worksheets" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">أوراق العمل</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="sections" class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">أقسام الصفحة</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">يمكن الوصول إلى المحتوى الخاص بروضة طلائع المبدعين من خلال الأقسام التالية.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <button id="exercisesCard" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block w-full">
+          <div class="w-14 h-14 bg-blue-900 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">1</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">التمارين التفاعلية</h3>
+          <p class="text-gray-600 leading-8">الدخول إلى التمارين المضافة لهذه الروضة من النظام الأساسي.</p>
+        </button>
+
+        <a href="#worksheets" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">2</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">أوراق العمل</h3>
+          <p class="text-gray-600 leading-8">قسم مخصص لأوراق العمل الخاصة بروضة طلائع المبدعين.</p>
+        </a>
+
+        <a href="#about" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">3</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">التعريف بالروضة</h3>
+          <p class="text-gray-600 leading-8">نبذة مختصرة عن الروضة ورسالتها وبيئتها التعليمية.</p>
+        </a>
+
+        <a href="#gallery" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-yellow-500 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">4</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">المعرض</h3>
+          <p class="text-gray-600 leading-8">مساحة لعرض صور وفيديوهات الروضة بشكل منظم وأنيق.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="py-16 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-6">التعريف بروضة طلائع المبدعين</h2>
+          <p class="text-gray-700 mb-6 leading-8">
+            هذه الصفحة تمثل الواجهة الرقمية الخاصة بروضة طلائع المبدعين، وتهدف إلى تسهيل الوصول إلى الأنشطة التعليمية والتمارين التفاعلية ومحتوى الروضة.
+          </p>
+          <p class="text-gray-700 mb-8 leading-8">
+            يمكن لاحقًا توسيع هذه الصفحة لتشمل مزيدًا من الأقسام الخاصة بالأهالي، وأوراق العمل، والمعرض، والمحتوى الإداري المرتبط بالروضة.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-blue-900 mb-2">واجهة مستقلة</h4>
+              <p class="text-gray-600 text-sm leading-7">صفحة مخصصة للروضة بدون صفحة اختيار مشتركة.</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-blue-900 mb-2">ربط مع النظام</h4>
+              <p class="text-gray-600 text-sm leading-7">زر التمارين مرتبط بصفحة التمارين الأساسية الموجودة حاليًا.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-xl">
+          <div class="w-full h-72 rounded-xl mb-6 bg-gradient-to-br from-blue-100 to-slate-100 flex items-center justify-center text-blue-900 text-2xl font-bold">
+            روضة طلائع المبدعين
+          </div>
+          <h3 class="text-2xl font-bold text-blue-900 mb-4">واجهة جاهزة كبداية</h3>
+          <p class="text-gray-700 leading-8">
+            هذه الصفحة مصممة كبداية مؤقتة ومنظمة، ويمكن لاحقًا ربطها ببيانات مخصصة للصور والفيديوهات وأوراق العمل وإدارة الروضة من داخل النظام.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="worksheets" class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="bg-slate-50 rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+        <h2 class="text-3xl font-bold text-blue-900 mb-4">أوراق العمل</h2>
+        <p class="text-gray-700 leading-8 max-w-3xl mx-auto">
+          هذا القسم جاهز حاليًا كواجهة مؤقتة، ويمكن لاحقًا ربطه بملفات وأوراق العمل الخاصة بروضة طلائع المبدعين من داخل لوحة الإدارة.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="py-16 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">المعرض</h2>
+        <p class="text-gray-600">قسم مبدئي لعرض صور وفيديوهات الروضة لاحقًا.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <div class="h-52 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">صورة 1</div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <div class="h-52 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">صورة 2</div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <div class="h-52 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">فيديو / صورة 3</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="admin" class="py-16 bg-blue-900 text-white">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">خاص بالإدارة</h2>
+      <p class="text-gray-200 max-w-3xl mx-auto leading-8 mb-8">
+        هذا القسم مخصص كواجهة أولية للإدارة الخاصة بروضة طلائع المبدعين. في المرحلة القادمة يمكن ربطه بإدارة الطلاب والأكواد والصور والفيديوهات الخاصة بالروضة.
+      </p>
+      <div class="inline-flex items-center gap-3 bg-white/10 border border-white/20 rounded-2xl px-5 py-4">
+        <span class="font-semibold">الحالة الحالية:</span>
+        <span>تم تجهيز زر وقسم الإدارة كبداية أولية.</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black text-gray-400 py-10">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p>&copy; 2026 روضة طلائع المبدعين. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.appspot.com",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const KG_ID = "talaea-almobdeeen";
+    const KG_NAME = "روضة طلائع المبدعين";
+
+    async function ensureKindergartenSession() {
+      sessionStorage.setItem("familyKindergarten", KG_ID);
+      sessionStorage.setItem("familyKindergartenName", KG_NAME);
+      return true;
+    }
+
+    async function verifyKindergartenExists() {
+      try {
+        const snap = await db.collection("kindergartens").doc(KG_ID).get();
+        if (!snap.exists) {
+          console.warn("Kindergarten document not found for:", KG_ID);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function openExercises() {
+      await ensureKindergartenSession();
+      window.location.href = "exercises.html";
+    }
+
+    document.getElementById("mainExercisesBtn").addEventListener("click", openExercises);
+    document.getElementById("exercisesCard").addEventListener("click", openExercises);
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href');
+        if (!targetId || targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    ensureKindergartenSession();
+    verifyKindergartenExists();
+  </script>
+</body>
+</html>
