@@ -60,10 +60,10 @@
         <p id="pageSubtitle" class="text-sm text-slate-600 mt-1">جاري تحميل بيانات الصفحة...</p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <a href="exercises.html" class="bg-slate-200 text-slate-800 px-5 py-2.5 rounded-full font-medium hover:bg-slate-300 transition">
+        <a id="backToExercisesLink" href="exercises.html" class="bg-slate-200 text-slate-800 px-5 py-2.5 rounded-full font-medium hover:bg-slate-300 transition">
           العودة للتمارين
         </a>
-        <a href="kindergarten-home.html" class="bg-blue-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-blue-800 transition">
+        <a id="kindergartenHomeLink" href="kindergarten-home.html" class="bg-blue-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-blue-800 transition">
           صفحة الروضة
         </a>
       </div>
@@ -147,13 +147,17 @@
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
-      const familyKindergarten = sessionStorage.getItem("familyKindergarten");
-      if (!familyKindergarten) {
+      const params = new URLSearchParams(window.location.search);
+      const kindergartenFromUrl = params.get("kg");
+      const familyKindergarten = kindergartenFromUrl || sessionStorage.getItem("familyKindergarten");
+
+      if (familyKindergarten) {
+        sessionStorage.setItem("familyKindergarten", familyKindergarten);
+      } else {
         window.location.href = "kindergartens.html";
         return;
       }
 
-      const params = new URLSearchParams(window.location.search);
       const stage = params.get("stage") || "";
       const subject = params.get("subject") || "";
       const page = params.get("page") || "";
@@ -172,6 +176,18 @@
       const startExerciseBtn = document.getElementById("startExerciseBtn");
       const playerLock = document.getElementById("playerLock");
       const playerLockBtn = document.getElementById("playerLockBtn");
+
+      const backToExercisesLink = document.getElementById("backToExercisesLink");
+      const kindergartenHomeLink = document.getElementById("kindergartenHomeLink");
+
+      function withKg(url) {
+        if (!familyKindergarten) return url;
+        const joiner = url.includes("?") ? "&" : "?";
+        return `${url}${joiner}kg=${encodeURIComponent(familyKindergarten)}`;
+      }
+
+      if (backToExercisesLink) backToExercisesLink.href = withKg("exercises.html");
+      if (kindergartenHomeLink) kindergartenHomeLink.href = withKg("kindergarten-home.html");
 
       let currentKindergarten = null;
       let currentExerciseTitle = "";
