@@ -14,6 +14,7 @@
       background: #f8fafc;
       color: #0f172a;
       margin: 0;
+      -webkit-tap-highlight-color: transparent;
     }
     .hero-gradient {
       background: linear-gradient(135deg, #1e3a8a 0%, #334155 100%);
@@ -50,65 +51,78 @@
       padding: 24px;
       box-shadow: 0 18px 40px rgba(15,23,42,.10);
     }
+    @media (max-width: 767px) {
+      iframe {
+        min-height: 72vh;
+      }
+      .player-lock {
+        padding: 14px;
+      }
+      .player-lock-card {
+        max-width: 100%;
+        border-radius: 20px;
+        padding: 18px 16px;
+      }
+    }
   </style>
 </head>
-<body class="min-h-screen text-right">
-  <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-slate-200">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<body class="min-h-screen text-right pt-24 md:pt-28">
+  <header id="mainHeader" class="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-200 transition-transform duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
       <div>
-        <h1 id="pageTitle" class="text-2xl font-extrabold text-blue-900">عارض التمرين</h1>
-        <p id="pageSubtitle" class="text-sm text-slate-600 mt-1">جاري تحميل بيانات الصفحة...</p>
+        <h1 id="pageTitle" class="text-xl md:text-2xl font-extrabold text-blue-900 leading-tight">عارض التمرين</h1>
+        <p id="pageSubtitle" class="text-xs md:text-sm text-slate-600 mt-1 leading-6">جاري تحميل بيانات الصفحة...</p>
       </div>
-      <div class="flex flex-wrap gap-3">
-        <a id="backToExercisesLink" href="exercises.html" class="bg-slate-200 text-slate-800 px-5 py-2.5 rounded-full font-medium hover:bg-slate-300 transition">
+      <div class="flex w-full md:w-auto flex-wrap gap-2 md:gap-3">
+        <a id="backToExercisesLink" href="exercises.html" class="flex-1 md:flex-none text-center bg-slate-200 text-slate-800 px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-slate-300 transition">
           العودة للتمارين
         </a>
-        <a id="kindergartenHomeLink" href="kindergarten-home.html" class="bg-blue-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-blue-800 transition">
+        <a id="kindergartenHomeLink" href="kindergarten-home.html" class="flex-1 md:flex-none text-center bg-blue-900 text-white px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-blue-800 transition">
           صفحة الروضة
         </a>
       </div>
     </div>
   </header>
 
-  <section class="hero-gradient text-white py-10">
+  <section class="hero-gradient text-white py-7 md:py-10">
     <div class="max-w-5xl mx-auto px-4 text-center">
-      <h2 id="heroTitle" class="text-3xl md:text-4xl font-extrabold mb-4">التمرين التفاعلي</h2>
-      <p id="heroText" class="text-base md:text-lg opacity-90 leading-8">
+      <h2 id="heroTitle" class="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4 leading-tight">التمرين التفاعلي</h2>
+      <p id="heroText" class="text-sm md:text-lg opacity-90 leading-7 md:leading-8 max-w-3xl mx-auto">
         يتم هنا عرض التمرين مع ملفاته وصوره وأصواته بشكل مباشر.
       </p>
     </div>
   </section>
 
-  <main class="max-w-7xl mx-auto px-4 py-8">
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-      <h3 class="text-2xl font-bold text-blue-900 mb-5 text-center">بيانات الطالب</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <main class="max-w-7xl mx-auto px-3 md:px-4 py-5 md:py-8">
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-5 md:mb-6">
+      <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4 md:mb-5 text-center">بيانات الطالب</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         <div>
-          <label class="block mb-2 font-medium text-slate-700">اسم الطالب</label>
-          <input id="studentName" type="text" placeholder="اكتب اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-blue-200">
+          <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">اسم الطالب</label>
+          <input id="studentName" type="text" placeholder="اكتب اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
         </div>
         <div>
-          <label class="block mb-2 font-medium text-slate-700">كود الطالب</label>
-          <input id="studentCode" type="text" placeholder="اكتب كود الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-blue-200">
+          <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">كود الطالب</label>
+          <input id="studentCode" type="text" placeholder="اكتب كود الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
         </div>
         <div>
-          <label class="block mb-2 font-medium text-slate-700">الشعبة / الصف</label>
-          <input id="className" type="text" placeholder="مثال: التمهيدي A" class="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-blue-200">
+          <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">الشعبة / الصف</label>
+          <input id="className" type="text" placeholder="مثال: التمهيدي A" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
         </div>
       </div>
       <div class="mt-4 text-center">
-        <button id="startExerciseBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800 transition">
+        <button id="startExerciseBtn" class="w-full sm:w-auto bg-blue-900 text-white px-6 py-3 rounded-xl text-sm md:text-base font-medium hover:bg-blue-800 transition">
           بدء التمرين
         </button>
       </div>
-      <p id="studentMsg" class="mt-4 text-center font-medium text-slate-700"></p>
+      <p id="studentMsg" class="mt-4 text-center text-sm md:text-base font-medium text-slate-700"></p>
     </section>
 
-    <section id="statusBox" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
-      <p id="statusText" class="text-lg font-bold text-slate-700">جاري تحميل التمرين...</p>
+    <section id="statusBox" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
+      <p id="statusText" class="text-base md:text-lg font-bold text-slate-700 leading-7">جاري تحميل التمرين...</p>
     </section>
 
-    <section id="playerBox" class="hidden mt-6">
+    <section id="playerBox" class="hidden mt-5 md:mt-6">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden player-wrap">
         <div id="playerLock" class="player-lock">
           <div class="player-lock-card">
@@ -125,9 +139,9 @@
       </div>
     </section>
 
-    <section id="resultBox" class="hidden mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
-      <h3 class="text-2xl font-bold text-blue-900 mb-4">نتيجة الطالب</h3>
-      <p id="resultText" class="text-xl font-bold text-slate-800"></p>
+    <section id="resultBox" class="hidden mt-5 md:mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
+      <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4">نتيجة الطالب</h3>
+      <p id="resultText" class="text-lg md:text-xl font-bold text-slate-800"></p>
       <p id="saveStatus" class="mt-4 font-medium text-slate-700"></p>
     </section>
   </main>
@@ -148,15 +162,13 @@
       const db = firebase.firestore();
 
       const params = new URLSearchParams(window.location.search);
-      const kindergartenFromUrl = params.get("kg");
+      const kindergartenFromUrl = params.get("kg") || "";
       const familyKindergarten = kindergartenFromUrl || sessionStorage.getItem("familyKindergarten");
-
-      if (familyKindergarten) {
-        sessionStorage.setItem("familyKindergarten", familyKindergarten);
-      } else {
+      if (!familyKindergarten) {
         window.location.href = "kindergartens.html";
         return;
       }
+      sessionStorage.setItem("familyKindergarten", familyKindergarten);
 
       const stage = params.get("stage") || "";
       const subject = params.get("subject") || "";
@@ -176,18 +188,16 @@
       const startExerciseBtn = document.getElementById("startExerciseBtn");
       const playerLock = document.getElementById("playerLock");
       const playerLockBtn = document.getElementById("playerLockBtn");
-
       const backToExercisesLink = document.getElementById("backToExercisesLink");
       const kindergartenHomeLink = document.getElementById("kindergartenHomeLink");
 
-      function withKg(url) {
-        if (!familyKindergarten) return url;
-        const joiner = url.includes("?") ? "&" : "?";
-        return `${url}${joiner}kg=${encodeURIComponent(familyKindergarten)}`;
+      function updateNavigationLinks() {
+        const kgParam = encodeURIComponent(familyKindergarten);
+        if (backToExercisesLink) backToExercisesLink.href = `exercises.html?kg=${kgParam}`;
+        if (kindergartenHomeLink) kindergartenHomeLink.href = `kindergarten-home.html?kg=${kgParam}`;
       }
 
-      if (backToExercisesLink) backToExercisesLink.href = withKg("exercises.html");
-      if (kindergartenHomeLink) kindergartenHomeLink.href = withKg("kindergarten-home.html");
+      updateNavigationLinks();
 
       let currentKindergarten = null;
       let currentExerciseTitle = "";
@@ -803,6 +813,29 @@ ${jsText ? `<script>${jsText}<\/script>` : ""}
         resultBox.classList.remove("hidden");
         saveResult(score, total, event.data.extraData || {});
       });
+
+      let lastScrollY = window.scrollY;
+      const mainHeader = document.getElementById("mainHeader");
+
+      window.addEventListener("scroll", function () {
+        if (!mainHeader) return;
+
+        const currentScrollY = window.scrollY;
+
+        if (currentScrollY <= 20) {
+          mainHeader.style.transform = "translateY(0)";
+          lastScrollY = currentScrollY;
+          return;
+        }
+
+        if (currentScrollY > lastScrollY && currentScrollY > 80) {
+          mainHeader.style.transform = "translateY(-100%)";
+        } else if (currentScrollY < lastScrollY) {
+          mainHeader.style.transform = "translateY(0)";
+        }
+
+        lastScrollY = currentScrollY;
+      }, { passive: true });
 
       loadExercise();
     })();
