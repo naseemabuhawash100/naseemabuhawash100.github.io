@@ -110,6 +110,7 @@
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
       measurementId: "G-QM0TNEN9XJ"
     };
+
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
@@ -133,27 +134,32 @@
       inactiveBox.style.display = "none";
       inactiveText.innerText = "يرجى مراجعة الإدارة للمتابعة.";
     }
+
     function renderKindergartens() {
       select.innerHTML = '<option value="">-- اختر الروضة --</option>';
       kindergartens.forEach(kg => {
         const option = document.createElement("option");
         option.value = kg.id;
-        option.textContent = kg.name;
+        option.textContent = kg.name || kg.id;
         select.appendChild(option);
       });
     }
+
     async function loadKindergartens() {
       topStatus.innerText = "جاري تحميل الروضات من Firebase...";
       const snap = await db.collection("kindergartens").get();
-      kindergartens = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
-        .sort((a, b) => String(a.name).localeCompare(String(b.name), 'ar'));
+      kindergartens = snap.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id), 'ar'));
       renderKindergartens();
-      topStatus.innerText = "تم تحميل الروضات بنجاح";
+      topStatus.innerText = kindergartens.length ? "تم تحميل الروضات بنجاح" : "لا توجد روضات متاحة حاليًا";
     }
 
     document.querySelectorAll('input[name="entryType"]').forEach(radio => {
       radio.addEventListener("change", function() {
         teacherLoginBox.style.display = this.value === "teacher" ? "block" : "none";
+        message.innerText = "";
+        hideInactiveMessage();
       });
     });
 
@@ -178,16 +184,17 @@
         return;
       }
 
+      if (!kg.active) {
+        showInactiveMessage(kg.name || kg.id, entryType.value);
+        return;
+      }
+
       if (entryType.value === "teacher") {
         const email = document.getElementById("teacherEmail").value.trim();
         const pass = document.getElementById("teacherPassword").value.trim();
 
         if (!email || !pass) {
           message.innerText = "يرجى إدخال البريد الإلكتروني وكلمة المرور";
-          return;
-        }
-        if (!kg.active) {
-          showInactiveMessage(kg.name, "teacher");
           return;
         }
 
@@ -241,6 +248,7 @@
           sessionStorage.setItem("teacherUid", uid);
           sessionStorage.setItem("teacherLoginSource", "firebase-auth-users");
           window.location.href = "results.html";
+          return;
         } catch (error) {
           console.error("Teacher login error:", error);
           const firebaseErrors = {
@@ -252,44 +260,8 @@
             "permission-denied": "لا يوجد صلاحية للوصول إلى بيانات المستخدمين في Firestore"
           };
           message.innerText = firebaseErrors[error.code] || `${error.code || ""} ${error.message || "حدث خطأ أثناء تسجيل دخول المعلمة"}`.trim();
-        }
-        return;
-      }
-
-      if (!kg.active) {
-          showInactiveMessage(kg.name, "teacher");
           return;
         }
-
-        try {
-          const teacherSnap = await db.collection("teachers")
-            .where("kindergartenId", "==", kindergartenId)
-            .where("name", "==", teacherName)
-            .where("user", "==", user)
-            .where("pass", "==", pass)
-            .where("subject", "==", subject)
-            .get();
-
-          if (teacherSnap.empty) {
-            message.innerText = "بيانات المعلمة أو المادة غير صحيحة";
-            return;
-          }
-
-          sessionStorage.setItem("teacherLoggedIn", "true");
-          sessionStorage.setItem("teacherKindergarten", kindergartenId);
-          sessionStorage.setItem("teacherSubject", subject);
-          sessionStorage.setItem("teacherName", teacherName);
-          window.location.href = "results.html";
-        } catch (error) {
-          console.error(error);
-          message.innerText = "حدث خطأ أثناء التحقق من بيانات المعلمة";
-        }
-        return;
-      }
-
-      if (!kg.active) {
-        showInactiveMessage(kg.name, "family");
-        return;
       }
 
       sessionStorage.setItem("familyKindergarten", kindergartenId);
@@ -299,6 +271,9 @@
     loadKindergartens().catch(err => {
       console.error(err);
       topStatus.innerText = "تعذر تحميل الروضات من Firebase";
+      message.innerText = err.code === 'permission-denied'
+        ? 'لا يوجد صلاحية لقراءة قائمة الروضات من Firestore'
+        : 'تعذر تحميل قائمة الروضات';
     });
   </script>
 </body>
