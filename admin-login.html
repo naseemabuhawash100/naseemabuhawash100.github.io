@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>دخول الأدمن</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  margin-top: 120px;
+  background: #f5f5f5;
+}
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+#error {
+  color: red;
+  margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <h2>دخول الأدمن</h2>
+
+  <input type="email" id="email" placeholder="البريد الإلكتروني">
+  <input type="password" id="password" placeholder="كلمة المرور">
+
+  <button onclick="login()">تسجيل الدخول</button>
+
+  <div id="error"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+  authDomain: "interactive-book-37270.firebaseapp.com",
+  projectId: "interactive-book-37270",
+  storageBucket: "interactive-book-37270.firebasestorage.app",
+  messagingSenderId: "350364566140",
+  appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const errorDiv = document.getElementById("error");
+
+  errorDiv.innerText = "";
+
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+
+    const doc = await db.collection("users").doc(user.uid).get();
+
+    if (!doc.exists) {
+      errorDiv.innerText = "المستخدم غير موجود";
+      return;
+    }
+
+    const data = doc.data();
+
+    if (data.role !== "admin") {
+      errorDiv.innerText = "ليس لديك صلاحية الأدمن";
+      return;
+    }
+
+    if (data.isActive !== true) {
+      errorDiv.innerText = "الحساب غير مفعل";
+      return;
+    }
+
+    window.location.href = "admin-data-manager.html";
+
+  } catch (error) {
+    errorDiv.innerText = "الإيميل أو كلمة المرور خطأ";
+  }
+}
+</script>
+
+</body>
+</html>
