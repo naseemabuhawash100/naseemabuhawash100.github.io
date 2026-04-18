@@ -192,11 +192,8 @@
     const DEFAULT_TEACHER_NAME = 'إدارة الروضة';
 
     function openResultsPage() {
-      sessionStorage.setItem('teacherLoggedIn', 'true');
-      sessionStorage.setItem('teacherKindergarten', KG_ID);
-      sessionStorage.setItem('teacherSubject', DEFAULT_SUBJECT);
-      sessionStorage.setItem('teacherName', DEFAULT_TEACHER_NAME);
-      window.location.href = 'results.html';
+      alert('تم إيقاف الدخول المباشر إلى النتائج مؤقتًا حتى يتم تفعيل نظام دخول آمن.');
+      window.location.href = 'kindergartens.html';
     }
 
     document.getElementById('resultsBtnTop').addEventListener('click', openResultsPage);
