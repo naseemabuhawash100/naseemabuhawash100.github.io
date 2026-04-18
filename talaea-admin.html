@@ -17,6 +17,15 @@
     .btn-hover { transition: all .2s ease; }
     .btn-hover:hover { transform: scale(1.03); }
     .section-anchor { scroll-margin-top: 110px; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right text-slate-800">
@@ -39,43 +48,54 @@
     <div class="max-w-5xl mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-4">لوحة الإدارة الخاصة بالروضة</h2>
       <p class="text-lg opacity-90 leading-8 max-w-3xl mx-auto">
-        هذه الصفحة تجمع بين الواجهة التي جهزتها سابقًا وبين إدارة الطلاب والمعلمات الخاصة بروضة طلائع المبدعين، مع حماية دخول للمديرة فقط.
+        هذه الصفحة تجمع بين الواجهة التي جهزتها سابقًا وبين إدارة الطلاب والمعلمات الخاصة بروضة طلائع المبدعين، مع حماية دخول للمديرة فقط، وإضافة قسم مراجعة النتائج المرسلة من المعلمات.
       </p>
       <p id="topStatus" class="mt-4 text-sm font-medium text-slate-100">جاري تحميل البيانات...</p>
     </div>
   </section>
 
   <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
-    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6">
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-6">
       <a href="#worksheets" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4">1</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">تحميل أوراق العمل</h3>
         <p class="text-gray-600 leading-7">إضافة ورقة عمل مع المادة والصف والرقم والعنوان.</p>
       </a>
+
       <a href="#images" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-yellow-500 text-white flex items-center justify-center text-2xl mb-4">2</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">تحميل الصور</h3>
         <p class="text-gray-600 leading-7">قسم شكلي مؤقت منظم لرفع صور المعرض لاحقًا.</p>
       </a>
+
       <a href="#videos" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4">3</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">رفع الفيديوهات</h3>
         <p class="text-gray-600 leading-7">إضافة فيديوهات الروضة مع عنوان ووصف مختصر.</p>
       </a>
+
       <a href="#students-management" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl mb-4">4</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
         <p class="text-gray-600 leading-7">إضافة الطلاب ومراجعتهم وحذفهم داخل نفس الروضة.</p>
       </a>
+
       <a href="#teachers-management" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-fuchsia-600 text-white flex items-center justify-center text-2xl mb-4">5</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">معلمات الروضة</h3>
         <p class="text-gray-600 leading-7">عرض المعلمات وتفعيل أو تعطيل حساباتهن.</p>
       </a>
+
       <a href="results.html" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">6</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">نتائج الطلاب</h3>
         <p class="text-gray-600 leading-7">الانتقال إلى صفحة النتائج الخاصة بالروضة.</p>
+      </a>
+
+      <a href="#results-review" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
+        <div class="w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl mb-4">7</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">مراجعة النتائج</h3>
+        <p class="text-gray-600 leading-7">مراجعة نتائج المعلمات وقبولها أو رفضها.</p>
       </a>
     </section>
 
@@ -248,7 +268,7 @@
       <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
           <h2 class="text-3xl font-bold text-blue-900 mb-2">معلمات الروضة</h2>
-          <p class="text-gray-600">عرض المعلمات المرتبطات بهذه الروضة فقط مع إمكانية تفعيل أو تعطيل الحساب.</p>
+          <p class="text-gray-600">عرض المعلمات المرتبطات بهذه الروضة فقط مع إمكانية تفعيل أو تعطيل الحسابات.</p>
         </div>
         <span class="bg-fuchsia-50 text-fuchsia-700 px-4 py-2 rounded-full text-sm font-medium">مربوط بقاعدة البيانات</span>
       </div>
@@ -276,6 +296,40 @@
         </table>
       </div>
     </section>
+
+    <section id="results-review" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">مراجعة نتائج المعلمات</h2>
+          <p class="text-gray-600">النتائج المرسلة من المعلمات بانتظار قرار المديرة.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <span class="status-pill bg-amber-100 text-amber-800">بانتظار: <span id="pendingCount" class="mr-1">0</span></span>
+          <span class="status-pill bg-green-100 text-green-800">معتمد: <span id="approvedCount" class="mr-1">0</span></span>
+          <span class="status-pill bg-red-100 text-red-800">مرفوض: <span id="rejectedCount" class="mr-1">0</span></span>
+          <button id="refreshResultsBtn" class="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 btn-hover">تحديث النتائج</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-center border-collapse">
+          <thead>
+            <tr class="bg-red-600 text-white">
+              <th class="p-3 border">اسم الطالب</th>
+              <th class="p-3 border">الكود</th>
+              <th class="p-3 border">المادة</th>
+              <th class="p-3 border">الدرجة</th>
+              <th class="p-3 border">اسم المعلمة</th>
+              <th class="p-3 border">الحالة</th>
+              <th class="p-3 border">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="resultsReviewTable">
+            <tr><td colspan="7" class="p-4 border">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -292,11 +346,12 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const KG_ID = 'talaea-almobdeeen';
-    const KG_NAME = 'روضة طلائع المبدعين';
+    const KG_ID = 'talaea';
     let currentManager = null;
+    let currentManagerUid = null;
     let students = [];
     let teachers = [];
+    let pendingResults = [];
 
     const topStatus = document.getElementById('topStatus');
     const headerStatus = document.getElementById('headerStatus');
@@ -311,7 +366,16 @@
     }
 
     function subjectLabel(v) {
-      return v === 'math' ? 'الرياضيات' : v === 'arabic' ? 'العربي' : v === 'english' ? 'الإنجليزي' : (v || '-');
+      return v === 'math' ? 'الرياضيات'
+        : v === 'arabic' ? 'العربي'
+        : v === 'english' ? 'الإنجليزي'
+        : (v || '-');
+    }
+
+    function statusLabel(v) {
+      if (v === 'approved') return '<span class="status-pill bg-green-100 text-green-800">معتمد</span>';
+      if (v === 'rejected') return '<span class="status-pill bg-red-100 text-red-800">مرفوض</span>';
+      return '<span class="status-pill bg-amber-100 text-amber-800">بانتظار</span>';
     }
 
     function renderStudents() {
@@ -334,7 +398,9 @@
           <td class="p-3 border">${escapeHtml(s.name)}</td>
           <td class="p-3 border">${escapeHtml(s.code)}</td>
           <td class="p-3 border">${escapeHtml(s.className || '-')}</td>
-          <td class="p-3 border"><button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(s.docId)}">حذف</button></td>`;
+          <td class="p-3 border">
+            <button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(s.docId)}">حذف</button>
+          </td>`;
         tbody.appendChild(tr);
       });
 
@@ -374,7 +440,11 @@
           <td class="p-3 border">${escapeHtml(t.email || '-')}</td>
           <td class="p-3 border">${escapeHtml(subjectLabel(t.subject))}</td>
           <td class="p-3 border">${isActive ? '<span class="text-green-700 font-bold">مفعلة</span>' : '<span class="text-red-700 font-bold">معطلة</span>'}</td>
-          <td class="p-3 border"><button class="toggle-teacher ${isActive ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-700 hover:bg-green-800'} text-white px-4 py-2 rounded-xl" data-id="${escapeHtml(t.docId)}" data-active="${isActive ? 'true' : 'false'}">${isActive ? 'تعطيل' : 'تفعيل'}</button></td>`;
+          <td class="p-3 border">
+            <button class="toggle-teacher ${isActive ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-700 hover:bg-green-800'} text-white px-4 py-2 rounded-xl" data-id="${escapeHtml(t.docId)}" data-active="${isActive ? 'true' : 'false'}">
+              ${isActive ? 'تعطيل' : 'تفعيل'}
+            </button>
+          </td>`;
         tbody.appendChild(tr);
       });
 
@@ -388,6 +458,89 @@
           } catch (error) {
             alert('حدث خطأ أثناء تحديث حالة المعلمة');
             console.error(error);
+          }
+        });
+      });
+    }
+
+    function renderResultsReview() {
+      const tbody = document.getElementById('resultsReviewTable');
+      tbody.innerHTML = '';
+
+      document.getElementById('pendingCount').innerText = pendingResults.filter(r => r.status === 'pending').length;
+      document.getElementById('approvedCount').innerText = pendingResults.filter(r => r.status === 'approved').length;
+      document.getElementById('rejectedCount').innerText = pendingResults.filter(r => r.status === 'rejected').length;
+
+      if (!pendingResults.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد نتائج مرسلة بعد</td></tr>';
+        return;
+      }
+
+      pendingResults.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 border">${escapeHtml(r.studentName || '-')}</td>
+          <td class="p-3 border">${escapeHtml(r.studentCode || '-')}</td>
+          <td class="p-3 border">${escapeHtml(subjectLabel(r.subject))}</td>
+          <td class="p-3 border">${escapeHtml(r.score ?? '')}</td>
+          <td class="p-3 border">${escapeHtml(r.teacherName || '-')}</td>
+          <td class="p-3 border">${statusLabel(r.status)}</td>
+          <td class="p-3 border">
+            ${r.status === 'pending' ? `
+              <div class="flex flex-wrap justify-center gap-2">
+                <button class="approve-result bg-green-600 text-white px-3 py-2 rounded-xl hover:bg-green-700" data-id="${escapeHtml(r.docId)}">قبول</button>
+                <button class="reject-result bg-red-600 text-white px-3 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(r.docId)}">رفض</button>
+              </div>
+            ` : '<span class="text-slate-500 text-sm">تمت المراجعة</span>'}
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.approve-result').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          try {
+            const snap = await db.collection('pending_results').doc(id).get();
+            if (!snap.exists) return;
+
+            const data = snap.data();
+
+            await db.collection('results').add({
+              ...data,
+              kindergartenId: KG_ID,
+              approvedBy: currentManagerUid,
+              approvedByName: currentManager?.name || '',
+              approvedAt: new Date().toISOString()
+            });
+
+            await db.collection('pending_results').doc(id).update({
+              status: 'approved',
+              reviewedAt: new Date().toISOString(),
+              reviewedBy: currentManagerUid
+            });
+
+            await loadResultsReview();
+          } catch (error) {
+            console.error(error);
+            alert('حدث خطأ أثناء اعتماد النتيجة');
+          }
+        });
+      });
+
+      document.querySelectorAll('.reject-result').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          try {
+            await db.collection('pending_results').doc(id).update({
+              status: 'rejected',
+              reviewedAt: new Date().toISOString(),
+              reviewedBy: currentManagerUid
+            });
+
+            await loadResultsReview();
+          } catch (error) {
+            console.error(error);
+            alert('حدث خطأ أثناء رفض النتيجة');
           }
         });
       });
@@ -407,42 +560,52 @@
       renderTeachers();
     }
 
+    async function loadResultsReview() {
+      const snap = await db.collection('pending_results').where('kindergartenId', '==', KG_ID).get();
+      pendingResults = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      renderResultsReview();
+    }
+
     async function loadAll() {
       topStatus.textContent = 'جاري تحميل بيانات الروضة...';
-      await Promise.all([loadStudents(), loadTeachers()]);
+      await Promise.all([loadStudents(), loadTeachers(), loadResultsReview()]);
       topStatus.textContent = 'تم تحميل البيانات بنجاح';
     }
 
     async function protectPage(user) {
       const userSnap = await db.collection('users').doc(user.uid).get();
+
       if (!userSnap.exists) {
         await auth.signOut();
-        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        window.location.href = 'talaea-almobdeeen.html';
         return false;
       }
 
       const data = userSnap.data();
+
       if (data.role !== 'kindergarten_manager' || data.isActive !== true) {
         await auth.signOut();
-        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        window.location.href = 'talaea-almobdeeen.html';
         return false;
       }
 
       if (data.kindergartenId !== KG_ID) {
         await auth.signOut();
         alert('هذا الحساب لا يتبع لروضة طلائع المبدعين');
-        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        window.location.href = 'talaea-almobdeeen.html';
         return false;
       }
 
       currentManager = data;
+      currentManagerUid = user.uid;
       headerStatus.textContent = 'الحساب الحالي: ' + (data.name || 'مديرة الروضة');
       return true;
     }
 
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        window.location.href = 'talaea-almobdeeen.html';
         return;
       }
 
@@ -453,7 +616,7 @@
       } catch (error) {
         console.error(error);
         alert('تعذر فتح لوحة إدارة الروضة');
-        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        window.location.href = 'talaea-almobdeeen.html';
       }
     });
 
@@ -477,12 +640,20 @@
           return;
         }
 
-        await db.collection('students').add({ kindergartenId: KG_ID, name, code, className });
+        await db.collection('students').add({
+          kindergartenId: KG_ID,
+          name,
+          code,
+          className
+        });
+
         msg.textContent = 'تم حفظ الطالب بنجاح';
         msg.className = 'mt-4 text-sm font-medium text-green-600';
+
         document.getElementById('studentName').value = '';
         document.getElementById('studentCode').value = '';
         document.getElementById('studentClass').value = '';
+
         await loadStudents();
       } catch (error) {
         console.error(error);
@@ -494,9 +665,10 @@
     document.getElementById('searchStudent').addEventListener('input', renderStudents);
     document.getElementById('searchTeacher').addEventListener('input', renderTeachers);
     document.getElementById('refreshBtn').addEventListener('click', loadAll);
+    document.getElementById('refreshResultsBtn').addEventListener('click', loadResultsReview);
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await auth.signOut();
-      window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+      window.location.href = 'talaea-almobdeeen.html';
     });
   </script>
 </body>
