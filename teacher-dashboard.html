@@ -1,290 +1,198 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة المعلمة</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة المعلمة</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <style>
-    body { font-family: Arial, sans-serif; }
-  </style>
+<style>
+body { font-family: Arial; direction: rtl; }
+</style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800">
 
-  <header class="bg-white shadow-md sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-blue-900">لوحة المعلمة</h1>
-        <p class="text-sm text-gray-600">إدارة طلاب المادة الخاصة بك وإرسال النتائج للمديرة</p>
-      </div>
-      <div class="flex gap-3">
-        <button onclick="goToResults()" class="bg-blue-900 text-white px-5 py-2 rounded-xl hover:bg-blue-800">النتائج</button>
-        <button onclick="logout()" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-xl hover:bg-gray-300">تسجيل خروج</button>
-      </div>
-    </div>
-  </header>
+<body class="bg-gray-100">
 
-  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
-    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center md:text-right">
-        <div class="bg-slate-50 rounded-xl p-4">
-          <p class="text-sm text-gray-500">اسم المعلمة</p>
-          <h2 id="teacherName" class="text-xl font-bold text-blue-900">...</h2>
-        </div>
-        <div class="bg-slate-50 rounded-xl p-4">
-          <p class="text-sm text-gray-500">المادة</p>
-          <h2 id="teacherSubject" class="text-xl font-bold text-blue-900">...</h2>
-        </div>
-        <div class="bg-slate-50 rounded-xl p-4">
-          <p class="text-sm text-gray-500">الروضة</p>
-          <h2 id="teacherKg" class="text-xl font-bold text-blue-900">...</h2>
-        </div>
-      </div>
-      <p id="topMsg" class="mt-4 text-sm font-medium text-gray-600"></p>
-    </section>
+<div class="max-w-5xl mx-auto p-6">
 
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
-          <div>
-            <h3 class="text-2xl font-bold text-blue-900">إدارة طلاب مادتي</h3>
-            <p class="text-gray-600 text-sm">يتم عرض الطلاب الذين تحتوي بياناتهم على نفس مادة المعلمة فقط.</p>
-          </div>
-          <button onclick="loadStudents()" class="bg-blue-900 text-white px-5 py-2 rounded-xl hover:bg-blue-800">
-            تحديث الطلاب
-          </button>
-        </div>
+<h1 class="text-3xl font-bold mb-6 text-center">لوحة المعلمة</h1>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-center border-collapse">
-            <thead>
-              <tr class="bg-blue-900 text-white">
-                <th class="p-3 border">اسم الطالب</th>
-                <th class="p-3 border">الكود</th>
-                <th class="p-3 border">الشعبة</th>
-                <th class="p-3 border">الدرجة</th>
-              </tr>
-            </thead>
-            <tbody id="studentsTable">
-              <tr><td colspan="4" class="p-4 border">جاري تحميل الطلاب...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+<!-- بيانات المعلمة -->
+<div class="bg-white p-4 rounded shadow mb-6">
+<h2 class="text-xl font-bold mb-2">بيانات المعلمة</h2>
+<p>الاسم: <span id="teacherName"></span></p>
+<p>المادة: <span id="teacherSubject"></span></p>
+</div>
 
-      <div class="space-y-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">إرسال النتائج للمديرة</h3>
-          <p class="text-sm text-gray-600 mb-4">سيتم حفظ النتائج في قسم انتظار مراجعة المديرة.</p>
-          <button onclick="sendResults()" class="w-full bg-green-600 text-white px-5 py-3 rounded-xl hover:bg-green-700">
-            إرسال النتائج
-          </button>
-          <p id="sendMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
-        </div>
+<!-- إضافة طالب -->
+<div class="bg-white p-4 rounded shadow mb-6">
+<h2 class="text-xl font-bold mb-3">إضافة طالب</h2>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">إضافة صور المعلمة</h3>
-          <p class="text-sm text-gray-600 mb-4">هذا الزر مجهز الآن، وربط الرفع الفعلي سيكون في الخطوة التالية.</p>
-          <input id="imageFile" type="file" accept="image/*" class="w-full border rounded-xl p-3 mb-3">
-          <input id="imageTitle" type="text" placeholder="عنوان الصورة" class="w-full border rounded-xl p-3 mb-3">
-          <textarea id="imageDesc" rows="3" placeholder="وصف مختصر للصورة" class="w-full border rounded-xl p-3 mb-3"></textarea>
-          <button onclick="uploadImage()" class="w-full bg-amber-500 text-white px-5 py-3 rounded-xl hover:bg-amber-600">
-            رفع الصورة
-          </button>
-          <p id="imageMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
-        </div>
-      </div>
-    </section>
-  </main>
+<input id="studentName" placeholder="اسم الطالب" class="border p-2 w-full mb-2">
+<input id="studentCode" placeholder="كود الطالب" class="border p-2 w-full mb-2">
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
-      authDomain: "interactive-book-37270.firebaseapp.com",
-      projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.firebasestorage.app",
-      messagingSenderId: "350364566140",
-      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
-    };
+<button onclick="addStudent()" class="bg-green-600 text-white px-4 py-2 rounded">
+إضافة
+</button>
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+<p id="msg" class="mt-2 text-red-600"></p>
+</div>
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+<!-- الطلاب -->
+<div class="bg-white p-4 rounded shadow mb-6">
+<h2 class="text-xl font-bold mb-3">قائمة الطلاب</h2>
 
-    let teacherData = null;
-    let loadedStudents = [];
+<table class="w-full border text-center">
+<thead>
+<tr class="bg-blue-900 text-white">
+<th>الاسم</th>
+<th>الكود</th>
+<th>الدرجة</th>
+<th>حذف</th>
+</tr>
+</thead>
 
-    function subjectLabel(v) {
-      if (v === "arabic") return "العربي";
-      if (v === "math") return "الرياضيات";
-      if (v === "english") return "الإنجليزي";
-      return v || "";
-    }
+<tbody id="studentsTable"></tbody>
+</table>
+</div>
 
-    async function loadTeacherData(user) {
-      const snap = await db.collection("users").doc(user.uid).get();
+<!-- إرسال النتائج -->
+<div class="bg-white p-4 rounded shadow">
+<button onclick="sendResults()" class="bg-blue-900 text-white px-4 py-2 rounded w-full">
+إرسال النتائج للمديرة
+</button>
 
-      if (!snap.exists) {
-        alert("المستخدم غير موجود في قاعدة البيانات");
-        window.location.href = "talaea-almobdeeen.html";
-        return;
-      }
+<p id="sendMsg" class="mt-2"></p>
+</div>
 
-      const data = snap.data();
+</div>
 
-      if (data.role !== "teacher") {
-        alert("هذه الصفحة مخصصة للمعلمات فقط");
-        window.location.href = "talaea-almobdeeen.html";
-        return;
-      }
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+authDomain: "interactive-book-37270.firebaseapp.com",
+projectId: "interactive-book-37270"
+};
 
-      if (data.kindergartenId !== "talaea-almobdeeen") {
-        alert("ليس لديك صلاحية الدخول إلى هذه الروضة");
-        window.location.href = "talaea-almobdeeen.html";
-        return;
-      }
+firebase.initializeApp(firebaseConfig);
 
-      teacherData = data;
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-      document.getElementById("teacherName").innerText = data.name || "معلمة";
-      document.getElementById("teacherSubject").innerText = subjectLabel(data.subject);
-      document.getElementById("teacherKg").innerText = data.kindergartenId || "";
-      document.getElementById("topMsg").innerText = "مرحبًا بك، يمكنك الآن إدارة نتائج طلاب مادّتك فقط.";
+const KG_ID = "talaea";
 
-      await loadStudents();
-    }
+let teacherUid = null;
+let teacherData = null;
+let students = [];
 
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        window.location.href = "talaea-almobdeeen.html";
-        return;
-      }
+// تحميل بيانات المعلمة
+auth.onAuthStateChanged(async user => {
+if (!user) {
+location.href = "talaea-almobdeeen.html";
+return;
+}
 
-      try {
-        await loadTeacherData(user);
-      } catch (error) {
-        console.error(error);
-        alert("حدث خطأ أثناء تحميل بيانات المعلمة");
-      }
-    });
+teacherUid = user.uid;
 
-    async function loadStudents() {
-      if (!teacherData) return;
+const doc = await db.collection("users").doc(user.uid).get();
+const data = doc.data();
 
-      const tbody = document.getElementById("studentsTable");
-      tbody.innerHTML = '<tr><td colspan="4" class="p-4 border">جاري تحميل الطلاب...</td></tr>';
+teacherData = data;
 
-      try {
-        const snapshot = await db.collection("students")
-          .where("kindergartenId", "==", teacherData.kindergartenId)
-          .get();
+document.getElementById("teacherName").innerText = data.name;
+document.getElementById("teacherSubject").innerText = data.subject;
 
-        loadedStudents = [];
-        let html = "";
+loadStudents();
+});
 
-        snapshot.forEach(doc => {
-          const s = doc.data();
-          const subjects = Array.isArray(s.subjects) ? s.subjects : [];
+// تحميل الطلاب
+async function loadStudents() {
+const snap = await db.collection("teacher_students")
+.where("teacherUid","==",teacherUid)
+.get();
 
-          if (subjects.includes(teacherData.subject)) {
-            loadedStudents.push({ id: doc.id, ...s });
+students = [];
 
-            html += `
-              <tr>
-                <td class="p-3 border">${s.name || ""}</td>
-                <td class="p-3 border">${s.code || ""}</td>
-                <td class="p-3 border">${s.className || ""}</td>
-                <td class="p-3 border">
-                  <input type="number" min="0" max="100" id="score_${doc.id}" placeholder="الدرجة"
-                    class="w-24 border rounded-lg p-2 text-center">
-                </td>
-              </tr>
-            `;
-          }
-        });
+let html = "";
 
-        if (!loadedStudents.length) {
-          html = '<tr><td colspan="4" class="p-4 border">لا يوجد طلاب مرتبطون بمادتك حاليًا</td></tr>';
-        }
+snap.forEach(doc=>{
+let s = doc.data();
+s.id = doc.id;
+students.push(s);
 
-        tbody.innerHTML = html;
-      } catch (error) {
-        console.error(error);
-        tbody.innerHTML = '<tr><td colspan="4" class="p-4 border text-red-600">حدث خطأ أثناء تحميل الطلاب</td></tr>';
-      }
-    }
+html += `
+<tr>
+<td>${s.name}</td>
+<td>${s.code}</td>
+<td>
+<input id="score_${s.id}" class="border w-20 p-1">
+</td>
+<td>
+<button onclick="deleteStudent('${s.id}')" class="bg-red-500 text-white px-2">
+حذف
+</button>
+</td>
+</tr>
+`;
+});
 
-    async function sendResults() {
-      const msg = document.getElementById("sendMsg");
-      msg.className = "mt-4 text-sm font-medium text-blue-700";
-      msg.innerText = "جاري إرسال النتائج للمديرة...";
+document.getElementById("studentsTable").innerHTML = html;
+}
 
-      try {
-        let sentCount = 0;
+// إضافة طالب
+async function addStudent() {
+let name = document.getElementById("studentName").value;
+let code = document.getElementById("studentCode").value;
 
-        for (const s of loadedStudents) {
-          const input = document.getElementById(`score_${s.id}`);
-          if (!input) continue;
+if (!name || !code) {
+document.getElementById("msg").innerText = "املأ الحقول";
+return;
+}
 
-          const raw = input.value.trim();
-          if (!raw) continue;
+await db.collection("teacher_students").add({
+name,
+code,
+teacherUid,
+kindergartenId: KG_ID,
+subject: teacherData.subject
+});
 
-          await db.collection("pending_results").add({
-            studentId: s.id,
-            studentName: s.name || "",
-            teacherUid: auth.currentUser.uid,
-            teacherName: teacherData.name || "",
-            subject: teacherData.subject,
-            score: Number(raw),
-            status: "pending",
-            kindergartenId: teacherData.kindergartenId,
-            createdAt: new Date().toISOString()
-          });
+document.getElementById("msg").innerText = "تمت الإضافة";
+loadStudents();
+}
 
-          sentCount++;
-        }
+// حذف طالب
+async function deleteStudent(id) {
+await db.collection("teacher_students").doc(id).delete();
+loadStudents();
+}
 
-        msg.className = "mt-4 text-sm font-medium text-green-600";
-        msg.innerText = sentCount
-          ? `تم إرسال ${sentCount} نتيجة إلى المديرة بنجاح`
-          : "لم يتم إرسال أي نتيجة لأن جميع الحقول فارغة";
-      } catch (error) {
-        console.error(error);
-        msg.className = "mt-4 text-sm font-medium text-red-600";
-        msg.innerText = "حدث خطأ أثناء إرسال النتائج";
-      }
-    }
+// إرسال النتائج
+async function sendResults() {
+for (let s of students) {
 
-    function uploadImage() {
-      const file = document.getElementById("imageFile").files[0];
-      const msg = document.getElementById("imageMsg");
+let score = document.getElementById("score_"+s.id).value;
 
-      if (!file) {
-        msg.className = "mt-4 text-sm font-medium text-red-600";
-        msg.innerText = "يرجى اختيار صورة أولًا";
-        return;
-      }
+if (!score) continue;
 
-      msg.className = "mt-4 text-sm font-medium text-blue-700";
-      msg.innerText = "تم تجهيز زر رفع الصور، وسنربطه بالمعرض في الخطوة التالية.";
-    }
+await db.collection("pending_results").add({
+studentName: s.name,
+studentCode: s.code,
+score,
+teacherUid,
+teacherName: teacherData.name,
+kindergartenId: KG_ID,
+status: "pending"
+});
+}
 
-    function goToResults() {
-      window.location.href = "results.html";
-    }
+document.getElementById("sendMsg").innerText = "تم إرسال النتائج";
+}
+</script>
 
-    function logout() {
-      auth.signOut();
-      window.location.href = "talaea-almobdeeen.html";
-    }
-  </script>
 </body>
 </html>
