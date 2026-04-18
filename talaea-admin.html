@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>إدارة روضة طلائع المبدعين</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
@@ -13,6 +16,7 @@
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 24px rgba(0,0,0,.08); }
     .btn-hover { transition: all .2s ease; }
     .btn-hover:hover { transform: scale(1.03); }
+    .section-anchor { scroll-margin-top: 110px; }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right text-slate-800">
@@ -20,11 +24,13 @@
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-800">إدارة روضة طلائع المبدعين</h1>
-        <p class="text-sm text-gray-600">واجهة إدارة مؤقتة وقابلة للتطوير لاحقًا</p>
+        <p id="headerStatus" class="text-sm text-gray-600">جاري التحقق من حساب المديرة...</p>
       </div>
       <div class="flex flex-wrap justify-center gap-3">
         <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة إلى صفحة الروضة</a>
-        <button id="resultsBtnTop" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</button>
+        <a href="results.html" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</a>
+        <button id="refreshBtn" class="bg-slate-700 text-white px-5 py-2 rounded-full font-medium hover:bg-slate-800 btn-hover">تحديث</button>
+        <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
@@ -33,13 +39,14 @@
     <div class="max-w-5xl mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold mb-4">لوحة الإدارة الخاصة بالروضة</h2>
       <p class="text-lg opacity-90 leading-8 max-w-3xl mx-auto">
-        هذه الصفحة مجهزة كبداية عملية لإدارة محتوى روضة طلائع المبدعين، وتشمل أوراق العمل، الصور، الفيديوهات، والدخول السريع إلى نتائج الطلاب.
+        هذه الصفحة تجمع بين الواجهة التي جهزتها سابقًا وبين إدارة الطلاب والمعلمات الخاصة بروضة طلائع المبدعين، مع حماية دخول للمديرة فقط.
       </p>
+      <p id="topStatus" class="mt-4 text-sm font-medium text-slate-100">جاري تحميل البيانات...</p>
     </div>
   </section>
 
   <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
-    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6">
       <a href="#worksheets" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
         <div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4">1</div>
         <h3 class="text-xl font-bold text-blue-900 mb-2">تحميل أوراق العمل</h3>
@@ -55,14 +62,24 @@
         <h3 class="text-xl font-bold text-blue-900 mb-2">رفع الفيديوهات</h3>
         <p class="text-gray-600 leading-7">إضافة فيديوهات الروضة مع عنوان ووصف مختصر.</p>
       </a>
-      <button id="resultsCardBtn" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-right">
-        <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">4</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">الدخول إلى نتائج الطلاب</h3>
-        <p class="text-gray-600 leading-7">ينقلك مباشرة إلى ملف النتائج الموجود مسبقًا.</p>
-      </button>
+      <a href="#students-management" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
+        <div class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl mb-4">4</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
+        <p class="text-gray-600 leading-7">إضافة الطلاب ومراجعتهم وحذفهم داخل نفس الروضة.</p>
+      </a>
+      <a href="#teachers-management" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
+        <div class="w-14 h-14 rounded-full bg-fuchsia-600 text-white flex items-center justify-center text-2xl mb-4">5</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">معلمات الروضة</h3>
+        <p class="text-gray-600 leading-7">عرض المعلمات وتفعيل أو تعطيل حساباتهن.</p>
+      </a>
+      <a href="results.html" class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 block">
+        <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">6</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">نتائج الطلاب</h3>
+        <p class="text-gray-600 leading-7">الانتقال إلى صفحة النتائج الخاصة بالروضة.</p>
+      </a>
     </section>
 
-    <section id="worksheets" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <section id="worksheets" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
       <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
           <h2 class="text-3xl font-bold text-blue-900 mb-2">تحميل أوراق العمل</h2>
@@ -113,7 +130,7 @@
       </form>
     </section>
 
-    <section id="images" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <section id="images" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
       <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
           <h2 class="text-3xl font-bold text-blue-900 mb-2">تحميل الصور</h2>
@@ -148,7 +165,7 @@
       </div>
     </section>
 
-    <section id="videos" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <section id="videos" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
       <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
         <div>
           <h2 class="text-3xl font-bold text-blue-900 mb-2">رفع الفيديوهات الخاصة بالروضة</h2>
@@ -179,26 +196,308 @@
         </div>
         <div class="md:col-span-2 flex flex-wrap gap-3">
           <button type="button" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-green-700 btn-hover">إضافة الفيديو</button>
-          <button type="button" id="resultsBtnBottom" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover">الدخول إلى نتائج الطلاب</button>
+          <a href="results.html" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover inline-block">الدخول إلى نتائج الطلاب</a>
         </div>
       </form>
+    </section>
+
+    <section id="students-management" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">إدارة الطلاب</h2>
+          <p class="text-gray-600">هذا القسم يعمل فعليًا على طلاب روضة طلائع المبدعين فقط.</p>
+        </div>
+        <span class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium">مربوط بقاعدة البيانات</span>
+      </div>
+
+      <div class="bg-slate-50 rounded-2xl border border-gray-100 p-6 mb-6">
+        <h3 class="text-xl font-bold text-slate-800 mb-4">إضافة طالب جديد</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input id="studentName" type="text" placeholder="اسم الطالب" class="px-4 py-3 rounded-xl border border-gray-300">
+          <input id="studentCode" type="text" placeholder="كود الطالب" class="px-4 py-3 rounded-xl border border-gray-300">
+          <input id="studentClass" type="text" placeholder="الشعبة / الصف" class="px-4 py-3 rounded-xl border border-gray-300">
+        </div>
+        <div class="mt-4 flex gap-3">
+          <button id="addStudentBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700">حفظ الطالب</button>
+        </div>
+        <p id="studentMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
+      </div>
+
+      <div>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+          <h3 class="text-2xl font-bold text-blue-900">قائمة الطلاب</h3>
+          <input id="searchStudent" type="text" placeholder="ابحث باسم الطالب أو الكود" class="px-4 py-2 rounded-xl border border-gray-300 w-full md:w-80">
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-center border-collapse">
+            <thead>
+              <tr class="bg-indigo-700 text-white">
+                <th class="p-3 border">اسم الطالب</th>
+                <th class="p-3 border">الكود</th>
+                <th class="p-3 border">الشعبة</th>
+                <th class="p-3 border">إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="teachers-management" class="section-anchor bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">معلمات الروضة</h2>
+          <p class="text-gray-600">عرض المعلمات المرتبطات بهذه الروضة فقط مع إمكانية تفعيل أو تعطيل الحساب.</p>
+        </div>
+        <span class="bg-fuchsia-50 text-fuchsia-700 px-4 py-2 rounded-full text-sm font-medium">مربوط بقاعدة البيانات</span>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 mb-5 text-sm leading-7">
+        إضافة معلمة جديدة وربطها مع تسجيل الدخول سنفعّلها لاحقًا عبر الـ Backend. في هذه النسخة تستطيعين مراجعة المعلمات الحاليّات وتفعيل أو تعطيل الحسابات.
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+        <h3 class="text-2xl font-bold text-blue-900">قائمة المعلمات</h3>
+        <input id="searchTeacher" type="text" placeholder="ابحث باسم المعلمة أو البريد أو المادة" class="px-4 py-2 rounded-xl border border-gray-300 w-full md:w-80">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-center border-collapse">
+          <thead>
+            <tr class="bg-fuchsia-700 text-white">
+              <th class="p-3 border">اسم المعلمة</th>
+              <th class="p-3 border">البريد الإلكتروني</th>
+              <th class="p-3 border">المادة</th>
+              <th class="p-3 border">الحالة</th>
+              <th class="p-3 border">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="teachersTable"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     const KG_ID = 'talaea-almobdeeen';
     const KG_NAME = 'روضة طلائع المبدعين';
-    const DEFAULT_SUBJECT = 'arabic';
-    const DEFAULT_TEACHER_NAME = 'إدارة الروضة';
+    let currentManager = null;
+    let students = [];
+    let teachers = [];
 
-    function openResultsPage() {
-      alert('تم إيقاف الدخول المباشر إلى النتائج مؤقتًا حتى يتم تفعيل نظام دخول آمن.');
-      window.location.href = 'kindergartens.html';
+    const topStatus = document.getElementById('topStatus');
+    const headerStatus = document.getElementById('headerStatus');
+
+    function escapeHtml(text) {
+      return String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
-    document.getElementById('resultsBtnTop').addEventListener('click', openResultsPage);
-    document.getElementById('resultsCardBtn').addEventListener('click', openResultsPage);
-    document.getElementById('resultsBtnBottom').addEventListener('click', openResultsPage);
+    function subjectLabel(v) {
+      return v === 'math' ? 'الرياضيات' : v === 'arabic' ? 'العربي' : v === 'english' ? 'الإنجليزي' : (v || '-');
+    }
+
+    function renderStudents() {
+      const tbody = document.getElementById('studentsTable');
+      const search = document.getElementById('searchStudent').value.trim().toLowerCase();
+      const filtered = students.filter(s => {
+        const txt = ((s.name || '') + ' ' + (s.code || '') + ' ' + (s.className || '')).toLowerCase();
+        return !search || txt.includes(search);
+      });
+
+      tbody.innerHTML = '';
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 border">لا يوجد طلاب بعد</td></tr>';
+        return;
+      }
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 border">${escapeHtml(s.name)}</td>
+          <td class="p-3 border">${escapeHtml(s.code)}</td>
+          <td class="p-3 border">${escapeHtml(s.className || '-')}</td>
+          <td class="p-3 border"><button class="delete-student bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${escapeHtml(s.docId)}">حذف</button></td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.delete-student').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('هل تريد حذف هذا الطالب؟')) return;
+          try {
+            await db.collection('students').doc(this.dataset.id).delete();
+            await loadStudents();
+          } catch (error) {
+            alert('حدث خطأ أثناء حذف الطالب');
+            console.error(error);
+          }
+        });
+      });
+    }
+
+    function renderTeachers() {
+      const tbody = document.getElementById('teachersTable');
+      const search = document.getElementById('searchTeacher').value.trim().toLowerCase();
+      const filtered = teachers.filter(t => {
+        const txt = ((t.name || '') + ' ' + (t.email || '') + ' ' + (t.subject || '')).toLowerCase();
+        return !search || txt.includes(search);
+      });
+
+      tbody.innerHTML = '';
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 border">لا توجد معلمات مرتبطات بهذه الروضة بعد</td></tr>';
+        return;
+      }
+
+      filtered.forEach(t => {
+        const isActive = t.isActive === true;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-3 border">${escapeHtml(t.name || '-')}</td>
+          <td class="p-3 border">${escapeHtml(t.email || '-')}</td>
+          <td class="p-3 border">${escapeHtml(subjectLabel(t.subject))}</td>
+          <td class="p-3 border">${isActive ? '<span class="text-green-700 font-bold">مفعلة</span>' : '<span class="text-red-700 font-bold">معطلة</span>'}</td>
+          <td class="p-3 border"><button class="toggle-teacher ${isActive ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-700 hover:bg-green-800'} text-white px-4 py-2 rounded-xl" data-id="${escapeHtml(t.docId)}" data-active="${isActive ? 'true' : 'false'}">${isActive ? 'تعطيل' : 'تفعيل'}</button></td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.toggle-teacher').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const id = this.dataset.id;
+          const active = this.dataset.active === 'true';
+          try {
+            await db.collection('users').doc(id).update({ isActive: !active });
+            await loadTeachers();
+          } catch (error) {
+            alert('حدث خطأ أثناء تحديث حالة المعلمة');
+            console.error(error);
+          }
+        });
+      });
+    }
+
+    async function loadStudents() {
+      const snap = await db.collection('students').where('kindergartenId', '==', KG_ID).get();
+      students = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
+      renderStudents();
+    }
+
+    async function loadTeachers() {
+      const snap = await db.collection('users').where('role', '==', 'teacher').where('kindergartenId', '==', KG_ID).get();
+      teachers = snap.docs.map(doc => ({ docId: doc.id, ...doc.data() }))
+        .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'ar'));
+      renderTeachers();
+    }
+
+    async function loadAll() {
+      topStatus.textContent = 'جاري تحميل بيانات الروضة...';
+      await Promise.all([loadStudents(), loadTeachers()]);
+      topStatus.textContent = 'تم تحميل البيانات بنجاح';
+    }
+
+    async function protectPage(user) {
+      const userSnap = await db.collection('users').doc(user.uid).get();
+      if (!userSnap.exists) {
+        await auth.signOut();
+        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        return false;
+      }
+
+      const data = userSnap.data();
+      if (data.role !== 'kindergarten_manager' || data.isActive !== true) {
+        await auth.signOut();
+        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        return false;
+      }
+
+      if (data.kindergartenId !== KG_ID) {
+        await auth.signOut();
+        alert('هذا الحساب لا يتبع لروضة طلائع المبدعين');
+        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        return false;
+      }
+
+      currentManager = data;
+      headerStatus.textContent = 'الحساب الحالي: ' + (data.name || 'مديرة الروضة');
+      return true;
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+        return;
+      }
+
+      try {
+        const allowed = await protectPage(user);
+        if (!allowed) return;
+        await loadAll();
+      } catch (error) {
+        console.error(error);
+        alert('تعذر فتح لوحة إدارة الروضة');
+        window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+      }
+    });
+
+    document.getElementById('addStudentBtn').addEventListener('click', async function() {
+      const name = document.getElementById('studentName').value.trim();
+      const code = document.getElementById('studentCode').value.trim().toUpperCase();
+      const className = document.getElementById('studentClass').value.trim();
+      const msg = document.getElementById('studentMsg');
+
+      if (!name || !code) {
+        msg.textContent = 'يرجى تعبئة اسم الطالب وكوده';
+        msg.className = 'mt-4 text-sm font-medium text-red-600';
+        return;
+      }
+
+      try {
+        const existing = await db.collection('students').where('code', '==', code).get();
+        if (!existing.empty) {
+          msg.textContent = 'هذا الكود مستخدم بالفعل';
+          msg.className = 'mt-4 text-sm font-medium text-red-600';
+          return;
+        }
+
+        await db.collection('students').add({ kindergartenId: KG_ID, name, code, className });
+        msg.textContent = 'تم حفظ الطالب بنجاح';
+        msg.className = 'mt-4 text-sm font-medium text-green-600';
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentCode').value = '';
+        document.getElementById('studentClass').value = '';
+        await loadStudents();
+      } catch (error) {
+        console.error(error);
+        msg.textContent = 'حدث خطأ أثناء حفظ الطالب';
+        msg.className = 'mt-4 text-sm font-medium text-red-600';
+      }
+    });
+
+    document.getElementById('searchStudent').addEventListener('input', renderStudents);
+    document.getElementById('searchTeacher').addEventListener('input', renderTeachers);
+    document.getElementById('refreshBtn').addEventListener('click', loadAll);
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await auth.signOut();
+      window.location.href = 'kg-admin-login.html?kg=' + encodeURIComponent(KG_ID) + '&kgName=' + encodeURIComponent('طلائع المبدعين');
+    });
   </script>
 </body>
 </html>
