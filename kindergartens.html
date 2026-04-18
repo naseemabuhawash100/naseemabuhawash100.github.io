@@ -29,7 +29,6 @@
       </div>
       <div class="flex gap-3">
         <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة للرئيسية</a>
-        <a href="results.html" class="bg-green-600 text-white px-5 py-2 rounded-full font-medium hover:bg-green-700 btn-hover">النتائج</a>
       </div>
     </div>
   </header>
@@ -37,7 +36,7 @@
   <section class="hero-gradient text-white py-16 md:py-24">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl md:text-5xl font-bold mb-5">اختر الروضة وطريقة الدخول</h2>
-      <p class="text-lg md:text-xl opacity-90 leading-9">يتم الآن تسجيل دخول المعلمات عبر Firebase Authentication، ثم يتم جلب الاسم والمادة والصلاحيات تلقائيًا من Collection users.</p>
+      <p class="text-lg md:text-xl opacity-90 leading-9">يتم تسجيل دخول المعلمات عبر Firebase Authentication، ثم يتم جلب الاسم والمادة والصلاحيات من Collection users.</p>
       <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري تحميل الروضات من Firebase...</p>
     </div>
   </section>
@@ -123,6 +122,10 @@
     const inactiveText = document.getElementById("inactiveText");
     let kindergartens = [];
 
+    function getKindergartenName(kg) {
+      return kg.name || kg.title || kg.kindergartenName || kg.docId || kg.id || "روضة بدون اسم";
+    }
+
     function showInactiveMessage(kindergartenName, entryType) {
       const targetLabel = entryType === "teacher" ? "دخول المعلمة" : "دخول الأهالي";
       inactiveText.innerText = `الروضة "${kindergartenName}" غير مفعلة حاليًا، لذلك لا يمكن إكمال ${targetLabel}. يرجى مراجعة الإدارة.`;
@@ -137,10 +140,10 @@
 
     function renderKindergartens() {
       select.innerHTML = '<option value="">-- اختر الروضة --</option>';
-      kindergartens.forEach(kg => {
+      kindergartens.forEach((kg) => {
         const option = document.createElement("option");
         option.value = kg.id;
-        option.textContent = kg.name || kg.id;
+        option.textContent = getKindergartenName(kg);
         select.appendChild(option);
       });
     }
@@ -148,14 +151,29 @@
     async function loadKindergartens() {
       topStatus.innerText = "جاري تحميل الروضات من Firebase...";
       const snap = await db.collection("kindergartens").get();
-      kindergartens = snap.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id), 'ar'));
+
+      kindergartens = snap.docs.map((doc) => {
+        const data = doc.data() || {};
+        return {
+          id: doc.id,
+          docId: doc.id,
+          ...data,
+        };
+      }).sort((a, b) => getKindergartenName(a).localeCompare(getKindergartenName(b), 'ar'));
+
+      console.log("Loaded kindergartens:", kindergartens);
       renderKindergartens();
-      topStatus.innerText = kindergartens.length ? "تم تحميل الروضات بنجاح" : "لا توجد روضات متاحة حاليًا";
+
+      if (!kindergartens.length) {
+        topStatus.innerText = "لم يتم العثور على أي روضات داخل Collection kindergartens";
+        message.innerText = "Collection kindergartens فارغة حاليًا أو أسماء الروضات غير موجودة.";
+        return;
+      }
+
+      topStatus.innerText = `تم تحميل ${kindergartens.length} روضة بنجاح`;
     }
 
-    document.querySelectorAll('input[name="entryType"]').forEach(radio => {
+    document.querySelectorAll('input[name="entryType"]').forEach((radio) => {
       radio.addEventListener("change", function() {
         teacherLoginBox.style.display = this.value === "teacher" ? "block" : "none";
         message.innerText = "";
@@ -178,14 +196,15 @@
         return;
       }
 
-      const kg = kindergartens.find(k => k.id === kindergartenId);
+      const kg = kindergartens.find((k) => k.id === kindergartenId);
       if (!kg) {
         message.innerText = "تعذر العثور على الروضة المطلوبة";
         return;
       }
 
-      if (!kg.active) {
-        showInactiveMessage(kg.name || kg.id, entryType.value);
+      const isInactive = kg.active === false || kg.isActive === false;
+      if (isInactive) {
+        showInactiveMessage(getKindergartenName(kg), entryType.value);
         return;
       }
 
@@ -268,12 +287,12 @@
       window.location.href = "kindergarten-home.html";
     });
 
-    loadKindergartens().catch(err => {
-      console.error(err);
+    loadKindergartens().catch((err) => {
+      console.error("Kindergartens load error:", err);
       topStatus.innerText = "تعذر تحميل الروضات من Firebase";
       message.innerText = err.code === 'permission-denied'
         ? 'لا يوجد صلاحية لقراءة قائمة الروضات من Firestore'
-        : 'تعذر تحميل قائمة الروضات';
+        : `${err.code || ''} ${err.message || 'تعذر تحميل قائمة الروضات'}`.trim();
     });
   </script>
 </body>
