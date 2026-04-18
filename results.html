@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
@@ -83,27 +84,6 @@
     </div>
   </section>
 
-  <script>
-    const teacherLoggedIn = sessionStorage.getItem("teacherLoggedIn");
-    const teacherKindergarten = sessionStorage.getItem("teacherKindergarten");
-    const teacherSubject = sessionStorage.getItem("teacherSubject");
-    const teacherName = sessionStorage.getItem("teacherName");
-    const teacherLoginSource = sessionStorage.getItem("teacherLoginSource");
-    if (
-      teacherLoggedIn !== "true" ||
-      !teacherKindergarten ||
-      !teacherSubject ||
-      !teacherName ||
-      teacherLoginSource !== "kindergartens-page"
-    ) {
-      sessionStorage.removeItem("teacherLoggedIn");
-      sessionStorage.removeItem("teacherKindergarten");
-      sessionStorage.removeItem("teacherSubject");
-      sessionStorage.removeItem("teacherName");
-      sessionStorage.removeItem("teacherLoginSource");
-      window.location.href = "kindergartens.html";
-    }
-  </script>
 
   <script>
     const firebaseConfig = {
@@ -118,11 +98,13 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     const db = firebase.firestore();
+    const auth = firebase.auth();
     const table = document.getElementById("resultsTable");
     const status = document.getElementById("status");
     const countBox = document.getElementById("countBox");
     let allResults = [];
     let currentKindergarten = null;
+    let currentTeacherProfile = null;
 
     function formatStage(stage) {
       const stageMap = { tamheedi: "التمهيدي", tahdiri: "التحضيري" };
@@ -196,29 +178,60 @@
       document.getElementById("filterCode").value = "";
       document.getElementById("filterClass").value = "";
       renderRows(allResults);
-      status.innerText = currentKindergarten ? `تمت إعادة عرض كل نتائج ${currentKindergarten.name} - ${formatSubject(sessionStorage.getItem("teacherSubject"))}` : "تمت إعادة عرض كل النتائج";
+      status.innerText = currentKindergarten && currentTeacherProfile ? `تمت إعادة عرض كل نتائج ${currentKindergarten.name} - ${formatSubject(currentTeacherProfile.subject)}` : "تمت إعادة عرض كل النتائج";
+    }
+        async function getTeacherProfile() {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        return null;
+      }
+
+      const userSnap = await db.collection("users").doc(firebaseUser.uid).get();
+      if (!userSnap.exists) {
+        return null;
+      }
+
+      const userData = userSnap.data() || {};
+      if (userData.role !== "teacher" || userData.isActive === false || !userData.kindergartenId || !userData.subject) {
+        return null;
+      }
+
+      return {
+        uid: firebaseUser.uid,
+        ...userData
+      };
     }
     async function loadKindergartenInfo() {
-      const snap = await db.collection("kindergartens").doc(teacherKindergarten).get();
+      const snap = await db.collection("kindergartens").doc(currentTeacherProfile.kindergartenId).get();
       if (!snap.exists) {
-        window.location.href = "kindergartens.html";
         return null;
       }
       const kg = snap.data();
       document.getElementById("pageTitle").innerText = `نتائج ${kg.name}`;
-      document.getElementById("pageSubtitle").innerText = `المعلمة: ${teacherName} | المادة: ${formatSubject(teacherSubject)}`;
-      document.getElementById("heroTitle").innerText = `نتائج ${kg.name} - ${formatSubject(teacherSubject)}`;
-      document.getElementById("heroText").innerText = "يتم عرض نتائج نفس الروضة ونفس المادة فقط حسب سجل المعلمة.";
+      document.getElementById("pageSubtitle").innerText = `المعلمة: ${currentTeacherProfile.name || currentTeacherProfile.email || ""} | المادة: ${formatSubject(currentTeacherProfile.subject)}`;
+      document.getElementById("heroTitle").innerText = `نتائج ${kg.name} - ${formatSubject(currentTeacherProfile.subject)}`;
+      document.getElementById("heroText").innerText = "يتم عرض نتائج نفس الروضة ونفس المادة فقط حسب حساب المعلمة المسجل دخولًا.";
       return kg;
     }
     async function loadResults() {
+      currentTeacherProfile = await getTeacherProfile();
+      if (!currentTeacherProfile) {
+        await auth.signOut().catch(() => {});
+        window.location.href = "kindergartens.html";
+        return;
+      }
+
       currentKindergarten = await loadKindergartenInfo();
-      if (!currentKindergarten) return;
+      if (!currentKindergarten) {
+        await auth.signOut().catch(() => {});
+        window.location.href = "kindergartens.html";
+        return;
+      }
 
       status.innerText = "جاري تحميل النتائج...";
       const snap = await db.collection("results")
-        .where("kindergarten", "==", teacherKindergarten)
-        .where("subject", "==", teacherSubject)
+        .where("kindergarten", "==", currentTeacherProfile.kindergartenId)
+        .where("subject", "==", currentTeacherProfile.subject)
         .get();
 
       allResults = [];
@@ -230,24 +243,28 @@
       });
 
       renderRows(allResults);
-      status.innerText = `تم تحميل نتائج ${currentKindergarten.name} - ${formatSubject(teacherSubject)} بنجاح`;
+      status.innerText = `تم تحميل نتائج ${currentKindergarten.name} - ${formatSubject(currentTeacherProfile.subject)} بنجاح`;
     }
 
     document.getElementById("applyFilters").addEventListener("click", applyFilters);
     document.getElementById("resetFilters").addEventListener("click", resetFilters);
-    document.getElementById("logoutBtn").addEventListener("click", function() {
-      sessionStorage.removeItem("teacherLoggedIn");
-      sessionStorage.removeItem("teacherKindergarten");
-      sessionStorage.removeItem("teacherSubject");
-      sessionStorage.removeItem("teacherName");
+    document.getElementById("logoutBtn").addEventListener("click", async function() {
       sessionStorage.removeItem("teacherLoginSource");
+      await auth.signOut().catch(() => {});
       window.location.href = "kindergartens.html";
     });
 
-    loadResults().catch(function(error) {
-      console.error(error);
-      table.innerHTML = '<tr><td colspan="8" class="p-4 border">حدث خطأ أثناء تحميل النتائج</td></tr>';
-      status.innerText = "حدث خطأ أثناء تحميل النتائج";
+    auth.onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = "kindergartens.html";
+        return;
+      }
+
+      loadResults().catch(function(error) {
+        console.error(error);
+        table.innerHTML = '<tr><td colspan="8" class="p-4 border">حدث خطأ أثناء تحميل النتائج</td></tr>';
+        status.innerText = "حدث خطأ أثناء تحميل النتائج";
+      });
     });
   </script>
 </body>
