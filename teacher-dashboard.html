@@ -1,198 +1,608 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة المعلمة</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة المعلمة - روضة طلائع المبدعين</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-<style>
-body { font-family: Arial; direction: rtl; }
-</style>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    .hero-gradient { background: linear-gradient(135deg, #183153 0%, #24507b 100%); }
+    .card-hover { transition: all .25s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 24px rgba(0,0,0,.08); }
+    .btn-hover { transition: all .2s ease; }
+    .btn-hover:hover { transform: scale(1.03); }
+    .section-chip {
+      background: #eff6ff;
+      color: #1e3a8a;
+      border: 1px solid #bfdbfe;
+    }
+    .soft-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .input-ui {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 18px;
+      padding: 14px 16px;
+      outline: none;
+      transition: .2s;
+      background: #fff;
+    }
+    .input-ui:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(147, 197, 253, .25);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+    }
+    thead th {
+      background: #183153;
+      color: white;
+      font-weight: 700;
+    }
+    tbody tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    .small-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: white;
+      font-weight: 700;
+    }
+  </style>
 </head>
+<body class="min-h-screen bg-slate-50 text-right text-slate-800">
 
-<body class="bg-gray-100">
+  <header class="sticky top-0 z-40 bg-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">لوحة المعلمة</h1>
+        <p class="text-sm text-gray-600">واجهة خاصة بالمعلمة ضمن موقع روضة طلائع المبدعين</p>
+      </div>
 
-<div class="max-w-5xl mx-auto p-6">
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">
+          العودة إلى صفحة الروضة
+        </a>
+        <button id="resultsBtnTop" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">
+          النتائج
+        </button>
+        <button id="logoutBtnTop" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">
+          تسجيل خروج
+        </button>
+      </div>
+    </div>
+  </header>
 
-<h1 class="text-3xl font-bold mb-6 text-center">لوحة المعلمة</h1>
+  <section class="hero-gradient text-white py-16 md:py-20 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div class="text-center lg:text-right">
+          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">
+            واجهة المعلمة الخاصة
+          </span>
+          <h2 class="text-4xl md:text-5xl font-bold mb-5">مرحبًا بكِ في لوحة المعلمة</h2>
+          <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
+            من هذه الصفحة يمكنكِ إدارة طلاب مادّتك، إضافة الأسماء والأكواد، إدخال الدرجات، إرسال النتائج للمديرة، وتجهيز الصور الخاصة بالأنشطة.
+          </p>
 
-<!-- بيانات المعلمة -->
-<div class="bg-white p-4 rounded shadow mb-6">
-<h2 class="text-xl font-bold mb-2">بيانات المعلمة</h2>
-<p>الاسم: <span id="teacherName"></span></p>
-<p>المادة: <span id="teacherSubject"></span></p>
-</div>
+          <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+            <a href="#teacherInfo" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">بيانات المعلمة</a>
+            <a href="#addStudentSection" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">إضافة طالب</a>
+            <a href="#studentsSection" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">إدارة الطلاب</a>
+          </div>
+        </div>
 
-<!-- إضافة طالب -->
-<div class="bg-white p-4 rounded shadow mb-6">
-<h2 class="text-xl font-bold mb-3">إضافة طالب</h2>
+        <div class="flex justify-center lg:justify-end">
+          <div class="w-full max-w-md bg-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20">
+            <div class="bg-white/95 rounded-[28px] p-6">
+              <div class="grid grid-cols-1 gap-4">
+                <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+                  <p class="text-sm text-slate-500 mb-2">اسم المعلمة</p>
+                  <h3 id="teacherNameHero" class="text-2xl font-bold text-blue-900">...</h3>
+                </div>
+                <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
+                  <p class="text-sm text-slate-500 mb-2">المادة</p>
+                  <h3 id="teacherSubjectHero" class="text-2xl font-bold text-blue-900">...</h3>
+                </div>
+                <div class="rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
+                  <p class="text-sm text-slate-500 mb-2">الروضة</p>
+                  <h3 id="teacherKgHero" class="text-2xl font-bold text-blue-900">...</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<input id="studentName" placeholder="اسم الطالب" class="border p-2 w-full mb-2">
-<input id="studentCode" placeholder="كود الطالب" class="border p-2 w-full mb-2">
+      </div>
+    </div>
+  </section>
 
-<button onclick="addStudent()" class="bg-green-600 text-white px-4 py-2 rounded">
-إضافة
-</button>
+  <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
 
-<p id="msg" class="mt-2 text-red-600"></p>
-</div>
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+      <a href="#teacherInfo" class="card-hover soft-card rounded-2xl p-6 block">
+        <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">1</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">بيانات المعلمة</h3>
+        <p class="text-gray-600 leading-7">عرض الاسم والمادة والروضة المرتبطة بالحساب.</p>
+      </a>
 
-<!-- الطلاب -->
-<div class="bg-white p-4 rounded shadow mb-6">
-<h2 class="text-xl font-bold mb-3">قائمة الطلاب</h2>
+      <a href="#addStudentSection" class="card-hover soft-card rounded-2xl p-6 block">
+        <div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4">2</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إضافة طالب</h3>
+        <p class="text-gray-600 leading-7">إضافة اسم الطالب والكود المعتمد الخاص به.</p>
+      </a>
 
-<table class="w-full border text-center">
-<thead>
-<tr class="bg-blue-900 text-white">
-<th>الاسم</th>
-<th>الكود</th>
-<th>الدرجة</th>
-<th>حذف</th>
-</tr>
-</thead>
+      <a href="#studentsSection" class="card-hover soft-card rounded-2xl p-6 block">
+        <div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-4">3</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
+        <p class="text-gray-600 leading-7">عرض الطلاب، إدخال الدرجات، حذف طالب عند الحاجة.</p>
+      </a>
 
-<tbody id="studentsTable"></tbody>
-</table>
-</div>
+      <a href="#sendResultsSection" class="card-hover soft-card rounded-2xl p-6 block">
+        <div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4">4</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إرسال النتائج</h3>
+        <p class="text-gray-600 leading-7">إرسال الدرجات للمديرة بحالة انتظار المراجعة.</p>
+      </a>
 
-<!-- إرسال النتائج -->
-<div class="bg-white p-4 rounded shadow">
-<button onclick="sendResults()" class="bg-blue-900 text-white px-4 py-2 rounded w-full">
-إرسال النتائج للمديرة
-</button>
+      <a href="#imagesSection" class="card-hover soft-card rounded-2xl p-6 block">
+        <div class="w-14 h-14 rounded-full bg-violet-600 text-white flex items-center justify-center text-2xl mb-4">5</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">صور المعلمة</h3>
+        <p class="text-gray-600 leading-7">قسم رفع الصور جاهز للربط في الخطوة التالية.</p>
+      </a>
+    </section>
 
-<p id="sendMsg" class="mt-2"></p>
-</div>
+    <section id="teacherInfo" class="soft-card rounded-3xl p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">بيانات المعلمة</h2>
+          <p class="text-gray-600">يتم جلب بياناتك تلقائيًا من النظام.</p>
+        </div>
+        <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">حساب محمي</span>
+      </div>
 
-</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+          <p class="text-sm text-gray-500 mb-2">اسم المعلمة</p>
+          <h3 id="teacherName" class="text-xl font-bold text-blue-900">...</h3>
+        </div>
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+          <p class="text-sm text-gray-500 mb-2">المادة</p>
+          <h3 id="teacherSubject" class="text-xl font-bold text-blue-900">...</h3>
+        </div>
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+          <p class="text-sm text-gray-500 mb-2">الروضة</p>
+          <h3 id="teacherKg" class="text-xl font-bold text-blue-900">...</h3>
+        </div>
+      </div>
 
-<script>
-const firebaseConfig = {
-apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
-authDomain: "interactive-book-37270.firebaseapp.com",
-projectId: "interactive-book-37270"
-};
+      <p id="topMsg" class="mt-5 text-sm font-medium text-gray-700"></p>
+    </section>
 
-firebase.initializeApp(firebaseConfig);
+    <section id="addStudentSection" class="soft-card rounded-3xl p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">إضافة طالب جديد</h2>
+          <p class="text-gray-600">أضيفي فقط الطلاب المسموح لهم لاحقًا بإرسال النتائج.</p>
+        </div>
+        <span class="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">طلاب مادّتك فقط</span>
+      </div>
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">اسم الطالب</label>
+          <input id="studentName" type="text" placeholder="مثال: أحمد محمد" class="input-ui">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">كود الطالب</label>
+          <input id="studentCode" type="text" placeholder="مثال: ST001" class="input-ui">
+        </div>
+      </div>
 
-const KG_ID = "talaea";
+      <div class="mt-5 flex flex-wrap gap-3">
+        <button id="addStudentBtn" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-green-700 btn-hover">
+          حفظ الطالب
+        </button>
+        <button id="clearStudentBtn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-2xl font-medium hover:bg-gray-200 btn-hover">
+          تفريغ الحقول
+        </button>
+      </div>
 
-let teacherUid = null;
-let teacherData = null;
-let students = [];
+      <p id="studentMsg" class="mt-4 text-sm font-medium"></p>
+    </section>
 
-// تحميل بيانات المعلمة
-auth.onAuthStateChanged(async user => {
-if (!user) {
-location.href = "talaea-almobdeeen.html";
-return;
-}
+    <section id="studentsSection" class="soft-card rounded-3xl p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">قائمة طلاب مادّتي</h2>
+          <p class="text-gray-600">هذه القائمة تعرض فقط الطلاب الذين أضفتِهم أنتِ.</p>
+        </div>
+        <button id="refreshStudentsBtn" class="bg-blue-900 text-white px-5 py-2 rounded-xl hover:bg-blue-800 btn-hover">
+          تحديث القائمة
+        </button>
+      </div>
 
-teacherUid = user.uid;
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>اسم الطالب</th>
+              <th>الكود</th>
+              <th>الدرجة</th>
+              <th>إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTable">
+            <tr>
+              <td colspan="4" class="p-4">جاري تحميل الطلاب...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-const doc = await db.collection("users").doc(user.uid).get();
-const data = doc.data();
+    <section id="sendResultsSection" class="soft-card rounded-3xl p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">إرسال النتائج للمديرة</h2>
+          <p class="text-gray-600">سيتم إرسال النتائج المدخلة فقط للطلاب الموجودين في قائمتك.</p>
+        </div>
+        <span class="bg-rose-50 text-rose-700 px-4 py-2 rounded-full text-sm font-medium">حالة الإرسال: انتظار المراجعة</span>
+      </div>
 
-teacherData = data;
+      <div class="flex flex-wrap gap-3">
+        <button id="sendResultsBtn" class="bg-rose-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-rose-700 btn-hover">
+          إرسال النتائج
+        </button>
+        <button id="resultsBtnBottom" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover">
+          فتح صفحة النتائج
+        </button>
+      </div>
 
-document.getElementById("teacherName").innerText = data.name;
-document.getElementById("teacherSubject").innerText = data.subject;
+      <p id="sendMsg" class="mt-4 text-sm font-medium"></p>
+    </section>
 
-loadStudents();
-});
+    <section id="imagesSection" class="soft-card rounded-3xl p-8">
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-blue-900 mb-2">صور المعلمة</h2>
+          <p class="text-gray-600">هذا القسم جاهز للشكل والواجهة، وسنربطه لاحقًا برفع الصور الفعلي.</p>
+        </div>
+        <span class="bg-violet-50 text-violet-700 px-4 py-2 rounded-full text-sm font-medium">جاهز للربط</span>
+      </div>
 
-// تحميل الطلاب
-async function loadStudents() {
-const snap = await db.collection("teacher_students")
-.where("teacherUid","==",teacherUid)
-.get();
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">عنوان الصورة</label>
+          <input id="imageTitle" type="text" placeholder="مثال: نشاط العد" class="input-ui">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">اختيار صورة</label>
+          <input id="imageFile" type="file" accept="image/*" class="input-ui">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-slate-700 mb-2">وصف مختصر</label>
+          <textarea id="imageDesc" rows="4" placeholder="اكتبي وصفًا مختصرًا للصورة" class="input-ui"></textarea>
+        </div>
+      </div>
 
-students = [];
+      <div class="mt-5">
+        <button id="uploadImageBtn" class="bg-violet-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-violet-700 btn-hover">
+          رفع الصورة
+        </button>
+      </div>
 
-let html = "";
+      <p id="imageMsg" class="mt-4 text-sm font-medium"></p>
+    </section>
 
-snap.forEach(doc=>{
-let s = doc.data();
-s.id = doc.id;
-students.push(s);
+  </main>
 
-html += `
-<tr>
-<td>${s.name}</td>
-<td>${s.code}</td>
-<td>
-<input id="score_${s.id}" class="border w-20 p-1">
-</td>
-<td>
-<button onclick="deleteStudent('${s.id}')" class="bg-red-500 text-white px-2">
-حذف
-</button>
-</td>
-</tr>
-`;
-});
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.appspot.com",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
 
-document.getElementById("studentsTable").innerHTML = html;
-}
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-// إضافة طالب
-async function addStudent() {
-let name = document.getElementById("studentName").value;
-let code = document.getElementById("studentCode").value;
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-if (!name || !code) {
-document.getElementById("msg").innerText = "املأ الحقول";
-return;
-}
+    const KG_ID = "talaea";
 
-await db.collection("teacher_students").add({
-name,
-code,
-teacherUid,
-kindergartenId: KG_ID,
-subject: teacherData.subject
-});
+    let teacherUid = null;
+    let teacherData = null;
+    let teacherStudents = [];
 
-document.getElementById("msg").innerText = "تمت الإضافة";
-loadStudents();
-}
+    function prettifySubject(v) {
+      if (v === "math") return "الرياضيات";
+      if (v === "arabic") return "العربي";
+      if (v === "english") return "الإنجليزي";
+      return v || "";
+    }
 
-// حذف طالب
-async function deleteStudent(id) {
-await db.collection("teacher_students").doc(id).delete();
-loadStudents();
-}
+    async function loadTeacherData(user) {
+      teacherUid = user.uid;
 
-// إرسال النتائج
-async function sendResults() {
-for (let s of students) {
+      const snap = await db.collection("users").doc(user.uid).get();
 
-let score = document.getElementById("score_"+s.id).value;
+      if (!snap.exists) {
+        alert("المستخدم غير موجود في قاعدة البيانات");
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
 
-if (!score) continue;
+      const data = snap.data();
 
-await db.collection("pending_results").add({
-studentName: s.name,
-studentCode: s.code,
-score,
-teacherUid,
-teacherName: teacherData.name,
-kindergartenId: KG_ID,
-status: "pending"
-});
-}
+      if (data.role !== "teacher") {
+        alert("هذه الصفحة للمعلمات فقط");
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
 
-document.getElementById("sendMsg").innerText = "تم إرسال النتائج";
-}
-</script>
+      if (data.kindergartenId !== KG_ID) {
+        alert("ليس لديك صلاحية لهذه الروضة");
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
+
+      if (data.isActive !== true) {
+        alert("الحساب غير مفعل");
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
+
+      teacherData = data;
+
+      document.getElementById("teacherName").innerText = data.name || "معلمة";
+      document.getElementById("teacherSubject").innerText = prettifySubject(data.subject);
+      document.getElementById("teacherKg").innerText = data.kindergartenId || "";
+
+      document.getElementById("teacherNameHero").innerText = data.name || "معلمة";
+      document.getElementById("teacherSubjectHero").innerText = prettifySubject(data.subject);
+      document.getElementById("teacherKgHero").innerText = data.kindergartenId || "";
+
+      document.getElementById("topMsg").innerText = "يمكنك الآن إضافة طلاب مادّتك، ثم إدخال الدرجات وإرسالها للمديرة.";
+    }
+
+    async function loadStudents() {
+      const tbody = document.getElementById("studentsTable");
+      tbody.innerHTML = '<tr><td colspan="4">جاري تحميل الطلاب...</td></tr>';
+
+      try {
+        const snapshot = await db.collection("teacher_students")
+          .where("teacherUid", "==", teacherUid)
+          .where("kindergartenId", "==", KG_ID)
+          .get();
+
+        teacherStudents = [];
+        let html = "";
+
+        snapshot.forEach(doc => {
+          const s = { id: doc.id, ...doc.data() };
+          teacherStudents.push(s);
+
+          html += `
+            <tr>
+              <td>${s.name || ""}</td>
+              <td>${s.code || ""}</td>
+              <td>
+                <input type="number" min="0" max="100" id="score_${s.id}" placeholder="الدرجة"
+                  style="width:95px;border:1px solid #d1d5db;border-radius:12px;padding:8px;text-align:center;">
+              </td>
+              <td>
+                <button onclick="deleteStudent('${s.id}')" class="small-btn" style="background:#dc2626;">
+                  حذف
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        if (!teacherStudents.length) {
+          html = '<tr><td colspan="4">لا يوجد طلاب مضافون بعد</td></tr>';
+        }
+
+        tbody.innerHTML = html;
+      } catch (error) {
+        console.error(error);
+        tbody.innerHTML = '<tr><td colspan="4" style="color:#dc2626;">حدث خطأ أثناء تحميل الطلاب</td></tr>';
+      }
+    }
+
+    async function addStudent() {
+      const name = document.getElementById("studentName").value.trim();
+      const code = document.getElementById("studentCode").value.trim();
+      const msg = document.getElementById("studentMsg");
+
+      msg.className = "mt-4 text-sm font-medium text-red-600";
+      msg.innerText = "";
+
+      if (!name || !code) {
+        msg.innerText = "يرجى تعبئة اسم الطالب والكود";
+        return;
+      }
+
+      try {
+        const sameCode = await db.collection("teacher_students")
+          .where("teacherUid", "==", teacherUid)
+          .where("code", "==", code)
+          .get();
+
+        if (!sameCode.empty) {
+          msg.innerText = "هذا الكود مستخدم مسبقًا عندك";
+          return;
+        }
+
+        await db.collection("teacher_students").add({
+          name,
+          code,
+          teacherUid,
+          teacherName: teacherData.name || "",
+          kindergartenId: KG_ID,
+          subject: teacherData.subject || "",
+          isActive: true,
+          createdAt: new Date().toISOString()
+        });
+
+        document.getElementById("studentName").value = "";
+        document.getElementById("studentCode").value = "";
+
+        msg.className = "mt-4 text-sm font-medium text-green-600";
+        msg.innerText = "تم حفظ الطالب بنجاح";
+
+        await loadStudents();
+      } catch (error) {
+        console.error(error);
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        msg.innerText = "حدث خطأ أثناء حفظ الطالب";
+      }
+    }
+
+    async function deleteStudent(studentId) {
+      const ok = confirm("هل تريدين حذف هذا الطالب؟");
+      if (!ok) return;
+
+      try {
+        await db.collection("teacher_students").doc(studentId).delete();
+        await loadStudents();
+      } catch (error) {
+        console.error(error);
+        alert("حدث خطأ أثناء حذف الطالب");
+      }
+    }
+
+    async function sendResults() {
+      const msg = document.getElementById("sendMsg");
+      msg.className = "mt-4 text-sm font-medium text-blue-700";
+      msg.innerText = "جاري إرسال النتائج للمديرة...";
+
+      try {
+        let sentCount = 0;
+
+        for (const s of teacherStudents) {
+          const input = document.getElementById(`score_${s.id}`);
+          if (!input) continue;
+
+          const score = input.value.trim();
+          if (!score) continue;
+
+          await db.collection("pending_results").add({
+            studentId: s.id,
+            studentName: s.name || "",
+            studentCode: s.code || "",
+            teacherUid,
+            teacherName: teacherData.name || "",
+            subject: teacherData.subject || "",
+            kindergartenId: KG_ID,
+            score: Number(score),
+            status: "pending",
+            createdAt: new Date().toISOString()
+          });
+
+          sentCount++;
+        }
+
+        msg.className = "mt-4 text-sm font-medium text-green-600";
+        msg.innerText = sentCount
+          ? `تم إرسال ${sentCount} نتيجة للمديرة بنجاح`
+          : "لم يتم إرسال أي نتيجة لأن حقول الدرجات فارغة";
+      } catch (error) {
+        console.error(error);
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        msg.innerText = "حدث خطأ أثناء إرسال النتائج";
+      }
+    }
+
+    function clearStudentInputs() {
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentCode").value = "";
+      document.getElementById("studentMsg").innerText = "";
+    }
+
+    function goToResults() {
+      window.location.href = "results.html";
+    }
+
+    function logout() {
+      auth.signOut();
+      window.location.href = "talaea-almobdeeen.html";
+    }
+
+    function uploadImagePlaceholder() {
+      const file = document.getElementById("imageFile").files[0];
+      const title = document.getElementById("imageTitle").value.trim();
+      const msg = document.getElementById("imageMsg");
+
+      if (!file) {
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        msg.innerText = "يرجى اختيار صورة أولًا";
+        return;
+      }
+
+      if (!title) {
+        msg.className = "mt-4 text-sm font-medium text-red-600";
+        msg.innerText = "يرجى كتابة عنوان للصورة";
+        return;
+      }
+
+      msg.className = "mt-4 text-sm font-medium text-blue-700";
+      msg.innerText = "تم تجهيز هذا القسم، وسنربطه برفع الصور الفعلي في الخطوة التالية.";
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
+
+      try {
+        await loadTeacherData(user);
+        await loadStudents();
+      } catch (error) {
+        console.error(error);
+        alert("حدث خطأ أثناء تحميل صفحة المعلمة");
+      }
+    });
+
+    document.getElementById("addStudentBtn").addEventListener("click", addStudent);
+    document.getElementById("clearStudentBtn").addEventListener("click", clearStudentInputs);
+    document.getElementById("refreshStudentsBtn").addEventListener("click", loadStudents);
+    document.getElementById("sendResultsBtn").addEventListener("click", sendResults);
+    document.getElementById("resultsBtnTop").addEventListener("click", goToResults);
+    document.getElementById("resultsBtnBottom").addEventListener("click", goToResults);
+    document.getElementById("logoutBtnTop").addEventListener("click", logout);
+    document.getElementById("uploadImageBtn").addEventListener("click", uploadImagePlaceholder);
+  </script>
 
 </body>
 </html>
