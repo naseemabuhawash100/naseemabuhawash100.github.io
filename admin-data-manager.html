@@ -37,7 +37,7 @@
       const db = firebase.firestore();
 
       function denyAccess() {
-        window.location.replace('kindergartens.html');
+        window.location.replace('talaea-almobdeeen.html');
       }
 
       auth.onAuthStateChanged(async function(user) {
@@ -78,7 +78,7 @@
         <p class="text-sm text-gray-600">إدارة الروضات والطلاب والمعلمات والتمارين من مكان واحد</p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <a href="index.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300">العودة للرئيسية</a>
+        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300">العودة للرئيسية</a>
         <button id="refreshBtn" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800">تحديث</button>
       </div>
     </div>
@@ -287,16 +287,7 @@
   </section>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
-      authDomain: "interactive-book-37270.firebaseapp.com",
-      projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.appspot.com",
-      messagingSenderId: "350364566140",
-      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
-      measurementId: "G-QM0TNEN9XJ"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    // Firebase already initialized by the protection script above - reuse the same app instance
     const db = firebase.firestore();
 
     const SUPABASE_URL = "https://sdmjyxtvubwhbtzhbsop.supabase.co";
