@@ -74,10 +74,10 @@
         <p id="pageSubtitle" class="text-xs md:text-sm text-slate-600 mt-1 leading-6">جاري تحميل بيانات الصفحة...</p>
       </div>
       <div class="flex w-full md:w-auto flex-wrap gap-2 md:gap-3">
-        <a id="backToExercisesLink" href="exercises.html" class="flex-1 md:flex-none text-center bg-slate-200 text-slate-800 px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-slate-300 transition">
+        <a id="backToExercisesLink" href="talaea-almobdeeen.html" class="flex-1 md:flex-none text-center bg-slate-200 text-slate-800 px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-slate-300 transition">
           العودة للتمارين
         </a>
-        <a id="kindergartenHomeLink" href="kindergarten-home.html" class="flex-1 md:flex-none text-center bg-blue-900 text-white px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-blue-800 transition">
+        <a id="kindergartenHomeLink" href="talaea-almobdeeen.html" class="flex-1 md:flex-none text-center bg-blue-900 text-white px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-blue-800 transition">
           صفحة الروضة
         </a>
       </div>
@@ -149,10 +149,10 @@
   <script>
     (function () {
       const firebaseConfig = {
-        apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
+        apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
         authDomain: "interactive-book-37270.firebaseapp.com",
         projectId: "interactive-book-37270",
-        storageBucket: "interactive-book-37270.appspot.com",
+        storageBucket: "interactive-book-37270.firebasestorage.app",
         messagingSenderId: "350364566140",
         appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
         measurementId: "G-QM0TNEN9XJ"
@@ -165,7 +165,7 @@
       const kindergartenFromUrl = params.get("kg") || "";
       const familyKindergarten = kindergartenFromUrl || sessionStorage.getItem("familyKindergarten");
       if (!familyKindergarten) {
-        window.location.href = "kindergartens.html";
+        window.location.href = "talaea-almobdeeen.html";
         return;
       }
       sessionStorage.setItem("familyKindergarten", familyKindergarten);
@@ -193,8 +193,8 @@
 
       function updateNavigationLinks() {
         const kgParam = encodeURIComponent(familyKindergarten);
-        if (backToExercisesLink) backToExercisesLink.href = `exercises.html?kg=${kgParam}`;
-        if (kindergartenHomeLink) kindergartenHomeLink.href = `kindergarten-home.html?kg=${kgParam}`;
+        if (backToExercisesLink) backToExercisesLink.href = `talaea-almobdeeen.html`;
+        if (kindergartenHomeLink) kindergartenHomeLink.href = `talaea-almobdeeen.html`;
       }
 
       updateNavigationLinks();
@@ -740,7 +740,7 @@ ${jsText ? `<script>${jsText}<\/script>` : ""}
 
           const kgSnap = await db.collection("kindergartens").doc(familyKindergarten).get();
           if (!kgSnap.exists) {
-            window.location.href = "kindergartens.html";
+            window.location.href = "talaea-almobdeeen.html";
             return;
           }
 
