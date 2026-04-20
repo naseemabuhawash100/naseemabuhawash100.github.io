@@ -6,7 +6,6 @@
   <title>روضة طلائع المبدعين</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
@@ -74,7 +73,7 @@
       </nav>
 
       <div class="flex flex-wrap justify-center gap-3">
-        <button id="adminLoginBtnTop" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">خاص بالإدارة</button>
+        <a href="talaea-admin.html" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">خاص بالإدارة</a>
       </div>
     </div>
   </header>
@@ -353,35 +352,11 @@
       <p class="text-gray-200 max-w-3xl mx-auto leading-8 mb-8">
         تم تجهيز صفحة إدارة مستقلة لهذه الروضة. يمكنك الدخول إليها من زر "خاص بالإدارة" في أعلى الصفحة لإدارة أوراق العمل والصور والفيديوهات والدخول إلى نتائج الطلاب.
       </p>
-      <button id="adminLoginBtnSection" class="inline-flex items-center gap-3 bg-white text-blue-900 rounded-2xl px-6 py-4 font-bold hover:bg-slate-100 btn-hover">
-        الدخول إلى الإدارة
-      </button>
+      <a href="talaea-admin.html" class="inline-flex items-center gap-3 bg-white text-blue-900 rounded-2xl px-6 py-4 font-bold hover:bg-slate-100 btn-hover">
+        الدخول إلى صفحة الإدارة
+      </a>
     </div>
   </section>
-
-  <div id="loginModal" class="fixed inset-0 bg-black/50 z-[999] hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-      <div class="bg-amber-500 text-white px-6 py-4">
-        <h3 class="text-2xl font-bold">دخول الإدارة</h3>
-        <p class="text-sm opacity-90 mt-1">للمديرة والمعلمات فقط - روضة طلائع المبدعين</p>
-      </div>
-      <div class="p-6 space-y-4">
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" placeholder="example@email.com" class="w-full rounded-2xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">كلمة المرور</label>
-          <input type="password" id="loginPassword" placeholder="********" class="w-full rounded-2xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-200">
-        </div>
-        <p id="loginError" class="text-sm font-medium text-red-600 min-h-[24px]"></p>
-        <div class="flex gap-3">
-          <button id="loginSubmitBtn" class="flex-1 bg-blue-900 text-white px-5 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover">دخول</button>
-          <button id="loginCloseBtn" class="flex-1 bg-gray-100 text-gray-700 px-5 py-3 rounded-2xl font-medium hover:bg-gray-200 btn-hover">إغلاق</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <footer class="bg-black text-gray-400 py-10">
     <div class="max-w-6xl mx-auto px-4 text-center">
@@ -391,10 +366,10 @@
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      apiKey: "AIzaSyCvMD5nCvSVsKtSMVfELNFLHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
       projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.firebasestorage.app",
+      storageBucket: "interactive-book-37270.appspot.com",
       messagingSenderId: "350364566140",
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
       measurementId: "G-QM0TNEN9XJ"
@@ -404,66 +379,6 @@
 
     const KG_ID = "talaea-almobdeeen";
     const KG_NAME = "روضة طلائع المبدعين";
-
-    function openLoginModal() {
-      document.getElementById("loginModal").classList.remove("hidden");
-      document.getElementById("loginModal").classList.add("flex");
-      document.getElementById("loginError").innerText = "";
-    }
-
-    function closeLoginModal() {
-      document.getElementById("loginModal").classList.add("hidden");
-      document.getElementById("loginModal").classList.remove("flex");
-      document.getElementById("loginError").innerText = "";
-      document.getElementById("loginPassword").value = "";
-    }
-
-    async function loginUser() {
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-      const errorEl = document.getElementById("loginError");
-      errorEl.innerText = "";
-
-      if (!email || !password) {
-        errorEl.innerText = "يرجى إدخال البريد الإلكتروني وكلمة المرور";
-        return;
-      }
-
-      try {
-        const userCred = await firebase.auth().signInWithEmailAndPassword(email, password);
-        const uid = userCred.user.uid;
-        const userDoc = await db.collection("users").doc(uid).get();
-
-        if (!userDoc.exists) {
-          throw new Error("المستخدم غير موجود في النظام");
-        }
-
-        const data = userDoc.data();
-
-        if (data.isActive !== true) {
-          throw new Error("الحساب غير مفعل");
-        }
-
-        if (data.kindergartenId !== KG_ID) {
-          throw new Error("هذا الحساب لا ينتمي لهذه الروضة");
-        }
-
-        if (data.role === "kindergarten_manager") {
-          window.location.href = `talaea-admin.html?kg=${KG_ID}`;
-          return;
-        }
-
-        if (data.role === "teacher") {
-          window.location.href = "teacher-dashboard.html";
-          return;
-        }
-
-        throw new Error("ليس لديك صلاحية الدخول");
-      } catch (error) {
-        console.error(error);
-        errorEl.innerText = error.message || "فشل تسجيل الدخول";
-      }
-    }
 
     async function ensureKindergartenSession() {
       sessionStorage.setItem("familyKindergarten", KG_ID);
@@ -484,7 +399,7 @@
 
     async function openExercises() {
       await ensureKindergartenSession();
-      window.location.href = "exercise-player.html?kg=" + KG_ID;
+      window.location.href = "exercises.html";
     }
 
     document.getElementById("mainExercisesBtn").addEventListener("click", openExercises);
@@ -499,14 +414,6 @@
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
-    });
-
-    document.getElementById("adminLoginBtnTop").addEventListener("click", openLoginModal);
-    document.getElementById("adminLoginBtnSection").addEventListener("click", openLoginModal);
-    document.getElementById("loginCloseBtn").addEventListener("click", closeLoginModal);
-    document.getElementById("loginSubmitBtn").addEventListener("click", loginUser);
-    document.getElementById("loginModal").addEventListener("click", function(e) {
-      if (e.target.id === "loginModal") closeLoginModal();
     });
 
     ensureKindergartenSession();
