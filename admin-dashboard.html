@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم إدارة الروضات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .input-field {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>لوحة تحكم إدارة الروضات</h1>
+    <div class="form-container">
+        <input class="input-field" type="text" id="kindergartenName" placeholder="اسم الروضة" />
+        <input class="input-field" type="text" id="kindergartenLink" placeholder="رابط صفحة الروضة" />
+        <input class="input-field" type="text" id="exerciseDetails" placeholder="تفاصيل التمارين (مثل: الصفحة 1، الصفحة 2)" />
+        <button class="submit-btn" onclick="generatePage()">إنشاء صفحة الروضة</button>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
