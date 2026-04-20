@@ -1,0 +1,20 @@
+name: Deploy Pages to GitHub
+
+on:
+  push:
+    branches:
+      - main  # أو أي فرع آخر تستخدمه
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Deploy to GitHub Pages
+      run: |
+        curl -X PUT -H "Authorization: token ${{ secrets.token }}" \
+        -d '{"message": "Add new page", "content": "BASE64_ENCODED_PAGE_CONTENT"}' \
+        https://api.github.com/repos/naseemabuhawash100/naseemabuhawash100.github.io/contents/NEW_PAGE.html
