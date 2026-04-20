@@ -394,7 +394,7 @@
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
       projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.appspot.com",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
       messagingSenderId: "350364566140",
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
       measurementId: "G-QM0TNEN9XJ"
@@ -484,7 +484,7 @@
 
     async function openExercises() {
       await ensureKindergartenSession();
-      window.location.href = "exercises.html";
+      window.location.href = "exercise-player.html?kg=" + KG_ID;
     }
 
     document.getElementById("mainExercisesBtn").addEventListener("click", openExercises);
