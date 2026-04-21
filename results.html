@@ -244,7 +244,14 @@
       }
     });
 
-    auth.onAuthStateChanged(async function(user) {
+    function getCurrentUser() {
+      return new Promise(function (resolve) {
+        if (auth.currentUser) { resolve(auth.currentUser); return; }
+        const unsub = auth.onAuthStateChanged(function (user) { unsub(); resolve(user); });
+      });
+    }
+
+    getCurrentUser().then(async function(user) {
       if (!user) {
         redirectBack();
         return;

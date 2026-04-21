@@ -27,16 +27,24 @@
         appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      firebase.auth().onAuthStateChanged(async function (user) {
+      const _auth = firebase.auth();
+      const _db = firebase.firestore();
+      function getCurrentUser() {
+        return new Promise(function(resolve) {
+          if (_auth.currentUser) { resolve(_auth.currentUser); return; }
+          const unsub = _auth.onAuthStateChanged(function(u) { unsub(); resolve(u); });
+        });
+      }
+      getCurrentUser().then(async function(user) {
         if (!user) { window.location.replace('admin-login.html'); return; }
-        const doc = await firebase.firestore().collection('users').doc(user.uid).get();
-        if (!doc.exists) { firebase.auth().signOut(); window.location.replace('admin-login.html'); return; }
+        const doc = await _db.collection('users').doc(user.uid).get();
+        if (!doc.exists) { _auth.signOut(); window.location.replace('admin-login.html'); return; }
         const d = doc.data() || {};
         if (d.isActive !== true || (d.role !== 'admin' && d.role !== 'kindergarten_manager')) {
-          firebase.auth().signOut(); window.location.replace('admin-login.html'); return;
+          _auth.signOut(); window.location.replace('admin-login.html'); return;
         }
         document.body.style.visibility = 'visible';
-      });
+      }).catch(function() { window.location.replace('admin-login.html'); });
     })();
   </script>
   <header class="bg-white shadow-md sticky top-0 z-40">

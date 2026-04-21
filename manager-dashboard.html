@@ -39,20 +39,31 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
-      let authChecked = false;
+      // نستخدم getCurrentUser بدل onAuthStateChanged لتجنب مشكلة null الأولى
+      function getCurrentUser() {
+        return new Promise(function (resolve) {
+          // إذا كان المستخدم محملاً بالفعل، أرجعه فوراً
+          if (auth.currentUser) {
+            resolve(auth.currentUser);
+            return;
+          }
+          // وإلا انتظر أول حالة حقيقية
+          const unsubscribe = auth.onAuthStateChanged(function (user) {
+            unsubscribe(); // ألغِ الاستماع بعد أول استجابة
+            resolve(user);
+          });
+        });
+      }
 
-      auth.onAuthStateChanged(async function (user) {
-        // منع التشغيل أكثر من مرة
-        if (authChecked) return;
-        authChecked = true;
-
-        // لو مفيش مستخدم مسجل → ارجع لصفحة الدخول
-        if (!user) {
-          window.location.replace('kindergartens.html');
-          return;
-        }
-
+      async function checkAccess() {
         try {
+          const user = await getCurrentUser();
+
+          if (!user) {
+            window.location.replace('kindergartens.html');
+            return;
+          }
+
           const doc = await db.collection('users').doc(user.uid).get();
 
           if (!doc.exists) {
@@ -63,7 +74,6 @@
 
           const data = doc.data() || {};
 
-          // التحقق من الدور والتفعيل
           if (data.isActive !== true || data.role !== 'kindergarten_manager') {
             await auth.signOut();
             window.location.replace('kindergartens.html');
@@ -78,7 +88,6 @@
 
         } catch (e) {
           console.error('Auth check error:', e);
-          // لا نرجع المستخدم - نعرض رسالة خطأ فقط
           document.body.style.visibility = 'visible';
           document.body.innerHTML = `
             <div style="font-family:Tajawal,Arial,sans-serif;direction:rtl;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;">
@@ -94,7 +103,9 @@
               </div>
             </div>`;
         }
-      });
+      }
+
+      checkAccess();
     })();
   </script>
 

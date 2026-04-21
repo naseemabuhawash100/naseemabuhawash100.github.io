@@ -40,26 +40,26 @@
         window.location.replace('kindergartens.html');
       }
 
-      auth.onAuthStateChanged(async function(user) {
-        if (!user) {
-          denyAccess();
-          return;
-        }
+      function getCurrentUser() {
+        return new Promise(function (resolve) {
+          if (auth.currentUser) { resolve(auth.currentUser); return; }
+          const unsub = auth.onAuthStateChanged(function (user) { unsub(); resolve(user); });
+        });
+      }
 
+      async function checkAccess() {
         try {
+          const user = await getCurrentUser();
+
+          if (!user) { denyAccess(); return; }
+
           const userDoc = await db.collection('users').doc(user.uid).get();
-          if (!userDoc.exists) {
-            denyAccess();
-            return;
-          }
+          if (!userDoc.exists) { denyAccess(); return; }
 
           const data = userDoc.data() || {};
           const allowed = data.isActive === true && (data.role === 'admin' || data.role === 'kindergarten_manager');
 
-          if (!allowed) {
-            denyAccess();
-            return;
-          }
+          if (!allowed) { denyAccess(); return; }
 
           window.currentAdminUser = data;
           document.body.style.visibility = 'visible';
@@ -67,7 +67,9 @@
           console.error('Admin page protection error:', error);
           denyAccess();
         }
-      });
+      }
+
+      checkAccess();
     })();
   </script>
 
