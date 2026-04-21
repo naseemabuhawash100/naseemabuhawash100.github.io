@@ -420,61 +420,49 @@
     verifyKindergartenExists();
   </script>
 
-<!-- زر الدخول للإدارة -->
-<button id="adminLoginBtn">خاص بالإدارة</button>
+<!-- Firebase Authentication and sign-in logic -->
 
-<!-- نافذة منبثقة لطلب تسجيل الدخول -->
-<div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>تسجيل الدخول</h2>
-    <form id="loginForm">
-      <label for="email">البريد الإلكتروني:</label>
-      <input type="email" id="email" required>
-      <label for="password">كلمة السر:</label>
-      <input type="password" id="password" required>
-      <button type="submit">دخول</button>
-    </form>
-  </div>
-</div>
+<!-- Firebase SDK (ensure these are included in the <head> or at the bottom of the page) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-<!-- JavaScript for handling login and redirect -->
 <script>
-document.getElementById("adminLoginBtn").onclick = function() {
-  document.getElementById("loginModal").style.display = "block"; // إظهار النافذة المنبثقة
-}
+  // Initialize Firebase with your config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-// إغلاق النافذة المنبثقة عند الضغط على (×)
-document.querySelector(".close").onclick = function() {
-  document.getElementById("loginModal").style.display = "none";
-}
+  // Firebase Authentication: Sign in with email and password
+  document.getElementById("loginForm").onsubmit = function(event) {
+    event.preventDefault();
 
-// التحقق من البريد وكلمة السر عند تقديم النموذج
-document.getElementById("loginForm").onsubmit = function(event) {
-  event.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+    // Firebase Authentication: sign-in
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
 
-  // قائمة للمستخدمين الافتراضيين (يمكنك استبدالها بقاعدة بيانات أو ملف JSON)
-  const users = [
-    { email: "admin@admin.com", password: "admin123", role: "admin" },
-    { email: "teacher@teacher.com", password: "teacher123", role: "teacher" }
-  ];
-
-  const user = users.find(user => user.email === email && user.password === password);
-
-  if (user) {
-    // إذا كان المستخدم هو المديرة
-    if (user.role === "admin") {
-      window.location.href = "talaea-admin.html"; // توجيه إلى صفحة المديرة
-    } else if (user.role === "teacher") {
-      window.location.href = "Teacher-dashboard.html"; // توجيه إلى صفحة المعلمة
-    }
-  } else {
-    alert("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+        // Redirect based on role
+        if (email === "admin@admin.com") {
+          window.location.href = "talaea-admin.html"; // Admin Page
+        } else if (email === "teacher@teacher.com") {
+          window.location.href = "Teacher-dashboard.html"; // Teacher Dashboard
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert("Error: " + errorMessage); // Handle error
+      });
   }
-}
 </script>
 </body>
 </html>
