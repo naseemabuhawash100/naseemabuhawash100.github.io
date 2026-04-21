@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم المديرة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; visibility: hidden; }
+    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+    .card-hover { transition: all .25s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 24px rgba(0,0,0,.08); }
+    .btn-hover { transition: all .2s ease; }
+    .btn-hover:hover { transform: scale(1.03); }
+    .tab-btn.active { background: #1e3a8a; color: white; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-right">
+
+  <!-- حماية الدخول: مديرة الروضة فقط -->
+  <script>
+    (function () {
+      const firebaseConfig = {
+        apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+        authDomain: "interactive-book-37270.firebaseapp.com",
+        projectId: "interactive-book-37270",
+        storageBucket: "interactive-book-37270.firebasestorage.app",
+        messagingSenderId: "350364566140",
+        appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+        measurementId: "G-QM0TNEN9XJ"
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      auth.onAuthStateChanged(async function (user) {
+        if (!user) { window.location.replace('kindergartens.html'); return; }
+        try {
+          const doc = await db.collection('users').doc(user.uid).get();
+          if (!doc.exists) { auth.signOut(); window.location.replace('kindergartens.html'); return; }
+          const data = doc.data() || {};
+          if (data.isActive !== true || data.role !== 'kindergarten_manager') {
+            auth.signOut(); window.location.replace('kindergartens.html'); return;
+          }
+          window.currentManagerData = data;
+          window.currentManagerUid = user.uid;
+          document.body.style.visibility = 'visible';
+          if (window.initDashboard) window.initDashboard();
+        } catch (e) {
+          console.error(e);
+          window.location.replace('kindergartens.html');
+        }
+      });
+    })();
+  </script>
+
+  <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 id="pageTitle" class="text-2xl font-bold text-blue-900">لوحة تحكم المديرة</h1>
+        <p id="pageSubtitle" class="text-sm text-gray-600">جاري تحميل بيانات الروضة...</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="kindergartens.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة</a>
+        <button id="refreshBtn" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">تحديث</button>
+        <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-gradient text-white py-12 md:py-16">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 id="heroTitle" class="text-4xl md:text-5xl font-bold mb-4">لوحة إدارة الروضة</h2>
+      <p class="text-lg opacity-90 leading-9">إدارة طلاب ومعلمات الروضة ومراجعة النتائج</p>
+      <p id="topStatus" class="mt-4 text-sm font-medium text-gray-200">جاري تحميل البيانات...</p>
+    </div>
+  </section>
+
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+
+      <!-- التبويبات -->
+      <div class="bg-white rounded-2xl shadow-lg p-4 border border-gray-100 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <button class="tab-btn active px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="students">إدارة الطلاب</button>
+          <button class="tab-btn px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="teachers">معلمات الروضة</button>
+          <button class="tab-btn px-4 py-3 rounded-xl border border-gray-300 font-bold" data-tab="results">النتائج</button>
+        </div>
+      </div>
+
+      <!-- تبويب الطلاب -->
+      <div id="tab-students" class="tab-panel active space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">إضافة طالب جديد</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input id="studentName" type="text" placeholder="اسم الطالب" class="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-900">
+            <input id="studentCode" type="text" placeholder="كود الطالب" class="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-900">
+            <input id="studentClass" type="text" placeholder="الشعبة / الصف" class="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-900">
+          </div>
+          <div class="mt-4">
+            <button id="addStudentBtn" class="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700 btn-hover">إضافة الطالب</button>
+          </div>
+          <p id="studentMsg" class="mt-4 text-sm font-medium text-gray-700"></p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+            <h3 class="text-2xl font-bold text-blue-900">قائمة الطلاب</h3>
+            <input id="searchStudent" type="text" placeholder="ابحث باسم الطالب أو الكود" class="px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:border-blue-900 w-full md:w-64">
+          </div>
+          <p id="studentsCount" class="text-sm text-gray-500 mb-4"></p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-center border-collapse">
+              <thead>
+                <tr class="bg-blue-900 text-white">
+                  <th class="p-3 border">اسم الطالب</th>
+                  <th class="p-3 border">الكود</th>
+                  <th class="p-3 border">الشعبة</th>
+                  <th class="p-3 border">إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- تبويب المعلمات -->
+      <div id="tab-teachers" class="tab-panel space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <h3 class="text-2xl font-bold text-blue-900 mb-5">معلمات الروضة</h3>
+          <p class="text-gray-500 text-sm mb-5">يمكن مراجعة المعلمات وتفعيل أو تعطيل حساباتهن. لإضافة معلمة جديدة يرجى التواصل مع الأدمن.</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-center border-collapse">
+              <thead>
+                <tr class="bg-blue-900 text-white">
+                  <th class="p-3 border">اسم المعلمة</th>
+                  <th class="p-3 border">البريد الإلكتروني</th>
+                  <th class="p-3 border">المادة</th>
+                  <th class="p-3 border">الحالة</th>
+                  <th class="p-3 border">إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="teachersTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- تبويب النتائج -->
+      <div id="tab-results" class="tab-panel space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-5">
+            <h3 class="text-2xl font-bold text-blue-900">نتائج الطلاب</h3>
+            <p id="resultsCount" class="text-gray-500 text-sm"></p>
+          </div>
+
+          <!-- فلاتر -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+            <input id="filterDate" type="date" class="px-4 py-3 rounded-xl border border-gray-300">
+            <input id="filterPage" type="number" min="1" placeholder="رقم الصفحة" class="px-4 py-3 rounded-xl border border-gray-300">
+            <input id="filterStudent" type="text" placeholder="اسم الطالب" class="px-4 py-3 rounded-xl border border-gray-300">
+            <select id="filterSubject" class="px-4 py-3 rounded-xl border border-gray-300">
+              <option value="">كل المواد</option>
+              <option value="math">الرياضيات</option>
+              <option value="arabic">العربي</option>
+              <option value="english">الإنجليزي</option>
+            </select>
+          </div>
+          <div class="flex gap-3 mb-6">
+            <button id="applyFilters" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800 btn-hover">تطبيق</button>
+            <button id="resetFilters" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-medium hover:bg-gray-300 btn-hover">مسح</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-center border-collapse">
+              <thead>
+                <tr class="bg-blue-900 text-white">
+                  <th class="p-3 border">اسم الطالب</th>
+                  <th class="p-3 border">الكود</th>
+                  <th class="p-3 border">الشعبة</th>
+                  <th class="p-3 border">النتيجة</th>
+                  <th class="p-3 border">المادة</th>
+                  <th class="p-3 border">رقم الصفحة</th>
+                  <th class="p-3 border">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9",
+      measurementId: "G-QM0TNEN9XJ"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentKgId = "";
+    let allStudents = [];
+    let allResults = [];
+
+    function escapeHtml(t) {
+      return String(t ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
+    }
+    function formatDate(v) {
+      if (!v) return "";
+      const d = new Date(v);
+      return isNaN(d) ? v : d.toLocaleDateString("ar-EG");
+    }
+    function extractDateOnly(v) {
+      if (!v) return "";
+      const d = new Date(v);
+      return isNaN(d) ? "" : d.toISOString().slice(0, 10);
+    }
+
+    // تبويبات
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        this.classList.add("active");
+        document.getElementById("tab-" + this.dataset.tab).classList.add("active");
+      });
+    });
+
+    // عرض الطلاب
+    function renderStudents() {
+      const tbody = document.getElementById("studentsTable");
+      const search = document.getElementById("searchStudent").value.trim().toLowerCase();
+      const filtered = allStudents.filter(s => {
+        const txt = (s.name || "") + " " + (s.code || "") + " " + (s.className || "");
+        return !search || txt.toLowerCase().includes(search);
+      });
+      document.getElementById("studentsCount").innerText = `إجمالي الطلاب: ${filtered.length}`;
+      tbody.innerHTML = "";
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 border">لا توجد بيانات مطابقة</td></tr>';
+        return;
+      }
+      filtered.forEach(s => {
+        tbody.innerHTML += `
+          <tr class="bg-white hover:bg-gray-50">
+            <td class="p-3 border">${escapeHtml(s.name)}</td>
+            <td class="p-3 border">${escapeHtml(s.code)}</td>
+            <td class="p-3 border">${escapeHtml(s.className || "")}</td>
+            <td class="p-3 border">
+              <button class="delete-student bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm" data-id="${escapeHtml(s.docId)}">حذف</button>
+            </td>
+          </tr>`;
+      });
+      document.querySelectorAll(".delete-student").forEach(btn => {
+        btn.addEventListener("click", async function () {
+          if (!confirm("هل تريد حذف هذا الطالب؟")) return;
+          await db.collection("students").doc(this.dataset.id).delete();
+          await loadStudents();
+        });
+      });
+    }
+
+    // عرض المعلمات
+    function renderTeachers(teachers) {
+      const tbody = document.getElementById("teachersTable");
+      tbody.innerHTML = "";
+      if (!teachers.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 border">لا توجد معلمات مرتبطة بهذه الروضة</td></tr>';
+        return;
+      }
+      teachers.forEach(t => {
+        const isActive = t.isActive !== false;
+        tbody.innerHTML += `
+          <tr class="bg-white hover:bg-gray-50">
+            <td class="p-3 border">${escapeHtml(t.name || "")}</td>
+            <td class="p-3 border">${escapeHtml(t.email || t.user || "")}</td>
+            <td class="p-3 border">${escapeHtml(subjectLabel(t.subject))}</td>
+            <td class="p-3 border">
+              <span class="px-3 py-1 rounded-full text-sm font-bold ${isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}">
+                ${isActive ? "مفعل" : "معطل"}
+              </span>
+            </td>
+            <td class="p-3 border">
+              <button class="toggle-teacher ${isActive ? "bg-amber-500 hover:bg-amber-600" : "bg-green-600 hover:bg-green-700"} text-white px-3 py-1 rounded-lg text-sm"
+                data-id="${escapeHtml(t.docId)}" data-active="${isActive}">
+                ${isActive ? "تعطيل" : "تفعيل"}
+              </button>
+            </td>
+          </tr>`;
+      });
+      document.querySelectorAll(".toggle-teacher").forEach(btn => {
+        btn.addEventListener("click", async function () {
+          const newActive = this.dataset.active === "true" ? false : true;
+          await db.collection("users").doc(this.dataset.id).update({ isActive: newActive });
+          await loadTeachers();
+        });
+      });
+    }
+
+    // عرض النتائج
+    function renderResults(results) {
+      const tbody = document.getElementById("resultsTable");
+      document.getElementById("resultsCount").innerText = `إجمالي النتائج: ${results.length}`;
+      tbody.innerHTML = "";
+      if (!results.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 border">لا توجد نتائج</td></tr>';
+        return;
+      }
+      results.forEach(r => {
+        tbody.innerHTML += `
+          <tr class="bg-white hover:bg-gray-50">
+            <td class="p-3 border">${escapeHtml(r.studentName || "")}</td>
+            <td class="p-3 border">${escapeHtml(r.studentCode || "")}</td>
+            <td class="p-3 border">${escapeHtml(r.className || "")}</td>
+            <td class="p-3 border">${escapeHtml(r.score ?? "")} / ${escapeHtml(r.total ?? "")}</td>
+            <td class="p-3 border">${escapeHtml(subjectLabel(r.subject))}</td>
+            <td class="p-3 border">${escapeHtml(r.pageNumber ?? "")}</td>
+            <td class="p-3 border">${escapeHtml(formatDate(r.createdAt))}</td>
+          </tr>`;
+      });
+    }
+
+    function applyFilters() {
+      const fd = document.getElementById("filterDate").value;
+      const fp = document.getElementById("filterPage").value.trim();
+      const fs = document.getElementById("filterStudent").value.trim().toLowerCase();
+      const fsub = document.getElementById("filterSubject").value;
+      const filtered = allResults.filter(r => {
+        if (fd && extractDateOnly(r.createdAt) !== fd) return false;
+        if (fp && String(r.pageNumber ?? "") !== fp) return false;
+        if (fs && !(r.studentName || "").toLowerCase().includes(fs)) return false;
+        if (fsub && r.subject !== fsub) return false;
+        return true;
+      });
+      renderResults(filtered);
+    }
+
+    // تحميل البيانات
+    async function loadStudents() {
+      const snap = await db.collection("students").where("kindergartenId", "==", currentKgId).get();
+      allStudents = snap.docs.map(d => ({ docId: d.id, ...d.data() }))
+        .sort((a, b) => (a.name || "").localeCompare(b.name || "", "ar"));
+      renderStudents();
+    }
+
+    async function loadTeachers() {
+      const snap = await db.collection("users")
+        .where("kindergartenId", "==", currentKgId)
+        .where("role", "==", "teacher")
+        .get();
+      const teachers = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+      renderTeachers(teachers);
+    }
+
+    async function loadResults() {
+      const snap = await db.collection("results").where("kindergarten", "==", currentKgId).get();
+      allResults = snap.docs.map(d => d.data())
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      renderResults(allResults);
+    }
+
+    async function loadAll() {
+      document.getElementById("topStatus").innerText = "جاري تحميل البيانات...";
+      await Promise.all([loadStudents(), loadTeachers(), loadResults()]);
+      document.getElementById("topStatus").innerText = "تم تحميل البيانات بنجاح";
+    }
+
+    // إضافة طالب
+    document.getElementById("addStudentBtn").addEventListener("click", async function () {
+      const name = document.getElementById("studentName").value.trim();
+      const code = document.getElementById("studentCode").value.trim().toUpperCase();
+      const className = document.getElementById("studentClass").value.trim();
+      const msg = document.getElementById("studentMsg");
+      if (!name || !code) { msg.innerText = "يرجى إدخال الاسم والكود"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
+      const existing = await db.collection("students").where("code", "==", code).get();
+      if (!existing.empty) { msg.innerText = "هذا الكود مستخدم بالفعل"; msg.className = "mt-4 text-sm font-medium text-red-600"; return; }
+      await db.collection("students").add({ kindergartenId: currentKgId, name, code, className });
+      msg.innerText = "تم إضافة الطالب بنجاح"; msg.className = "mt-4 text-sm font-medium text-green-600";
+      ["studentName", "studentCode", "studentClass"].forEach(id => document.getElementById(id).value = "");
+      await loadStudents();
+    });
+
+    document.getElementById("searchStudent").addEventListener("input", renderStudents);
+    document.getElementById("applyFilters").addEventListener("click", applyFilters);
+    document.getElementById("resetFilters").addEventListener("click", function () {
+      ["filterDate", "filterPage", "filterStudent"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("filterSubject").value = "";
+      renderResults(allResults);
+    });
+    document.getElementById("refreshBtn").addEventListener("click", loadAll);
+    document.getElementById("logoutBtn").addEventListener("click", async function () {
+      await auth.signOut();
+      window.location.href = "kindergartens.html";
+    });
+
+    window.initDashboard = async function () {
+      const data = window.currentManagerData;
+      currentKgId = data.kindergartenId || "";
+      if (!currentKgId) { window.location.replace("kindergartens.html"); return; }
+
+      // تحميل اسم الروضة
+      try {
+        const kgSnap = await db.collection("kindergartens").doc(currentKgId).get();
+        const kgName = kgSnap.exists ? (kgSnap.data().name || currentKgId) : currentKgId;
+        document.getElementById("pageTitle").innerText = `لوحة تحكم: ${kgName}`;
+        document.getElementById("pageSubtitle").innerText = `المديرة: ${data.name || ""} | الروضة: ${kgName}`;
+        document.getElementById("heroTitle").innerText = `إدارة ${kgName}`;
+      } catch (e) { console.error(e); }
+
+      await loadAll();
+    };
+
+    // إذا تم تحميل الصفحة بعد أن يكون auth جاهزًا
+    if (window.currentManagerData) window.initDashboard();
+  </script>
+</body>
+</html>

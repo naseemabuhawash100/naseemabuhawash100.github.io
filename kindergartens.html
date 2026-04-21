@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>الدخول إلى الروضات</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
@@ -143,7 +143,9 @@
       kindergartens.forEach((kg) => {
         const option = document.createElement("option");
         option.value = kg.id;
-        option.textContent = getKindergartenName(kg);
+        const isInactive = kg.active === false || kg.isActive === false;
+        option.textContent = getKindergartenName(kg) + (isInactive ? " (غير متاحة)" : "");
+        if (isInactive) option.style.color = "#9ca3af";
         select.appendChild(option);
       });
     }
