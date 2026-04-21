@@ -39,22 +39,60 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
+      let authChecked = false;
+
       auth.onAuthStateChanged(async function (user) {
-        if (!user) { window.location.replace('kindergartens.html'); return; }
+        // منع التشغيل أكثر من مرة
+        if (authChecked) return;
+        authChecked = true;
+
+        // لو مفيش مستخدم مسجل → ارجع لصفحة الدخول
+        if (!user) {
+          window.location.replace('kindergartens.html');
+          return;
+        }
+
         try {
           const doc = await db.collection('users').doc(user.uid).get();
-          if (!doc.exists) { auth.signOut(); window.location.replace('kindergartens.html'); return; }
-          const data = doc.data() || {};
-          if (data.isActive !== true || data.role !== 'kindergarten_manager') {
-            auth.signOut(); window.location.replace('kindergartens.html'); return;
+
+          if (!doc.exists) {
+            await auth.signOut();
+            window.location.replace('kindergartens.html');
+            return;
           }
+
+          const data = doc.data() || {};
+
+          // التحقق من الدور والتفعيل
+          if (data.isActive !== true || data.role !== 'kindergarten_manager') {
+            await auth.signOut();
+            window.location.replace('kindergartens.html');
+            return;
+          }
+
+          // نجح التحقق - أظهر الصفحة
           window.currentManagerData = data;
           window.currentManagerUid = user.uid;
           document.body.style.visibility = 'visible';
           if (window.initDashboard) window.initDashboard();
+
         } catch (e) {
-          console.error(e);
-          window.location.replace('kindergartens.html');
+          console.error('Auth check error:', e);
+          // لا نرجع المستخدم - نعرض رسالة خطأ فقط
+          document.body.style.visibility = 'visible';
+          document.body.innerHTML = `
+            <div style="font-family:Tajawal,Arial,sans-serif;direction:rtl;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;">
+              <div style="background:white;border-radius:20px;padding:40px;max-width:480px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+                <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+                <h2 style="color:#1e3a8a;font-size:22px;font-weight:800;margin-bottom:12px;">تعذر تحميل لوحة التحكم</h2>
+                <p style="color:#64748b;margin-bottom:8px;">حدث خطأ أثناء التحقق من الصلاحيات.</p>
+                <p style="color:#94a3b8;font-size:13px;margin-bottom:24px;">${e.message || 'خطأ غير معروف'}</p>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                  <button onclick="window.location.reload()" style="background:#1e3a8a;color:white;border:none;padding:12px 24px;border-radius:12px;font-family:Tajawal,Arial,sans-serif;font-size:15px;cursor:pointer;">إعادة المحاولة</button>
+                  <button onclick="firebase.auth().signOut().then(()=>window.location.href='kindergartens.html')" style="background:#e2e8f0;color:#334155;border:none;padding:12px 24px;border-radius:12px;font-family:Tajawal,Arial,sans-serif;font-size:15px;cursor:pointer;">تسجيل الخروج</button>
+                </div>
+              </div>
+            </div>`;
         }
       });
     })();
