@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دخول الإدارة - الروضة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', Arial, sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
+      <div class="bg-blue-900 text-white p-8 text-center">
+        <h1 class="text-3xl font-extrabold mb-2">دخول الإدارة</h1>
+        <p class="text-blue-100 text-sm">للروضة الحالية فقط</p>
+        <p id="kgLabel" class="mt-3 text-sm font-medium bg-white/10 rounded-xl px-3 py-2 inline-block">جاري تحديد الروضة...</p>
+      </div>
+
+      <div class="p-8 space-y-5">
+        <div>
+          <label class="block mb-2 text-sm font-bold text-slate-700">البريد الإلكتروني</label>
+          <input id="email" type="email" placeholder="example@email.com"
+            class="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-700" />
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-bold text-slate-700">كلمة المرور</label>
+          <input id="password" type="password" placeholder="********"
+            class="w-full px-4 py-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-700" />
+        </div>
+
+        <button id="loginBtn"
+          class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-2xl transition">
+          دخول
+        </button>
+
+        <p id="errorMsg" class="hidden text-red-700 bg-red-50 border border-red-200 rounded-2xl p-3 text-sm font-medium"></p>
+        <p id="statusMsg" class="hidden text-blue-700 bg-blue-50 border border-blue-200 rounded-2xl p-3 text-sm font-medium"></p>
+
+        <div class="text-center pt-2">
+          <a id="backLink" href="kindergartens.html" class="text-sm text-slate-600 hover:text-blue-900 underline">العودة</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const statusMsg = document.getElementById('statusMsg');
+    const kgLabel = document.getElementById('kgLabel');
+    const backLink = document.getElementById('backLink');
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedKg = (params.get('kg') || '').trim();
+    const requestedKgName = (params.get('kgName') || '').trim();
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove('hidden');
+      statusMsg.classList.add('hidden');
+    }
+
+    function showStatus(msg) {
+      statusMsg.textContent = msg;
+      statusMsg.classList.remove('hidden');
+      errorMsg.classList.add('hidden');
+    }
+
+    function clearMessages() {
+      errorMsg.classList.add('hidden');
+      statusMsg.classList.add('hidden');
+    }
+
+    if (!requestedKg) {
+      kgLabel.textContent = 'لم يتم تحديد الروضة في الرابط';
+      showError('الرابط غير مكتمل. يجب فتح الصفحة من داخل موقع الروضة أو تمرير ?kg=معرف_الروضة');
+      loginBtn.disabled = true;
+      loginBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      kgLabel.textContent = requestedKgName ? `الروضة: ${requestedKgName}` : `معرف الروضة: ${requestedKg}`;
+      backLink.href = `kindergartens.html`;
+    }
+
+    loginBtn.addEventListener('click', login);
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
+
+    async function login() {
+      if (!requestedKg) return;
+      clearMessages();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showError('يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'جاري تسجيل الدخول...';
+
+      try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        if (!user) {
+          throw new Error('تعذر إكمال تسجيل الدخول.');
+        }
+
+        const userDoc = await db.collection('users').doc(user.uid).get();
+
+        if (!userDoc.exists) {
+          await auth.signOut();
+          throw new Error('هذا الحساب غير موجود داخل users.');
+        }
+
+        const data = userDoc.data();
+
+        if (data.isActive !== true) {
+          await auth.signOut();
+          throw new Error('الحساب غير مفعل.');
+        }
+
+        if (data.kindergartenId !== requestedKg) {
+          await auth.signOut();
+          throw new Error('هذا الحساب لا يتبع للروضة الحالية.');
+        }
+
+        localStorage.setItem('currentKindergartenId', data.kindergartenId || '');
+        localStorage.setItem('currentUserRole', data.role || '');
+        localStorage.setItem('currentUserName', data.name || '');
+        localStorage.setItem('currentUserSubject', data.subject || '');
+
+        if (data.role === 'kindergarten_manager') {
+          showStatus('تم تسجيل دخول المديرة بنجاح. جاري التحويل...');
+          window.location.href = `manager-dashboard.html?kg=${encodeURIComponent(requestedKg)}`;
+          return;
+        }
+
+        if (data.role === 'teacher') {
+          showStatus('تم تسجيل دخول المعلمة بنجاح. جاري التحويل...');
+          window.location.href = 'results.html';
+          return;
+        }
+
+        await auth.signOut();
+        throw new Error('هذا الحساب ليس مديرية ولا معلمة.');
+      } catch (error) {
+        console.error('KG admin login error:', error);
+        const code = error && error.code ? error.code : '';
+
+        if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-login-credentials') {
+          showError('الإيميل أو كلمة المرور غير صحيحين.');
+        } else {
+          showError(error.message || 'حدث خطأ أثناء تسجيل الدخول.');
+        }
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'دخول';
+      }
+    }
+  </script>
+</body>
+</html>
