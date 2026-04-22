@@ -523,12 +523,33 @@
         // Successful login
         const user = userCredential.user;
         console.log("تم تسجيل الدخول بنجاح:", user);
+
+        // Get the user data from Firestore to check KG_ID
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
+        const correctKGID = "theCorrectKG_ID";  // Replace with the actual KG_ID of the kindergarten
+
+        userRef.get().then((doc) => {
+          if (doc.exists) {
+            const userKGID = doc.data().kg_id;
+
+            if (userKGID !== correctKGID) {
+              alert("هذا الحساب لا يتبع لروضة طلائع المبدعين");
+              firebase.auth().signOut();  // Sign out if KG_ID doesn't match
+            } else {
+              console.log("الحساب يتبع للروضة.");
+              // Proceed with the next steps if KG_ID matches
+            }
+          } else {
+            console.log("لا توجد بيانات للمستخدم.");
+            alert("حساب المستخدم غير موجود في النظام.");
+          }
+        });
       })
       .catch((error) => {
         // Error handling
         const errorCode = error.code;
         const errorMessage = error.message;
-
+        
         // Display error messages to the user
         if (errorCode === 'auth/wrong-password') {
           alert("كلمة المرور خاطئة. حاول مرة أخرى.");
