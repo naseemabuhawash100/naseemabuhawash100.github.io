@@ -512,5 +512,34 @@
     ensureKindergartenSession();
     verifyKindergartenExists();
   </script>
+
+<script>
+  function signIn() {
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Successful login
+        const user = userCredential.user;
+        console.log("تم تسجيل الدخول بنجاح:", user);
+      })
+      .catch((error) => {
+        // Error handling
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        // Display error messages to the user
+        if (errorCode === 'auth/wrong-password') {
+          alert("كلمة المرور خاطئة. حاول مرة أخرى.");
+        } else if (errorCode === 'auth/user-not-found') {
+          alert("البريد الإلكتروني غير مسجل. حاول البريد الإلكتروني الصحيح.");
+        } else {
+          alert("حدث خطأ أثناء تسجيل الدخول: " + errorMessage);
+        }
+      });
+  }
+</script>
+
 </body>
 </html>
