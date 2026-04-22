@@ -520,13 +520,12 @@
 
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        // Successful login
         const user = userCredential.user;
         console.log("تم تسجيل الدخول بنجاح:", user);
 
         // Get the user data from Firestore to check KG_ID
         const userRef = firebase.firestore().collection('users').doc(user.uid);
-        const correctKGID = "theCorrectKG_ID";  // Replace with the actual KG_ID of the kindergarten
+        const correctKGID = "talaea-almobdeeen";  // Updated to the actual correct KG_ID
 
         userRef.get().then((doc) => {
           if (doc.exists) {
@@ -551,7 +550,7 @@
         // Error handling
         const errorCode = error.code;
         const errorMessage = error.message;
-        
+
         // Display error messages to the user
         if (errorCode === 'auth/wrong-password') {
           alert("كلمة المرور خاطئة. حاول مرة أخرى.");
