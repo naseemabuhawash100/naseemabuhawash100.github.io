@@ -531,6 +531,8 @@
         userRef.get().then((doc) => {
           if (doc.exists) {
             const userKGID = doc.data().kg_id;
+            console.log("الـ KG_ID المخزن للمستخدم:", userKGID);
+            console.log("الـ KG_ID الصحيح الذي يتم التحقق منه:", correctKGID);
 
             if (userKGID !== correctKGID) {
               alert("هذا الحساب لا يتبع لروضة طلائع المبدعين");
