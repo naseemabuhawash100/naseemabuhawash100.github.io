@@ -73,253 +73,292 @@
       color: white;
       font-weight: 700;
     }
+    /* شاشة التحميل */
+    .loader-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #1e3a8a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .main-content {
+      display: none;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right text-slate-800">
 
-  <header class="sticky top-0 z-40 bg-white shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-800">لوحة المعلمة</h1>
-        <p class="text-sm text-gray-600">واجهة خاصة بالمعلمة ضمن موقع روضة طلائع المبدعين</p>
-      </div>
+  <!-- شاشة التحميل -->
+  <div id="loaderContainer" class="loader-container">
+    <div class="loader"></div>
+    <p class="text-blue-900 font-medium">جاري التحقق من صلاحيات المعلمة...</p>
+  </div>
 
-      <div class="flex flex-wrap justify-center gap-3">
-        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">
-          العودة إلى صفحة الروضة
-        </a>
-        <button id="resultsBtnTop" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">
-          النتائج
-        </button>
-        <button id="logoutBtnTop" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">
-          تسجيل خروج
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <section class="hero-gradient text-white py-16 md:py-20 overflow-hidden">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-        <div class="text-center lg:text-right">
-          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">
-            واجهة المعلمة الخاصة
-          </span>
-          <h2 class="text-4xl md:text-5xl font-bold mb-5">مرحبًا بكِ في لوحة المعلمة</h2>
-          <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
-            من هذه الصفحة يمكنكِ إدارة طلاب مادّتك، إضافة الأسماء والأكواد، إدخال الدرجات، إرسال النتائج للمديرة، وتجهيز الصور الخاصة بالأنشطة.
-          </p>
-
-          <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
-            <a href="#teacherInfo" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">بيانات المعلمة</a>
-            <a href="#addStudentSection" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">إضافة طالب</a>
-            <a href="#studentsSection" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">إدارة الطلاب</a>
-          </div>
+  <!-- المحتوى الرئيسي -->
+  <div id="mainContent" class="main-content">
+    <header class="sticky top-0 z-40 bg-white shadow-md">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-800">لوحة المعلمة</h1>
+          <p class="text-sm text-gray-600">واجهة خاصة بالمعلمة ضمن موقع روضة طلائع المبدعين</p>
         </div>
 
-        <div class="flex justify-center lg:justify-end">
-          <div class="w-full max-w-md bg-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20">
-            <div class="bg-white/95 rounded-[28px] p-6">
-              <div class="grid grid-cols-1 gap-4">
-                <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
-                  <p class="text-sm text-slate-500 mb-2">اسم المعلمة</p>
-                  <h3 id="teacherNameHero" class="text-2xl font-bold text-blue-900">...</h3>
-                </div>
-                <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
-                  <p class="text-sm text-slate-500 mb-2">المادة</p>
-                  <h3 id="teacherSubjectHero" class="text-2xl font-bold text-blue-900">...</h3>
-                </div>
-                <div class="rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
-                  <p class="text-sm text-slate-500 mb-2">الروضة</p>
-                  <h3 id="teacherKgHero" class="text-2xl font-bold text-blue-900">...</h3>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">
+            العودة إلى صفحة الروضة
+          </a>
+          <button id="resultsBtnTop" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">
+            النتائج
+          </button>
+          <button id="logoutBtnTop" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">
+            تسجيل خروج
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero-gradient text-white py-16 md:py-20 overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div class="text-center lg:text-right">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">
+              واجهة المعلمة الخاصة
+            </span>
+            <h2 class="text-4xl md:text-5xl font-bold mb-5">مرحبًا بكِ في لوحة المعلمة</h2>
+            <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
+              من هذه الصفحة يمكنكِ إدارة طلاب مادّتك، إضافة الأسماء والأكواد، إدخال الدرجات، إرسال النتائج للمديرة، وتجهيز الصور الخاصة بالأنشطة.
+            </p>
+
+            <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+              <a href="#teacherInfo" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">بيانات المعلمة</a>
+              <a href="#addStudentSection" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">إضافة طالب</a>
+              <a href="#studentsSection" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">إدارة الطلاب</a>
+            </div>
+          </div>
+
+          <div class="flex justify-center lg:justify-end">
+            <div class="w-full max-w-md bg-white/10 rounded-[32px] p-6 md:p-8 shadow-2xl border border-white/20">
+              <div class="bg-white/95 rounded-[28px] p-6">
+                <div class="grid grid-cols-1 gap-4">
+                  <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+                    <p class="text-sm text-slate-500 mb-2">اسم المعلمة</p>
+                    <h3 id="teacherNameHero" class="text-2xl font-bold text-blue-900">...</h3>
+                  </div>
+                  <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4">
+                    <p class="text-sm text-slate-500 mb-2">المادة</p>
+                    <h3 id="teacherSubjectHero" class="text-2xl font-bold text-blue-900">...</h3>
+                  </div>
+                  <div class="rounded-2xl bg-emerald-50 border border-emerald-100 p-4">
+                    <p class="text-sm text-slate-500 mb-2">الروضة</p>
+                    <h3 id="teacherKgHero" class="text-2xl font-bold text-blue-900">...</h3>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
-
-      </div>
-    </div>
-  </section>
-
-  <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
-
-    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-      <a href="#teacherInfo" class="card-hover soft-card rounded-2xl p-6 block">
-        <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">1</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">بيانات المعلمة</h3>
-        <p class="text-gray-600 leading-7">عرض الاسم والمادة والروضة المرتبطة بالحساب.</p>
-      </a>
-
-      <a href="#addStudentSection" class="card-hover soft-card rounded-2xl p-6 block">
-        <div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4">2</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">إضافة طالب</h3>
-        <p class="text-gray-600 leading-7">إضافة اسم الطالب والكود المعتمد الخاص به.</p>
-      </a>
-
-      <a href="#studentsSection" class="card-hover soft-card rounded-2xl p-6 block">
-        <div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-4">3</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
-        <p class="text-gray-600 leading-7">عرض الطلاب، إدخال الدرجات، حذف طالب عند الحاجة.</p>
-      </a>
-
-      <a href="#sendResultsSection" class="card-hover soft-card rounded-2xl p-6 block">
-        <div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4">4</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">إرسال النتائج</h3>
-        <p class="text-gray-600 leading-7">إرسال الدرجات للمديرة بحالة انتظار المراجعة.</p>
-      </a>
-
-      <a href="#imagesSection" class="card-hover soft-card rounded-2xl p-6 block">
-        <div class="w-14 h-14 rounded-full bg-violet-600 text-white flex items-center justify-center text-2xl mb-4">5</div>
-        <h3 class="text-xl font-bold text-blue-900 mb-2">صور المعلمة</h3>
-        <p class="text-gray-600 leading-7">قسم رفع الصور جاهز للربط في الخطوة التالية.</p>
-      </a>
-    </section>
-
-    <section id="teacherInfo" class="soft-card rounded-3xl p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-2">بيانات المعلمة</h2>
-          <p class="text-gray-600">يتم جلب بياناتك تلقائيًا من النظام.</p>
-        </div>
-        <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">حساب محمي</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-          <p class="text-sm text-gray-500 mb-2">اسم المعلمة</p>
-          <h3 id="teacherName" class="text-xl font-bold text-blue-900">...</h3>
-        </div>
-        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-          <p class="text-sm text-gray-500 mb-2">المادة</p>
-          <h3 id="teacherSubject" class="text-xl font-bold text-blue-900">...</h3>
-        </div>
-        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-          <p class="text-sm text-gray-500 mb-2">الروضة</p>
-          <h3 id="teacherKg" class="text-xl font-bold text-blue-900">...</h3>
-        </div>
-      </div>
-
-      <p id="topMsg" class="mt-5 text-sm font-medium text-gray-700"></p>
-    </section>
-
-    <section id="addStudentSection" class="soft-card rounded-3xl p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-2">إضافة طالب جديد</h2>
-          <p class="text-gray-600">أضيفي فقط الطلاب المسموح لهم لاحقًا بإرسال النتائج.</p>
-        </div>
-        <span class="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">طلاب مادّتك فقط</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">اسم الطالب</label>
-          <input id="studentName" type="text" placeholder="مثال: أحمد محمد" class="input-ui">
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">كود الطالب</label>
-          <input id="studentCode" type="text" placeholder="مثال: ST001" class="input-ui">
-        </div>
-      </div>
-
-      <div class="mt-5 flex flex-wrap gap-3">
-        <button id="addStudentBtn" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-green-700 btn-hover">
-          حفظ الطالب
-        </button>
-        <button id="clearStudentBtn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-2xl font-medium hover:bg-gray-200 btn-hover">
-          تفريغ الحقول
-        </button>
-      </div>
-
-      <p id="studentMsg" class="mt-4 text-sm font-medium"></p>
-    </section>
-
-    <section id="studentsSection" class="soft-card rounded-3xl p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-2">قائمة طلاب مادّتي</h2>
-          <p class="text-gray-600">هذه القائمة تعرض فقط الطلاب الذين أضفتِهم أنتِ.</p>
-        </div>
-        <button id="refreshStudentsBtn" class="bg-blue-900 text-white px-5 py-2 rounded-xl hover:bg-blue-800 btn-hover">
-          تحديث القائمة
-        </button>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>اسم الطالب</th>
-              <th>الكود</th>
-              <th>الدرجة</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="studentsTable">
-            <tr>
-              <td colspan="4" class="p-4">جاري تحميل الطلاب...</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </section>
 
-    <section id="sendResultsSection" class="soft-card rounded-3xl p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-2">إرسال النتائج للمديرة</h2>
-          <p class="text-gray-600">سيتم إرسال النتائج المدخلة فقط للطلاب الموجودين في قائمتك.</p>
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
+
+      <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+        <a href="#teacherInfo" class="card-hover soft-card rounded-2xl p-6 block">
+          <div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4">1</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-2">بيانات المعلمة</h3>
+          <p class="text-gray-600 leading-7">عرض الاسم والمادة والروضة المرتبطة بالحساب.</p>
+        </a>
+
+        <a href="#addStudentSection" class="card-hover soft-card rounded-2xl p-6 block">
+          <div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4">2</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-2">إضافة طالب</h3>
+          <p class="text-gray-600 leading-7">إضافة اسم الطالب والكود المعتمد الخاص به.</p>
+        </a>
+
+        <a href="#studentsSection" class="card-hover soft-card rounded-2xl p-6 block">
+          <div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-4">3</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
+          <p class="text-gray-600 leading-7">عرض الطلاب، إدخال الدرجات، حذف طالب عند الحاجة.</p>
+        </a>
+
+        <a href="#sendResultsSection" class="card-hover soft-card rounded-2xl p-6 block">
+          <div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4">4</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-2">إرسال النتائج</h3>
+          <p class="text-gray-600 leading-7">إرسال الدرجات للمديرة بحالة انتظار المراجعة.</p>
+        </a>
+
+        <a href="#imagesSection" class="card-hover soft-card rounded-2xl p-6 block">
+          <div class="w-14 h-14 rounded-full bg-violet-600 text-white flex items-center justify-center text-2xl mb-4">5</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-2">صور المعلمة</h3>
+          <p class="text-gray-600 leading-7">قسم رفع الصور جاهز للربط في الخطوة التالية.</p>
+        </a>
+      </section>
+
+      <section id="teacherInfo" class="soft-card rounded-3xl p-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-900 mb-2">بيانات المعلمة</h2>
+            <p class="text-gray-600">يتم جلب بياناتك تلقائيًا من النظام.</p>
+          </div>
+          <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">حساب محمي</span>
         </div>
-        <span class="bg-rose-50 text-rose-700 px-4 py-2 rounded-full text-sm font-medium">حالة الإرسال: انتظار المراجعة</span>
-      </div>
 
-      <div class="flex flex-wrap gap-3">
-        <button id="sendResultsBtn" class="bg-rose-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-rose-700 btn-hover">
-          إرسال النتائج
-        </button>
-        <button id="resultsBtnBottom" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover">
-          فتح صفحة النتائج
-        </button>
-      </div>
-
-      <p id="sendMsg" class="mt-4 text-sm font-medium"></p>
-    </section>
-
-    <section id="imagesSection" class="soft-card rounded-3xl p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
-        <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-2">صور المعلمة</h2>
-          <p class="text-gray-600">هذا القسم جاهز للشكل والواجهة، وسنربطه لاحقًا برفع الصور الفعلي.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+            <p class="text-sm text-gray-500 mb-2">اسم المعلمة</p>
+            <h3 id="teacherName" class="text-xl font-bold text-blue-900">...</h3>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+            <p class="text-sm text-gray-500 mb-2">المادة</p>
+            <h3 id="teacherSubject" class="text-xl font-bold text-blue-900">...</h3>
+          </div>
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+            <p class="text-sm text-gray-500 mb-2">الروضة</p>
+            <h3 id="teacherKg" class="text-xl font-bold text-blue-900">...</h3>
+          </div>
         </div>
-        <span class="bg-violet-50 text-violet-700 px-4 py-2 rounded-full text-sm font-medium">جاهز للربط</span>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">عنوان الصورة</label>
-          <input id="imageTitle" type="text" placeholder="مثال: نشاط العد" class="input-ui">
+        <p id="topMsg" class="mt-5 text-sm font-medium text-gray-700"></p>
+      </section>
+
+      <section id="addStudentSection" class="soft-card rounded-3xl p-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-900 mb-2">إضافة طالب جديد</h2>
+            <p class="text-gray-600">أضيفي فقط الطلاب المسموح لهم لاحقًا بإرسال النتائج.</p>
+          </div>
+          <span class="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium">طلاب مادّتك فقط</span>
         </div>
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">اختيار صورة</label>
-          <input id="imageFile" type="file" accept="image/*" class="input-ui">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">اسم الطالب</label>
+            <input id="studentName" type="text" placeholder="مثال: أحمد محمد" class="input-ui">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">كود الطالب</label>
+            <input id="studentCode" type="text" placeholder="مثال: ST001" class="input-ui">
+          </div>
         </div>
-        <div class="md:col-span-2">
-          <label class="block text-sm font-semibold text-slate-700 mb-2">وصف مختصر</label>
-          <textarea id="imageDesc" rows="4" placeholder="اكتبي وصفًا مختصرًا للصورة" class="input-ui"></textarea>
+
+        <div class="mt-5 flex flex-wrap gap-3">
+          <button id="addStudentBtn" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-green-700 btn-hover">
+            حفظ الطالب
+          </button>
+          <button id="clearStudentBtn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-2xl font-medium hover:bg-gray-200 btn-hover">
+            تفريغ الحقول
+          </button>
         </div>
-      </div>
 
-      <div class="mt-5">
-        <button id="uploadImageBtn" class="bg-violet-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-violet-700 btn-hover">
-          رفع الصورة
-        </button>
-      </div>
+        <p id="studentMsg" class="mt-4 text-sm font-medium"></p>
+      </section>
 
-      <p id="imageMsg" class="mt-4 text-sm font-medium"></p>
-    </section>
+      <section id="studentsSection" class="soft-card rounded-3xl p-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-900 mb-2">قائمة طلاب مادّتي</h2>
+            <p class="text-gray-600">هذه القائمة تعرض فقط الطلاب الذين أضفتِهم أنتِ.</p>
+          </div>
+          <button id="refreshStudentsBtn" class="bg-blue-900 text-white px-5 py-2 rounded-xl hover:bg-blue-800 btn-hover">
+            تحديث القائمة
+          </button>
+        </div>
 
-  </main>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>اسم الطالب</th>
+                <th>الكود</th>
+                <th>الدرجة</th>
+                <th>إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTable">
+              <tr>
+                <td colspan="4" class="p-4">جاري تحميل الطلاب...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="sendResultsSection" class="soft-card rounded-3xl p-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-900 mb-2">إرسال النتائج للمديرة</h2>
+            <p class="text-gray-600">سيتم إرسال النتائج المدخلة فقط للطلاب الموجودين في قائمتك.</p>
+          </div>
+          <span class="bg-rose-50 text-rose-700 px-4 py-2 rounded-full text-sm font-medium">حالة الإرسال: انتظار المراجعة</span>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button id="sendResultsBtn" class="bg-rose-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-rose-700 btn-hover">
+            إرسال النتائج
+          </button>
+          <button id="resultsBtnBottom" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-medium hover:bg-blue-800 btn-hover">
+            فتح صفحة النتائج
+          </button>
+        </div>
+
+        <p id="sendMsg" class="mt-4 text-sm font-medium"></p>
+      </section>
+
+      <section id="imagesSection" class="soft-card rounded-3xl p-8">
+        <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <h2 class="text-3xl font-bold text-blue-900 mb-2">صور المعلمة</h2>
+            <p class="text-gray-600">هذا القسم جاهز للشكل والواجهة، وسنربطه لاحقًا برفع الصور الفعلي.</p>
+          </div>
+          <span class="bg-violet-50 text-violet-700 px-4 py-2 rounded-full text-sm font-medium">جاهز للربط</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">عنوان الصورة</label>
+            <input id="imageTitle" type="text" placeholder="مثال: نشاط العد" class="input-ui">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">اختيار صورة</label>
+            <input id="imageFile" type="file" accept="image/*" class="input-ui">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">وصف مختصر</label>
+            <textarea id="imageDesc" rows="4" placeholder="اكتبي وصفًا مختصرًا للصورة" class="input-ui"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <button id="uploadImageBtn" class="bg-violet-600 text-white px-6 py-3 rounded-2xl font-medium hover:bg-violet-700 btn-hover">
+            رفع الصورة
+          </button>
+        </div>
+
+        <p id="imageMsg" class="mt-4 text-sm font-medium"></p>
+      </section>
+
+    </main>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -337,11 +376,16 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const KG_ID = "talaea";
+    // ===================== المتغيرات الموحدة =====================
+    const KG_ID = "kg_talaea";
+    // =============================================================
 
     let teacherUid = null;
     let teacherData = null;
     let teacherStudents = [];
+
+    const loaderContainer = document.getElementById('loaderContainer');
+    const mainContent = document.getElementById('mainContent');
 
     function prettifySubject(v) {
       if (v === "math") return "الرياضيات";
@@ -418,12 +462,12 @@
               <td>
                 <input type="number" min="0" max="100" id="score_${s.id}" placeholder="الدرجة"
                   style="width:95px;border:1px solid #d1d5db;border-radius:12px;padding:8px;text-align:center;">
-              </td>
+               </td>
               <td>
                 <button onclick="deleteStudent('${s.id}')" class="small-btn" style="background:#dc2626;">
                   حذف
                 </button>
-              </td>
+               </td>
             </tr>
           `;
         });
@@ -435,7 +479,7 @@
         tbody.innerHTML = html;
       } catch (error) {
         console.error(error);
-        tbody.innerHTML = '<tr><td colspan="4" style="color:#dc2626;">حدث خطأ أثناء تحميل الطلاب</td></tr>';
+        tbody.innerHTML = '<td><td colspan="4" style="color:#dc2626;">حدث خطأ أثناء تحميل الطلاب</td></tr>';
       }
     }
 
@@ -488,7 +532,7 @@
       }
     }
 
-    async function deleteStudent(studentId) {
+    window.deleteStudent = async function(studentId) {
       const ok = confirm("هل تريدين حذف هذا الطالب؟");
       if (!ok) return;
 
@@ -499,7 +543,7 @@
         console.error(error);
         alert("حدث خطأ أثناء حذف الطالب");
       }
-    }
+    };
 
     async function sendResults() {
       const msg = document.getElementById("sendMsg");
@@ -579,6 +623,7 @@
       msg.innerText = "تم تجهيز هذا القسم، وسنربطه برفع الصور الفعلي في الخطوة التالية.";
     }
 
+    // التحقق من المستخدم وعرض المحتوى
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
         window.location.href = "talaea-almobdeeen.html";
@@ -588,9 +633,13 @@
       try {
         await loadTeacherData(user);
         await loadStudents();
+        // إخفاء شاشة التحميل وإظهار المحتوى
+        loaderContainer.style.display = 'none';
+        mainContent.style.display = 'block';
       } catch (error) {
         console.error(error);
         alert("حدث خطأ أثناء تحميل صفحة المعلمة");
+        window.location.href = "talaea-almobdeeen.html";
       }
     });
 
