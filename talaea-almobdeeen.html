@@ -48,316 +48,362 @@
       color: #1e3a8a;
       border: 1px solid #bfdbfe;
     }
+    /* شاشة التحميل */
+    .loader-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #1e3a8a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .main-content {
+      display: none;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right">
-  <header class="sticky top-0 z-40 bg-white shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 p-2 flex items-center justify-center overflow-hidden">
-          <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=&quot;text-xs text-slate-500 text-center leading-5&quot;>شعار<br>الروضة</span>';">
-        </div>
-        <div>
-          <h1 id="pageTitle" class="text-2xl font-bold text-slate-800">روضة طلائع المبدعين</h1>
-          <p id="pageSubtitle" class="text-sm text-gray-600">الواجهة الخاصة بالروضة</p>
-        </div>
-      </div>
 
-      <nav class="w-full lg:w-auto">
-        <ul class="flex flex-wrap justify-center gap-4 text-center">
-          <li><a href="#home" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الرئيسية</a></li>
-          <li><a href="#sections" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الأقسام</a></li>
-          <li><a href="#about" class="nav-link text-gray-700 hover:text-blue-900 font-medium">التعريف بالروضة</a></li>
-          <li><a href="#gallery" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الصور</a></li>
-          <li><a href="#videos" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الفيديوهات</a></li>
-        </ul>
-      </nav>
+  <!-- شاشة التحميل -->
+  <div id="loaderContainer" class="loader-container">
+    <div class="loader"></div>
+    <p class="text-blue-900 font-medium">جاري تحميل صفحة الروضة...</p>
+  </div>
 
-      <div class="flex flex-wrap justify-center gap-3">
-        <button id="adminLoginBtnTop" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">خاص بالإدارة</button>
-      </div>
-    </div>
-  </header>
-
-  <section id="home" class="hero-gradient text-white py-16 md:py-24 overflow-hidden">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-        <div class="text-center lg:text-right">
-          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">بيئة تعليمية ممتعة وآمنة للأطفال</span>
-          <h2 class="text-4xl md:text-5xl font-bold mb-5">أهلًا بكم في روضة طلائع المبدعين</h2>
-          <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
-            هذه الصفحة مخصصة لروضة طلائع المبدعين، ويمكن من خلالها الوصول إلى التمارين التفاعلية وأوراق العمل والتعريف بالروضة ومعرض الصور والفيديوهات.
-          </p>
-          <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
-            <button id="mainExercisesBtn" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">التمارين التفاعلية</button>
-            <a href="#worksheets" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">أوراق العمل</a>
-            <a href="#gallery" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">معرض الصور</a>
+  <!-- المحتوى الرئيسي -->
+  <div id="mainContent" class="main-content">
+    <header class="sticky top-0 z-40 bg-white shadow-md">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 p-2 flex items-center justify-center overflow-hidden">
+            <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=&quot;text-xs text-slate-500 text-center leading-5&quot;>شعار<br>الروضة</span>';">
+          </div>
+          <div>
+            <h1 id="pageTitle" class="text-2xl font-bold text-slate-800">روضة طلائع المبدعين</h1>
+            <p id="pageSubtitle" class="text-sm text-gray-600">الواجهة الخاصة بالروضة</p>
           </div>
         </div>
 
-        <div class="flex justify-center lg:justify-end">
-          <div class="logo-shell rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl">
-            <div class="bg-white/95 rounded-[28px] p-5 md:p-6">
-              <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-[280px] md:h-[320px]" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;h-[280px] md:h-[320px] rounded-3xl bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center text-center px-6 text-blue-900 text-2xl font-bold leading-10&quot;>شعار<br>روضة طلائع المبدعين</div>');">
+        <nav class="w-full lg:w-auto">
+          <ul class="flex flex-wrap justify-center gap-4 text-center">
+            <li><a href="#home" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الرئيسية</a></li>
+            <li><a href="#sections" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الأقسام</a></li>
+            <li><a href="#about" class="nav-link text-gray-700 hover:text-blue-900 font-medium">التعريف بالروضة</a></li>
+            <li><a href="#gallery" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الصور</a></li>
+            <li><a href="#videos" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الفيديوهات</a></li>
+          </ul>
+        </nav>
+
+        <div class="flex flex-wrap justify-center gap-3">
+          <button id="adminLoginBtnTop" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">خاص بالإدارة</button>
+        </div>
+      </div>
+    </header>
+
+    <section id="home" class="hero-gradient text-white py-16 md:py-24 overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div class="text-center lg:text-right">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">بيئة تعليمية ممتعة وآمنة للأطفال</span>
+            <h2 class="text-4xl md:text-5xl font-bold mb-5">أهلًا بكم في روضة طلائع المبدعين</h2>
+            <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
+              هذه الصفحة مخصصة لروضة طلائع المبدعين، ويمكن من خلالها الوصول إلى التمارين التفاعلية وأوراق العمل والتعريف بالروضة ومعرض الصور والفيديوهات.
+            </p>
+            <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+              <button id="mainExercisesBtn" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">التمارين التفاعلية</button>
+              <a href="#worksheets" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">أوراق العمل</a>
+              <a href="#gallery" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">معرض الصور</a>
+            </div>
+          </div>
+
+          <div class="flex justify-center lg:justify-end">
+            <div class="logo-shell rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl">
+              <div class="bg-white/95 rounded-[28px] p-5 md:p-6">
+                <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-[280px] md:h-[320px]" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;h-[280px] md:h-[320px] rounded-3xl bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center text-center px-6 text-blue-900 text-2xl font-bold leading-10&quot;>شعار<br>روضة طلائع المبدعين</div>');">
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="sections" class="py-16 bg-white">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">أقسام الصفحة</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">يمكن الوصول إلى المحتوى الخاص بروضة طلائع المبدعين من خلال الأقسام التالية.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <button id="exercisesCard" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block w-full">
-          <div class="w-14 h-14 bg-blue-900 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">1</div>
-          <h3 class="text-xl font-bold text-blue-900 mb-3">التمارين التفاعلية</h3>
-          <p class="text-gray-600 leading-8">الدخول إلى التمارين المضافة لهذه الروضة من النظام الأساسي.</p>
-        </button>
-
-        <a href="#worksheets" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
-          <div class="w-14 h-14 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">2</div>
-          <h3 class="text-xl font-bold text-blue-900 mb-3">أوراق العمل</h3>
-          <p class="text-gray-600 leading-8">قسم مخصص لأوراق العمل الخاصة بروضة طلائع المبدعين.</p>
-        </a>
-
-        <a href="#about" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
-          <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">3</div>
-          <h3 class="text-xl font-bold text-blue-900 mb-3">التعريف بالروضة</h3>
-          <p class="text-gray-600 leading-8">نبذة مختصرة عن الروضة ورسالتها وبيئتها التعليمية.</p>
-        </a>
-
-        <a href="#gallery" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
-          <div class="w-14 h-14 bg-yellow-500 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">4</div>
-          <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الصور</h3>
-          <p class="text-gray-600 leading-8">مساحة مبدئية لعرض صور الروضة بشكل منظم وأنيق.</p>
-        </a>
-
-        <a href="#videos" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
-          <div class="w-14 h-14 bg-violet-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">5</div>
-          <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الفيديوهات</h3>
-          <p class="text-gray-600 leading-8">قسم مبدئي للفيديوهات مع صور مصغرة مؤقتة مناسبة للموضوع.</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section id="about" class="py-16 bg-slate-50">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-        <div>
-          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-6">التعريف بروضة طلائع المبدعين</h2>
-          <p class="text-gray-700 mb-6 leading-8">
-            هذه الصفحة تمثل الواجهة الرقمية الخاصة بروضة طلائع المبدعين، وتهدف إلى تسهيل الوصول إلى الأنشطة التعليمية والتمارين التفاعلية ومحتوى الروضة.
-          </p>
-          <p class="text-gray-700 mb-8 leading-8">
-            يمكن لاحقًا توسيع هذه الصفحة لتشمل مزيدًا من الأقسام الخاصة بالأهالي، وأوراق العمل، والمعرض، والمحتوى الإداري المرتبط بالروضة.
-          </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <h4 class="font-bold text-blue-900 mb-2">واجهة مستقلة</h4>
-              <p class="text-gray-600 text-sm leading-7">صفحة مخصصة للروضة بدون صفحة اختيار مشتركة.</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <h4 class="font-bold text-blue-900 mb-2">ربط مع النظام</h4>
-              <p class="text-gray-600 text-sm leading-7">زر التمارين مرتبط بصفحة التمارين الأساسية الموجودة حاليًا.</p>
-            </div>
-          </div>
+    <section id="sections" class="py-16 bg-white">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">أقسام الصفحة</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">يمكن الوصول إلى المحتوى الخاص بروضة طلائع المبدعين من خلال الأقسام التالية.</p>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-xl">
-          <div class="w-full min-h-[290px] rounded-xl mb-6 bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-200 flex items-center justify-center p-4">
-            <img src="talaea-logo.png" alt="شعار الروضة" class="logo-img w-full h-64" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;text-blue-900 text-2xl font-bold text-center leading-10&quot;>شعار روضة<br>طلائع المبدعين</div>');">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <button id="exercisesCard" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block w-full">
+            <div class="w-14 h-14 bg-blue-900 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">1</div>
+            <h3 class="text-xl font-bold text-blue-900 mb-3">التمارين التفاعلية</h3>
+            <p class="text-gray-600 leading-8">الدخول إلى التمارين المضافة لهذه الروضة من النظام الأساسي.</p>
+          </button>
+
+          <a href="#worksheets" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+            <div class="w-14 h-14 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">2</div>
+            <h3 class="text-xl font-bold text-blue-900 mb-3">أوراق العمل</h3>
+            <p class="text-gray-600 leading-8">قسم مخصص لأوراق العمل الخاصة بروضة طلائع المبدعين.</p>
+          </a>
+
+          <a href="#about" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+            <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">3</div>
+            <h3 class="text-xl font-bold text-blue-900 mb-3">التعريف بالروضة</h3>
+            <p class="text-gray-600 leading-8">نبذة مختصرة عن الروضة ورسالتها وبيئتها التعليمية.</p>
+          </a>
+
+          <a href="#gallery" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+            <div class="w-14 h-14 bg-yellow-500 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">4</div>
+            <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الصور</h3>
+            <p class="text-gray-600 leading-8">مساحة مبدئية لعرض صور الروضة بشكل منظم وأنيق.</p>
+          </a>
+
+          <a href="#videos" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+            <div class="w-14 h-14 bg-violet-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">5</div>
+            <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الفيديوهات</h3>
+            <p class="text-gray-600 leading-8">قسم مبدئي للفيديوهات مع صور مصغرة مؤقتة مناسبة للموضوع.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="py-16 bg-slate-50">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-6">التعريف بروضة طلائع المبدعين</h2>
+            <p class="text-gray-700 mb-6 leading-8">
+              هذه الصفحة تمثل الواجهة الرقمية الخاصة بروضة طلائع المبدعين، وتهدف إلى تسهيل الوصول إلى الأنشطة التعليمية والتمارين التفاعلية ومحتوى الروضة.
+            </p>
+            <p class="text-gray-700 mb-8 leading-8">
+              يمكن لاحقًا توسيع هذه الصفحة لتشمل مزيدًا من الأقسام الخاصة بالأهالي، وأوراق العمل، والمعرض، والمحتوى الإداري المرتبط بالروضة.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <h4 class="font-bold text-blue-900 mb-2">واجهة مستقلة</h4>
+                <p class="text-gray-600 text-sm leading-7">صفحة مخصصة للروضة بدون صفحة اختيار مشتركة.</p>
+              </div>
+              <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <h4 class="font-bold text-blue-900 mb-2">ربط مع النظام</h4>
+                <p class="text-gray-600 text-sm leading-7">زر التمارين مرتبط بصفحة التمارين الأساسية الموجودة حاليًا.</p>
+              </div>
+            </div>
           </div>
-          <h3 class="text-2xl font-bold text-blue-900 mb-4">واجهة جاهزة كبداية</h3>
-          <p class="text-gray-700 leading-8">
-            تم تخصيص هذه الواجهة لتناسب الروضة بشكل أوضح، مع إضافة معرض صور ومعرض فيديوهات ووضع الشعار في أماكن مناسبة داخل الصفحة.
+
+          <div class="bg-white p-8 rounded-2xl shadow-xl">
+            <div class="w-full min-h-[290px] rounded-xl mb-6 bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-200 flex items-center justify-center p-4">
+              <img src="talaea-logo.png" alt="شعار الروضة" class="logo-img w-full h-64" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;text-blue-900 text-2xl font-bold text-center leading-10&quot;>شعار روضة<br>طلائع المبدعين</div>');">
+            </div>
+            <h3 class="text-2xl font-bold text-blue-900 mb-4">واجهة جاهزة كبداية</h3>
+            <p class="text-gray-700 leading-8">
+              تم تخصيص هذه الواجهة لتناسب الروضة بشكل أوضح، مع إضافة معرض صور ومعرض فيديوهات ووضع الشعار في أماكن مناسبة داخل الصفحة.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="worksheets" class="py-16 bg-white">
+      <div class="max-w-5xl mx-auto px-4">
+        <div class="bg-slate-50 rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+          <h2 class="text-3xl font-bold text-blue-900 mb-4">أوراق العمل</h2>
+          <p class="text-gray-700 leading-8 max-w-3xl mx-auto">
+            هذا القسم جاهز حاليًا كواجهة مؤقتة، ويمكن لاحقًا ربطه بملفات وأوراق العمل الخاصة بروضة طلائع المبدعين من داخل لوحة الإدارة.
           </p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="worksheets" class="py-16 bg-white">
-    <div class="max-w-5xl mx-auto px-4">
-      <div class="bg-slate-50 rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
-        <h2 class="text-3xl font-bold text-blue-900 mb-4">أوراق العمل</h2>
-        <p class="text-gray-700 leading-8 max-w-3xl mx-auto">
-          هذا القسم جاهز حاليًا كواجهة مؤقتة، ويمكن لاحقًا ربطه بملفات وأوراق العمل الخاصة بروضة طلائع المبدعين من داخل لوحة الإدارة.
+    <section id="gallery" class="py-16 bg-slate-50">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">معرض الصور</h2>
+          <p class="text-gray-600">تمت إضافة صور مناسبة مؤقتة لطابع الروضة إلى حين استبدالها بالصور الفعلية.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <img class="gallery-image" alt="نشاط صفّي للأطفال" src="data:image/svg+xml;utf8,
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+              <defs>
+                <linearGradient id='g1' x1='0' y1='0' x2='1' y2='1'>
+                  <stop offset='0%' stop-color='%23dbeafe'/>
+                  <stop offset='100%' stop-color='%23fef3c7'/>
+                </linearGradient>
+              </defs>
+              <rect width='800' height='500' fill='url(%23g1)'/>
+              <rect x='70' y='110' width='660' height='300' rx='30' fill='%23ffffff'/>
+              <rect x='120' y='150' width='220' height='180' rx='22' fill='%23bfdbfe'/>
+              <rect x='370' y='150' width='300' height='24' rx='12' fill='%23cbd5e1'/>
+              <rect x='370' y='200' width='230' height='20' rx='10' fill='%23e2e8f0'/>
+              <rect x='370' y='240' width='250' height='20' rx='10' fill='%23e2e8f0'/>
+              <circle cx='190' cy='235' r='48' fill='%23f59e0b'/>
+              <circle cx='255' cy='235' r='48' fill='%2322c55e'/>
+              <circle cx='223' cy='195' r='48' fill='%23ef4444' fill-opacity='.9'/>
+              <rect x='160' y='350' width='470' height='20' rx='10' fill='%23dbeafe'/>
+              <text x='400' y='95' font-size='34' text-anchor='middle' fill='%231e3a8a' font-family='Arial'>أنشطة تعليمية ممتعة</text>
+            </svg>">
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أنشطة صفية</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض جانب من الأنشطة التعليمية داخل الروضة.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <img class="gallery-image" alt="أعمال فنية للأطفال" src="data:image/svg+xml;utf8,
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+              <rect width='800' height='500' fill='%23fff7ed'/>
+              <rect x='70' y='90' width='660' height='330' rx='28' fill='%23ffffff'/>
+              <rect x='115' y='130' width='170' height='240' rx='24' fill='%23fde68a'/>
+              <rect x='315' y='130' width='170' height='240' rx='24' fill='%23bfdbfe'/>
+              <rect x='515' y='130' width='170' height='240' rx='24' fill='%23fecaca'/>
+              <path d='M160 300 C190 220 225 220 255 300' stroke='%23ef4444' stroke-width='14' fill='none' stroke-linecap='round'/>
+              <circle cx='400' cy='215' r='55' fill='%2322c55e'/>
+              <rect x='575' y='190' width='55' height='100' rx='18' fill='%238b5cf6'/>
+              <rect x='630' y='160' width='55' height='130' rx='18' fill='%230ea5e9'/>
+              <text x='400' y='78' font-size='34' text-anchor='middle' fill='%239a3412' font-family='Arial'>أعمال ورسومات الأطفال</text>
+            </svg>">
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أعمال فنية</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض رسومات وأعمال الأطفال داخل الروضة.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <img class="gallery-image" alt="زاوية لعب وتعليم" src="data:image/svg+xml;utf8,
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+              <defs>
+                <linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'>
+                  <stop offset='0%' stop-color='%23ecfccb'/>
+                  <stop offset='100%' stop-color='%23dbeafe'/>
+                </linearGradient>
+              </defs>
+              <rect width='800' height='500' fill='url(%23g2)'/>
+              <rect x='85' y='100' width='630' height='310' rx='30' fill='%23ffffff'/>
+              <rect x='135' y='290' width='110' height='70' rx='18' fill='%23fb7185'/>
+              <rect x='260' y='235' width='110' height='125' rx='18' fill='%23f59e0b'/>
+              <rect x='385' y='180' width='110' height='180' rx='18' fill='%2322c55e'/>
+              <rect x='510' y='140' width='110' height='220' rx='18' fill='%230ea5e9'/>
+              <circle cx='180' cy='205' r='30' fill='%238b5cf6'/>
+              <circle cx='305' cy='175' r='30' fill='%23ef4444'/>
+              <circle cx='430' cy='150' r='30' fill='%23facc15'/>
+              <text x='400' y='82' font-size='34' text-anchor='middle' fill='%23165d3b' font-family='Arial'>ركن اللعب والتعلّم</text>
+            </svg>">
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أركان تعليمية</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض الزوايا التعليمية والأنشطة التفاعلية.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="videos" class="py-16 bg-white">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">معرض الفيديوهات</h2>
+          <p class="text-gray-600">تمت إضافة صور مصغرة مؤقتة للفيديوهات بما يناسب موضوع الروضة، ويمكن لاحقًا ربطها بفيديوهات فعلية.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <div class="relative">
+              <img class="gallery-image" alt="صورة مصغرة لفيديو نشاط صباحي" src="data:image/svg+xml;utf8,
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+                <rect width='800' height='500' fill='%23e0f2fe'/>
+                <rect x='80' y='85' width='640' height='330' rx='30' fill='%23ffffff'/>
+                <circle cx='220' cy='215' r='72' fill='%23facc15'/>
+                <rect x='350' y='145' width='250' height='28' rx='14' fill='%2393c5fd'/>
+                <rect x='350' y='205' width='180' height='22' rx='11' fill='%23cbd5e1'/>
+                <rect x='350' y='250' width='210' height='22' rx='11' fill='%23cbd5e1'/>
+                <text x='400' y='82' font-size='34' text-anchor='middle' fill='%23036aa5' font-family='Arial'>الطابور الصباحي</text>
+              </svg>">
+              <div class="play-badge">
+                <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                  <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-blue-900 mr-1"></div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">نشاط صباحي</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة لفيديو تعريفي أو نشاط صباحي داخل الروضة.</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <div class="relative">
+              <img class="gallery-image" alt="صورة مصغرة لفيديو أعمال الأطفال" src="data:image/svg+xml;utf8,
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+                <rect width='800' height='500' fill='%23fdf2f8'/>
+                <rect x='90' y='95' width='620' height='310' rx='28' fill='%23ffffff'/>
+                <rect x='145' y='145' width='140' height='210' rx='20' fill='%23bfdbfe'/>
+                <rect x='330' y='145' width='140' height='210' rx='20' fill='%23fde68a'/>
+                <rect x='515' y='145' width='140' height='210' rx='20' fill='%23fecaca'/>
+                <text x='400' y='82' font-size='34' text-anchor='middle' fill='%239d174d' font-family='Arial'>أعمال الأطفال</text>
+              </svg>">
+              <div class="play-badge">
+                <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                  <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-rose-600 mr-1"></div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">عرض الأعمال</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة لفيديو يعرض رسومات الأطفال وإنجازاتهم.</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+            <div class="relative">
+              <img class="gallery-image" alt="صورة مصغرة لفيديو تعريفي بالروضة" src="data:image/svg+xml;utf8,
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
+                <rect width='800' height='500' fill='%23eef2ff'/>
+                <rect x='85' y='90' width='630' height='320' rx='30' fill='%23ffffff'/>
+                <rect x='125' y='140' width='260' height='220' rx='24' fill='%23c7d2fe'/>
+                <rect x='425' y='150' width='210' height='24' rx='12' fill='%2394a3b8'/>
+                <rect x='425' y='205' width='180' height='20' rx='10' fill='%23cbd5e1'/>
+                <rect x='425' y='245' width='190' height='20' rx='10' fill='%23cbd5e1'/>
+                <rect x='425' y='285' width='150' height='20' rx='10' fill='%23cbd5e1'/>
+                <text x='400' y='78' font-size='34' text-anchor='middle' fill='%234c1d95' font-family='Arial'>فيديو تعريفي</text>
+              </svg>">
+              <div class="play-badge">
+                <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                  <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-violet-600 mr-1"></div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">فيديو تعريفي</h3>
+            <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة مناسبة لفيديو تعريفي عن الروضة ومرافقها.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin" class="py-16 bg-blue-900 text-white">
+      <div class="max-w-5xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">خاص بالإدارة</h2>
+        <p class="text-gray-200 max-w-3xl mx-auto leading-8 mb-8">
+          تم تجهيز صفحة إدارة مستقلة لهذه الروضة. يمكنك الدخول إليها من زر "خاص بالإدارة" في أعلى الصفحة لإدارة أوراق العمل والصور والفيديوهات والدخول إلى نتائج الطلاب.
         </p>
+        <button id="adminLoginBtnSection" class="inline-flex items-center gap-3 bg-white text-blue-900 rounded-2xl px-6 py-4 font-bold hover:bg-slate-100 btn-hover">
+          الدخول إلى الإدارة
+        </button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="gallery" class="py-16 bg-slate-50">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">معرض الصور</h2>
-        <p class="text-gray-600">تمت إضافة صور مناسبة مؤقتة لطابع الروضة إلى حين استبدالها بالصور الفعلية.</p>
+    <footer class="bg-black text-gray-400 py-10">
+      <div class="max-w-6xl mx-auto px-4 text-center">
+        <p>&copy; 2026 روضة طلائع المبدعين. جميع الحقوق محفوظة.</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <img class="gallery-image" alt="نشاط صفّي للأطفال" src="data:image/svg+xml;utf8,
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-            <defs>
-              <linearGradient id='g1' x1='0' y1='0' x2='1' y2='1'>
-                <stop offset='0%' stop-color='%23dbeafe'/>
-                <stop offset='100%' stop-color='%23fef3c7'/>
-              </linearGradient>
-            </defs>
-            <rect width='800' height='500' fill='url(%23g1)'/>
-            <rect x='70' y='110' width='660' height='300' rx='30' fill='%23ffffff'/>
-            <rect x='120' y='150' width='220' height='180' rx='22' fill='%23bfdbfe'/>
-            <rect x='370' y='150' width='300' height='24' rx='12' fill='%23cbd5e1'/>
-            <rect x='370' y='200' width='230' height='20' rx='10' fill='%23e2e8f0'/>
-            <rect x='370' y='240' width='250' height='20' rx='10' fill='%23e2e8f0'/>
-            <circle cx='190' cy='235' r='48' fill='%23f59e0b'/>
-            <circle cx='255' cy='235' r='48' fill='%2322c55e'/>
-            <circle cx='223' cy='195' r='48' fill='%23ef4444' fill-opacity='.9'/>
-            <rect x='160' y='350' width='470' height='20' rx='10' fill='%23dbeafe'/>
-            <text x='400' y='95' font-size='34' text-anchor='middle' fill='%231e3a8a' font-family='Arial'>أنشطة تعليمية ممتعة</text>
-          </svg>">
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أنشطة صفية</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض جانب من الأنشطة التعليمية داخل الروضة.</p>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <img class="gallery-image" alt="أعمال فنية للأطفال" src="data:image/svg+xml;utf8,
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-            <rect width='800' height='500' fill='%23fff7ed'/>
-            <rect x='70' y='90' width='660' height='330' rx='28' fill='%23ffffff'/>
-            <rect x='115' y='130' width='170' height='240' rx='24' fill='%23fde68a'/>
-            <rect x='315' y='130' width='170' height='240' rx='24' fill='%23bfdbfe'/>
-            <rect x='515' y='130' width='170' height='240' rx='24' fill='%23fecaca'/>
-            <path d='M160 300 C190 220 225 220 255 300' stroke='%23ef4444' stroke-width='14' fill='none' stroke-linecap='round'/>
-            <circle cx='400' cy='215' r='55' fill='%2322c55e'/>
-            <rect x='575' y='190' width='55' height='100' rx='18' fill='%238b5cf6'/>
-            <rect x='630' y='160' width='55' height='130' rx='18' fill='%230ea5e9'/>
-            <text x='400' y='78' font-size='34' text-anchor='middle' fill='%239a3412' font-family='Arial'>أعمال ورسومات الأطفال</text>
-          </svg>">
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أعمال فنية</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض رسومات وأعمال الأطفال داخل الروضة.</p>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <img class="gallery-image" alt="زاوية لعب وتعليم" src="data:image/svg+xml;utf8,
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-            <defs>
-              <linearGradient id='g2' x1='0' y1='0' x2='1' y2='1'>
-                <stop offset='0%' stop-color='%23ecfccb'/>
-                <stop offset='100%' stop-color='%23dbeafe'/>
-              </linearGradient>
-            </defs>
-            <rect width='800' height='500' fill='url(%23g2)'/>
-            <rect x='85' y='100' width='630' height='310' rx='30' fill='%23ffffff'/>
-            <rect x='135' y='290' width='110' height='70' rx='18' fill='%23fb7185'/>
-            <rect x='260' y='235' width='110' height='125' rx='18' fill='%23f59e0b'/>
-            <rect x='385' y='180' width='110' height='180' rx='18' fill='%2322c55e'/>
-            <rect x='510' y='140' width='110' height='220' rx='18' fill='%230ea5e9'/>
-            <circle cx='180' cy='205' r='30' fill='%238b5cf6'/>
-            <circle cx='305' cy='175' r='30' fill='%23ef4444'/>
-            <circle cx='430' cy='150' r='30' fill='%23facc15'/>
-            <text x='400' y='82' font-size='34' text-anchor='middle' fill='%23165d3b' font-family='Arial'>ركن اللعب والتعلّم</text>
-          </svg>">
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">أركان تعليمية</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مؤقتة مناسبة لعرض الزوايا التعليمية والأنشطة التفاعلية.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="videos" class="py-16 bg-white">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">معرض الفيديوهات</h2>
-        <p class="text-gray-600">تمت إضافة صور مصغرة مؤقتة للفيديوهات بما يناسب موضوع الروضة، ويمكن لاحقًا ربطها بفيديوهات فعلية.</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <div class="relative">
-            <img class="gallery-image" alt="صورة مصغرة لفيديو نشاط صباحي" src="data:image/svg+xml;utf8,
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-              <rect width='800' height='500' fill='%23e0f2fe'/>
-              <rect x='80' y='85' width='640' height='330' rx='30' fill='%23ffffff'/>
-              <circle cx='220' cy='215' r='72' fill='%23facc15'/>
-              <rect x='350' y='145' width='250' height='28' rx='14' fill='%2393c5fd'/>
-              <rect x='350' y='205' width='180' height='22' rx='11' fill='%23cbd5e1'/>
-              <rect x='350' y='250' width='210' height='22' rx='11' fill='%23cbd5e1'/>
-              <text x='400' y='82' font-size='34' text-anchor='middle' fill='%23036aa5' font-family='Arial'>الطابور الصباحي</text>
-            </svg>">
-            <div class="play-badge">
-              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
-                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-blue-900 mr-1"></div>
-              </div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">نشاط صباحي</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة لفيديو تعريفي أو نشاط صباحي داخل الروضة.</p>
-        </div>
-
-        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <div class="relative">
-            <img class="gallery-image" alt="صورة مصغرة لفيديو أعمال الأطفال" src="data:image/svg+xml;utf8,
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-              <rect width='800' height='500' fill='%23fdf2f8'/>
-              <rect x='90' y='95' width='620' height='310' rx='28' fill='%23ffffff'/>
-              <rect x='145' y='145' width='140' height='210' rx='20' fill='%23bfdbfe'/>
-              <rect x='330' y='145' width='140' height='210' rx='20' fill='%23fde68a'/>
-              <rect x='515' y='145' width='140' height='210' rx='20' fill='%23fecaca'/>
-              <text x='400' y='82' font-size='34' text-anchor='middle' fill='%239d174d' font-family='Arial'>أعمال الأطفال</text>
-            </svg>">
-            <div class="play-badge">
-              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
-                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-rose-600 mr-1"></div>
-              </div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">عرض الأعمال</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة لفيديو يعرض رسومات الأطفال وإنجازاتهم.</p>
-        </div>
-
-        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
-          <div class="relative">
-            <img class="gallery-image" alt="صورة مصغرة لفيديو تعريفي بالروضة" src="data:image/svg+xml;utf8,
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
-              <rect width='800' height='500' fill='%23eef2ff'/>
-              <rect x='85' y='90' width='630' height='320' rx='30' fill='%23ffffff'/>
-              <rect x='125' y='140' width='260' height='220' rx='24' fill='%23c7d2fe'/>
-              <rect x='425' y='150' width='210' height='24' rx='12' fill='%2394a3b8'/>
-              <rect x='425' y='205' width='180' height='20' rx='10' fill='%23cbd5e1'/>
-              <rect x='425' y='245' width='190' height='20' rx='10' fill='%23cbd5e1'/>
-              <rect x='425' y='285' width='150' height='20' rx='10' fill='%23cbd5e1'/>
-              <text x='400' y='78' font-size='34' text-anchor='middle' fill='%234c1d95' font-family='Arial'>فيديو تعريفي</text>
-            </svg>">
-            <div class="play-badge">
-              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
-                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-violet-600 mr-1"></div>
-              </div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">فيديو تعريفي</h3>
-          <p class="text-gray-600 leading-7 text-sm">صورة مصغرة مؤقتة مناسبة لفيديو تعريفي عن الروضة ومرافقها.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="admin" class="py-16 bg-blue-900 text-white">
-    <div class="max-w-5xl mx-auto px-4 text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">خاص بالإدارة</h2>
-      <p class="text-gray-200 max-w-3xl mx-auto leading-8 mb-8">
-        تم تجهيز صفحة إدارة مستقلة لهذه الروضة. يمكنك الدخول إليها من زر "خاص بالإدارة" في أعلى الصفحة لإدارة أوراق العمل والصور والفيديوهات والدخول إلى نتائج الطلاب.
-      </p>
-      <button id="adminLoginBtnSection" class="inline-flex items-center gap-3 bg-white text-blue-900 rounded-2xl px-6 py-4 font-bold hover:bg-slate-100 btn-hover">
-        الدخول إلى الإدارة
-      </button>
-    </div>
-  </section>
+    </footer>
+  </div>
 
   <div id="loginModal" class="fixed inset-0 bg-black/50 z-[999] hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
@@ -383,12 +429,6 @@
     </div>
   </div>
 
-  <footer class="bg-black text-gray-400 py-10">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-      <p>&copy; 2026 روضة طلائع المبدعين. جميع الحقوق محفوظة.</p>
-    </div>
-  </footer>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
@@ -400,10 +440,16 @@
       measurementId: "G-QM0TNEN9XJ"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const KG_ID = "talaea-almobdeeen";
+    // ===================== المتغيرات الموحدة =====================
+    const KG_ID = "kg_talaea";
     const KG_NAME = "روضة طلائع المبدعين";
+    // =============================================================
+
+    const loaderContainer = document.getElementById('loaderContainer');
+    const mainContent = document.getElementById('mainContent');
 
     function openLoginModal() {
       document.getElementById("loginModal").classList.remove("hidden");
@@ -430,7 +476,7 @@
       }
 
       try {
-        const userCred = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const userCred = await auth.signInWithEmailAndPassword(email, password);
         const uid = userCred.user.uid;
         const userDoc = await db.collection("users").doc(uid).get();
 
@@ -449,7 +495,7 @@
         }
 
         if (data.role === "kindergarten_manager") {
-          window.location.href = `talaea-admin.html?kg=${KG_ID}`;
+          window.location.href = `talaea-admin.html`;
           return;
         }
 
@@ -487,6 +533,20 @@
       window.location.href = "exercises.html";
     }
 
+    // التحقق من الروضة وعرض المحتوى
+    async function checkAndShowContent() {
+      try {
+        await verifyKindergartenExists();
+        // إخفاء شاشة التحميل وإظهار المحتوى
+        loaderContainer.style.display = 'none';
+        mainContent.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        loaderContainer.style.display = 'none';
+        mainContent.style.display = 'block';
+      }
+    }
+
     document.getElementById("mainExercisesBtn").addEventListener("click", openExercises);
     document.getElementById("exercisesCard").addEventListener("click", openExercises);
 
@@ -510,58 +570,7 @@
     });
 
     ensureKindergartenSession();
-    verifyKindergartenExists();
+    checkAndShowContent();
   </script>
-
-<script>
-  function signIn() {
-    const email = document.getElementById('emailInput').value;
-    const password = document.getElementById('passwordInput').value;
-
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("تم تسجيل الدخول بنجاح:", user);
-
-        // Get the user data from Firestore to check KG_ID
-        const userRef = firebase.firestore().collection('users').doc(user.uid);
-        const correctKGID = "talaea-almobdeeen";  // Updated to the actual correct KG_ID
-
-        userRef.get().then((doc) => {
-          if (doc.exists) {
-            const userKGID = doc.data().kg_id;
-            console.log("الـ KG_ID المخزن للمستخدم:", userKGID);
-            console.log("الـ KG_ID الصحيح الذي يتم التحقق منه:", correctKGID);
-
-            if (userKGID !== correctKGID) {
-              alert("هذا الحساب لا يتبع لروضة طلائع المبدعين");
-              firebase.auth().signOut();  // Sign out if KG_ID doesn't match
-            } else {
-              console.log("الحساب يتبع للروضة.");
-              // Proceed with the next steps if KG_ID matches
-            }
-          } else {
-            console.log("لا توجد بيانات للمستخدم.");
-            alert("حساب المستخدم غير موجود في النظام.");
-          }
-        });
-      })
-      .catch((error) => {
-        // Error handling
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        // Display error messages to the user
-        if (errorCode === 'auth/wrong-password') {
-          alert("كلمة المرور خاطئة. حاول مرة أخرى.");
-        } else if (errorCode === 'auth/user-not-found') {
-          alert("البريد الإلكتروني غير مسجل. حاول البريد الإلكتروني الصحيح.");
-        } else {
-          alert("حدث خطأ أثناء تسجيل الدخول: " + errorMessage);
-        }
-      });
-  }
-</script>
-
 </body>
 </html>
