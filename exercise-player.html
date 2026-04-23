@@ -5,733 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>التمرين التفاعلي - روضة طلائع المبدعين</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Tajawal', Arial, sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
-      margin: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .hero-gradient {
-      background: linear-gradient(135deg, #1e3a8a 0%, #334155 100%);
-    }
-    iframe {
-      width: 100%;
-      min-height: 800px;
-      border: 0;
-      display: block;
-      background: #fff;
-      border-radius: 16px;
-    }
-    .player-wrap {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-    }
+    body { font-family: 'Tajawal', Arial, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; }
+    .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #334155 100%); }
+    iframe { width: 100%; min-height: 800px; border: 0; display: block; background: #fff; border-radius: 16px; }
+    .player-wrap { position: relative; border-radius: 16px; overflow: hidden; }
     .player-lock {
-      position: absolute;
-      inset: 0;
-      z-index: 5;
-      background: rgba(255,255,255,0.96);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 24px;
-      border-radius: 16px;
+      position: absolute; inset: 0; z-index: 5; background: rgba(255,255,255,0.96);
+      display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; border-radius: 16px;
     }
-    .player-lock.hidden {
-      display: none;
-    }
-    .player-lock-card {
-      max-width: 500px;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 18px 40px rgba(15,23,42,.10);
-    }
-    @media (max-width: 767px) {
-      iframe {
-        min-height: 70vh;
-      }
-      .player-lock-card {
-        padding: 20px;
-      }
-    }
-    /* شاشة التحميل */
-    .loader-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: white;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .loader {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #e2e8f0;
-      border-top: 4px solid #1e3a8a;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .main-content {
-      display: none;
-    }
+    .player-lock.hidden { display: none; }
+    .player-lock-card { max-width: 500px; background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 28px; box-shadow: 0 18px 40px rgba(15,23,42,.10); }
+    @media (max-width: 767px) { iframe { min-height: 70vh; } .player-lock-card { padding: 20px; } }
   </style>
 </head>
 <body class="min-h-screen text-right">
 
-  <!-- شاشة التحميل -->
-  <div id="loaderContainer" class="loader-container">
-    <div class="loader"></div>
-    <p class="text-blue-900 font-medium">جاري تحميل التمرين...</p>
-  </div>
-
-  <!-- المحتوى الرئيسي -->
-  <div id="mainContent" class="main-content">
-    <header id="mainHeader" class="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-200 transition-transform duration-500">
-      <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
-        <div>
-          <h1 id="pageTitle" class="text-xl md:text-2xl font-extrabold text-blue-900 leading-tight">التمرين التفاعلي</h1>
-          <p id="pageSubtitle" class="text-xs md:text-sm text-slate-600 mt-1 leading-6">روضة طلائع المبدعين</p>
-        </div>
-        <div class="flex w-full md:w-auto flex-wrap gap-2 md:gap-3">
-          <a id="backToExercisesLink" href="exercises.html" class="flex-1 md:flex-none text-center bg-slate-200 text-slate-800 px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-slate-300 transition">
-            📚 العودة للتمارين
-          </a>
-          <a id="kindergartenHomeLink" href="talaea-almobdeeen.html" class="flex-1 md:flex-none text-center bg-blue-900 text-white px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-blue-800 transition">
-            🏠 صفحة الروضة
-          </a>
-        </div>
+  <header id="mainHeader" class="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-200 transition-transform duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4">
+      <div>
+        <h1 id="pageTitle" class="text-xl md:text-2xl font-extrabold text-blue-900 leading-tight">التمرين التفاعلي</h1>
+        <p id="pageSubtitle" class="text-xs md:text-sm text-slate-600 mt-1 leading-6">روضة طلائع المبدعين</p>
       </div>
-    </header>
+      <div class="flex w-full md:w-auto flex-wrap gap-2 md:gap-3">
+        <a id="backToExercisesLink" href="exercises.html" class="flex-1 md:flex-none text-center bg-slate-200 text-slate-800 px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-slate-300 transition">📚 العودة للتمارين</a>
+        <a id="kindergartenHomeLink" href="talaea-almobdeeen.html" class="flex-1 md:flex-none text-center bg-blue-900 text-white px-4 md:px-5 py-2.5 rounded-full text-sm md:text-base font-medium hover:bg-blue-800 transition">🏠 صفحة الروضة</a>
+      </div>
+    </div>
+  </header>
 
-    <section class="hero-gradient text-white py-7 md:py-10 mt-16 md:mt-20">
-      <div class="max-w-5xl mx-auto px-4 text-center">
-        <h2 id="heroTitle" class="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4 leading-tight">📖 التمرين التفاعلي</h2>
-        <p id="heroText" class="text-sm md:text-lg opacity-90 leading-7 md:leading-8 max-w-3xl mx-auto">
-          أدخل بيانات الطالب ثم ابدأ التمرين.
-        </p>
+  <section class="hero-gradient text-white py-7 md:py-10 mt-16 md:mt-20">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 id="heroTitle" class="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4 leading-tight">📖 التمرين التفاعلي</h2>
+      <p id="heroText" class="text-sm md:text-lg opacity-90 leading-7 md:leading-8 max-w-3xl mx-auto">أدخل بيانات الطالب ثم ابدأ التمرين.</p>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-3 md:px-4 py-5 md:py-8">
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-5 md:mb-6">
+      <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4 md:mb-5 text-center">👤 بيانات الطالب</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        <div><label class="block mb-2 text-sm md:text-base font-medium text-slate-700">📝 اسم الطالب</label><input id="studentName" type="text" placeholder="أدخل اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200"></div>
+        <div><label class="block mb-2 text-sm md:text-base font-medium text-slate-700">🔢 كود الطالب</label><input id="studentCode" type="text" placeholder="أدخل كود الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200"></div>
+        <div><label class="block mb-2 text-sm md:text-base font-medium text-slate-700">📚 الشعبة / الصف</label><input id="className" type="text" placeholder="مثال: التمهيدي أ" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200"></div>
+      </div>
+      <div class="mt-4 text-center"><button id="startExerciseBtn" class="w-full sm:w-auto bg-blue-900 text-white px-6 py-3 rounded-xl text-sm md:text-base font-medium hover:bg-blue-800 transition">🚀 بدء التمرين</button></div>
+      <p id="studentMsg" class="mt-4 text-center text-sm md:text-base font-medium text-slate-700"></p>
+    </section>
+
+    <section id="statusBox" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
+      <p id="statusText" class="text-base md:text-lg font-bold text-slate-700 leading-7">⏳ جاري تجهيز التمرين...</p>
+    </section>
+
+    <section id="playerBox" class="hidden mt-5 md:mt-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden player-wrap">
+        <div id="playerLock" class="player-lock"><div class="player-lock-card"><h3 class="text-2xl font-bold text-blue-900 mb-3">🔐 أكملي بيانات الطالب أولاً</h3><p class="text-slate-600 leading-8 mb-4">يجب إدخال اسم الطالب وكوده الصحيح قبل بدء التمرين. بعد التحقق، سيتم فتح التمرين مباشرة.</p><button id="playerLockBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800 transition">✅ التحقق وفتح التمرين</button></div></div>
+        <iframe id="exerciseFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
       </div>
     </section>
 
-    <main class="max-w-7xl mx-auto px-3 md:px-4 py-5 md:py-8">
-      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 mb-5 md:mb-6">
-        <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4 md:mb-5 text-center">👤 بيانات الطالب</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-          <div>
-            <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">📝 اسم الطالب</label>
-            <input id="studentName" type="text" placeholder="أدخل اسم الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
-          </div>
-          <div>
-            <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">🔢 كود الطالب</label>
-            <input id="studentCode" type="text" placeholder="أدخل كود الطالب" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
-          </div>
-          <div>
-            <label class="block mb-2 text-sm md:text-base font-medium text-slate-700">📚 الشعبة / الصف</label>
-            <input id="className" type="text" placeholder="مثال: التمهيدي أ" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm md:text-base outline-none focus:ring-2 focus:ring-blue-200">
-          </div>
-        </div>
-        <div class="mt-4 text-center">
-          <button id="startExerciseBtn" class="w-full sm:w-auto bg-blue-900 text-white px-6 py-3 rounded-xl text-sm md:text-base font-medium hover:bg-blue-800 transition">
-            🚀 بدء التمرين
-          </button>
-        </div>
-        <p id="studentMsg" class="mt-4 text-center text-sm md:text-base font-medium text-slate-700"></p>
-      </section>
-
-      <section id="statusBox" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
-        <p id="statusText" class="text-base md:text-lg font-bold text-slate-700 leading-7">⏳ جاري تجهيز التمرين...</p>
-      </section>
-
-      <section id="playerBox" class="hidden mt-5 md:mt-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden player-wrap">
-          <div id="playerLock" class="player-lock">
-            <div class="player-lock-card">
-              <h3 class="text-2xl font-bold text-blue-900 mb-3">🔐 أكملي بيانات الطالب أولاً</h3>
-              <p class="text-slate-600 leading-8 mb-4">
-                يجب إدخال اسم الطالب وكوده الصحيح قبل بدء التمرين. بعد التحقق، سيتم فتح التمرين مباشرة.
-              </p>
-              <button id="playerLockBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800 transition">
-                ✅ التحقق وفتح التمرين
-              </button>
-            </div>
-          </div>
-          <iframe id="exerciseFrame" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
-        </div>
-      </section>
-
-      <section id="resultBox" class="hidden mt-5 md:mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
-        <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4">📊 نتيجة الطالب</h3>
-        <p id="resultText" class="text-lg md:text-xl font-bold text-slate-800"></p>
-        <p id="saveStatus" class="mt-4 font-medium text-slate-700"></p>
-      </section>
-    </main>
-  </div>
+    <section id="resultBox" class="hidden mt-5 md:mt-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 text-center">
+      <h3 class="text-xl md:text-2xl font-bold text-blue-900 mb-4">📊 نتيجة الطالب</h3>
+      <p id="resultText" class="text-lg md:text-xl font-bold text-slate-800"></p>
+      <p id="saveStatus" class="mt-4 font-medium text-slate-700"></p>
+    </section>
+  </main>
 
   <script>
-    (function () {
-      const firebaseConfig = {
-        apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
-        authDomain: "interactive-book-37270.firebaseapp.com",
-        projectId: "interactive-book-37270",
-        storageBucket: "interactive-book-37270.firebasestorage.app",
-        messagingSenderId: "350364566140",
-        appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
-      };
+    // نسخة تجريبية بدون Firebase - لاحقاً سنربطها بشكل صحيح
+    const KG_ID = "kg_talaea";
+    const KG_NAME = "روضة طلائع المبدعين";
 
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
+    const params = new URLSearchParams(window.location.search);
+    const stage = params.get("stage") || sessionStorage.getItem("selectedStage") || "";
+    const subject = params.get("subject") || sessionStorage.getItem("selectedSubject") || "";
+    const page = params.get("page") || sessionStorage.getItem("selectedPage") || "";
 
-      // ===================== المتغيرات الموحدة =====================
-      const KG_ID = "kg_talaea";
-      const KG_NAME = "روضة طلائع المبدعين";
-      // =============================================================
+    function stageLabel(v) { return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v; }
+    function subjectLabel(v) { return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v; }
 
-      const params = new URLSearchParams(window.location.search);
-      const stage = params.get("stage") || sessionStorage.getItem("selectedStage") || "";
-      const subject = params.get("subject") || sessionStorage.getItem("selectedSubject") || "";
-      const page = params.get("page") || sessionStorage.getItem("selectedPage") || "";
+    document.getElementById("pageTitle").innerText = `تمرين ${KG_NAME}`;
+    document.getElementById("pageSubtitle").innerText = `${stageLabel(stage)} - ${subjectLabel(subject)} - صفحة ${page}`;
+    document.getElementById("heroTitle").innerText = `${KG_NAME} | ${subjectLabel(subject)}`;
 
-      const loaderContainer = document.getElementById('loaderContainer');
-      const mainContent = document.getElementById('mainContent');
-      const pageTitle = document.getElementById("pageTitle");
-      const pageSubtitle = document.getElementById("pageSubtitle");
-      const heroTitle = document.getElementById("heroTitle");
-      const statusBox = document.getElementById("statusBox");
-      const statusText = document.getElementById("statusText");
-      const playerBox = document.getElementById("playerBox");
-      const frame = document.getElementById("exerciseFrame");
-      const resultBox = document.getElementById("resultBox");
-      const resultText = document.getElementById("resultText");
-      const saveStatus = document.getElementById("saveStatus");
-      const studentMsg = document.getElementById("studentMsg");
-      const startExerciseBtn = document.getElementById("startExerciseBtn");
-      const playerLock = document.getElementById("playerLock");
-      const playerLockBtn = document.getElementById("playerLockBtn");
-      const backToExercisesLink = document.getElementById("backToExercisesLink");
-      const kindergartenHomeLink = document.getElementById("kindergartenHomeLink");
-
-      function updateNavigationLinks() {
-        if (backToExercisesLink) backToExercisesLink.href = `exercises.html`;
-        if (kindergartenHomeLink) kindergartenHomeLink.href = `talaea-almobdeeen.html`;
-      }
-      updateNavigationLinks();
-
-      let currentKindergarten = null;
-      let currentExerciseTitle = "";
-      let allowedStudents = {};
-      let resultSaved = false;
-      let exerciseUnlocked = false;
-
-      function stageLabel(v) {
-        return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : v;
-      }
-
-      function subjectLabel(v) {
-        return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : v;
-      }
-
-      function padPage(value) {
-        return String(value || "").padStart(2, "0");
-      }
-
-      function getDocId(kindergartenId, stageValue, subjectValue, pageValue) {
-        return `${kindergartenId}__${stageValue}__${subjectValue}__p${padPage(pageValue)}`;
-      }
-
-      function normalizeArabicName(name) {
-        return String(name || "")
-          .trim()
-          .replace(/[أإآ]/g, "ا")
-          .replace(/ى/g, "ي")
-          .replace(/ة/g, "ه")
-          .replace(/\s+/g, " ")
-          .toLowerCase();
-      }
-
-      function getTodayDateOnly() {
-        return new Date().toISOString().slice(0, 10);
-      }
-
-      function getAudioUrls(audioFiles) {
-        const files = Array.isArray(audioFiles) ? audioFiles : [];
-
-        const findByKeywords = (keywords) => {
-          return files.find(file => {
-            const name = String(file?.name || "").toLowerCase();
-            return keywords.some(k => name.includes(k));
-          })?.url || "";
-        };
-
-        return {
-          correct: findByKeywords(["correct", "success", "right", "صح"]),
-          wrong: findByKeywords(["wrong", "error", "fail", "خطا", "خطأ"]),
-          intro: findByKeywords(["intro", "instruction", "start", "تعليمات", "بدايه", "بداية"])
-        };
-      }
-
-      function helperScriptBlock(audioUrls) {
-        const safeAudio = JSON.stringify(audioUrls || {});
-        return `
-<script>
-window.EXERCISE_AUDIO = ${safeAudio};
-
-function ensureExerciseAudioElement(id, src) {
-  if (!src) return null;
-  let el = document.getElementById(id);
-  if (!el) {
-    el = document.createElement('audio');
-    el.id = id;
-    el.preload = 'auto';
-    document.body.appendChild(el);
-  }
-  if (!el.src) el.src = src;
-  return el;
-}
-
-function playExerciseAudio(type) {
-  const src = window.EXERCISE_AUDIO && window.EXERCISE_AUDIO[type];
-  if (!src) return;
-  const el = ensureExerciseAudioElement('exercise-audio-' + type, src);
-  if (!el) return;
-  try {
-    el.currentTime = 0;
-    el.play();
-  } catch (e) {}
-}
-
-window.playCorrectSound = function() { playExerciseAudio('correct'); };
-window.playWrongSound = function() { playExerciseAudio('wrong'); };
-window.playIntroSound = function() { playExerciseAudio('intro'); };
-
-document.addEventListener('DOMContentLoaded', function() {
-  ensureExerciseAudioElement('exercise-audio-correct', window.EXERCISE_AUDIO?.correct);
-  ensureExerciseAudioElement('exercise-audio-wrong', window.EXERCISE_AUDIO?.wrong);
-  ensureExerciseAudioElement('exercise-audio-intro', window.EXERCISE_AUDIO?.intro);
-});
-
-window.completeExercise = function(score, total, extraData) {
-  window.parent.postMessage({
-    type: "exerciseResult",
-    score: Number(score || 0),
-    total: Number(total || 0),
-    extraData: extraData || {}
-  }, "*");
-};
-<\/script>`;
-      }
-
-      async function fetchText(url) {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("تعذر قراءة الملف: " + url);
-        }
-        return await response.text();
-      }
-
-      function escapeRegExp(str) {
-        return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      }
-
-      function getBaseUrl(fileUrl) {
-        if (!fileUrl) return "";
-        const i = fileUrl.lastIndexOf("/");
-        return i === -1 ? "" : fileUrl.slice(0, i + 1);
-      }
-
-      function buildImageMap(images) {
-        const map = {};
-        (images || []).forEach((img) => {
-          if (!img || !img.url) return;
-          const name = String(img.name || "").trim();
-          const path = String(img.path || "").trim().replace(/^\/+/, "");
-          const keys = new Set();
-          if (name) {
-            keys.add(name);
-            keys.add("./" + name);
-            keys.add("/" + name);
-            keys.add("images/" + name);
-            keys.add("./images/" + name);
-            keys.add("/images/" + name);
-          }
-          if (path) {
-            keys.add(path);
-            keys.add("./" + path);
-            keys.add("/" + path);
-            const parts = path.split("/");
-            const lastPart = parts[parts.length - 1];
-            if (lastPart) {
-              keys.add(lastPart);
-              keys.add("./" + lastPart);
-              keys.add("/" + lastPart);
-              keys.add("images/" + lastPart);
-            }
-            const imagesIndex = parts.findIndex(part => part === "images");
-            if (imagesIndex !== -1) {
-              const fromImages = parts.slice(imagesIndex).join("/");
-              keys.add(fromImages);
-              keys.add("./" + fromImages);
-              keys.add("/" + fromImages);
-            }
-          }
-          keys.forEach(key => { map[key] = img.url; });
-        });
-        return map;
-      }
-
-      function replaceKnownPaths(text, imageMap) {
-        let updated = String(text || "");
-        Object.entries(imageMap || {}).forEach(([key, value]) => {
-          updated = updated.replace(new RegExp(escapeRegExp(key), "g"), value);
-        });
-        return updated;
-      }
-
-      function buildResolverScript(imageMap) {
-        const imageJson = JSON.stringify(imageMap || {});
-        return `
-<script>
-(function() {
-  const IMAGE_MAP = ${imageJson};
-  function resolveAsset(path) {
-    if (!path || typeof path !== "string") return path;
-    if (IMAGE_MAP[path]) return IMAGE_MAP[path];
-    const cleaned = path.replace(/^\\.\\//, "").replace(/^\\//, "").replace(/^https?:\\/\\/[^/]+\\//, "");
-    if (IMAGE_MAP[cleaned]) return IMAGE_MAP[cleaned];
-    if (IMAGE_MAP["./" + cleaned]) return IMAGE_MAP["./" + cleaned];
-    if (IMAGE_MAP["/" + cleaned]) return IMAGE_MAP["/" + cleaned];
-    const last = cleaned.split("/").pop();
-    if (last && IMAGE_MAP[last]) return IMAGE_MAP[last];
-    if (last && IMAGE_MAP["images/" + last]) return IMAGE_MAP["images/" + last];
-    return path;
-  }
-  const originalSetAttribute = Element.prototype.setAttribute;
-  Element.prototype.setAttribute = function(name, value) {
-    if ((name === "src" || name === "href") && typeof value === "string") {
-      value = resolveAsset(value);
+    function studentInputs() { return { studentName: document.getElementById("studentName").value.trim(), studentCode: document.getElementById("studentCode").value.trim().toUpperCase(), className: document.getElementById("className").value.trim() }; }
+    function validateStudentInputs(showMessage = true) {
+      const inputs = studentInputs(); const msg = document.getElementById("studentMsg");
+      msg.innerText = ""; msg.className = "mt-4 text-center font-medium text-slate-700";
+      if (!inputs.studentName) { if (showMessage) { msg.innerText = "⚠️ يرجى كتابة اسم الطالب أولاً"; msg.className = "mt-4 text-center font-medium text-red-600"; } return false; }
+      if (!inputs.studentCode) { if (showMessage) { msg.innerText = "⚠️ يرجى إدخال كود الطالب أولاً"; msg.className = "mt-4 text-center font-medium text-red-600"; } return false; }
+      if (showMessage) { msg.innerText = "✅ تم التحقق من بيانات الطالب بنجاح (نسخة تجريبية)"; msg.className = "mt-4 text-center font-medium text-green-600"; }
+      return true;
     }
-    if (name === "style" && typeof value === "string") {
-      Object.keys(IMAGE_MAP).forEach((key) => {
-        value = value.split(key).join(IMAGE_MAP[key]);
-      });
-    }
-    return originalSetAttribute.call(this, name, value);
-  };
-  const imgSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
-  if (imgSrc && imgSrc.set) {
-    Object.defineProperty(HTMLImageElement.prototype, "src", {
-      get: imgSrc.get,
-      set: function(value) {
-        return imgSrc.set.call(this, resolveAsset(value));
-      }
-    });
-  }
-  function patchImages(root) {
-    if (!root || !root.querySelectorAll) return;
-    root.querySelectorAll("img, source").forEach((el) => {
-      const src = el.getAttribute("src");
-      if (src) el.setAttribute("src", resolveAsset(src));
-    });
-    root.querySelectorAll("[style]").forEach((el) => {
-      let style = el.getAttribute("style");
-      if (!style) return;
-      Object.keys(IMAGE_MAP).forEach((key) => {
-        style = style.split(key).join(IMAGE_MAP[key]);
-      });
-      el.setAttribute("style", style);
-    });
-  }
-  document.addEventListener("DOMContentLoaded", function() {
-    patchImages(document);
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) patchImages(node);
-        });
-      });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
-})();
-<\/script>`;
-      }
+    function unlockExercise() { if (!validateStudentInputs(true)) return; document.getElementById("playerLock").classList.add("hidden"); document.getElementById("playerBox").scrollIntoView({ behavior: "smooth", block: "start" }); }
+    document.getElementById("startExerciseBtn").addEventListener("click", unlockExercise);
+    document.getElementById("playerLockBtn").addEventListener("click", unlockExercise);
 
-      function buildDirectHtml(code, title, audioUrls) {
-        const trimmed = String(code || "").trim();
-        if (!trimmed) return "";
-        const helper = helperScriptBlock(audioUrls);
-        if (/<html|<head|<body/i.test(trimmed)) {
-          if (/<\/body>/i.test(trimmed)) {
-            return trimmed.replace(/<\/body>/i, helper + "\n</body>");
-          }
-          return trimmed + helper;
-        }
-        return `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title || "تمرين تفاعلي"}</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <style> body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; background: #f8fafc; margin: 0; padding: 24px; } </style>
-</head>
-<body>
-  ${trimmed}
-  ${helper}
-</body>
-</html>`;
-      }
-
-      async function buildFilesHtml(pageData, audioUrls) {
-        const htmlUrl = pageData?.files?.html?.url || "";
-        if (!htmlUrl) return "";
-        let htmlText = await fetchText(htmlUrl);
-        let cssText = pageData?.files?.css?.url ? await fetchText(pageData.files.css.url) : "";
-        let jsText = pageData?.files?.js?.url ? await fetchText(pageData.files.js.url) : "";
-        const imageMap = buildImageMap(pageData.images || []);
-        const baseUrl = getBaseUrl(htmlUrl);
-        htmlText = htmlText.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, "");
-        htmlText = htmlText.replace(/<script[^>]+src=["'][^"']+\.js["'][^>]*>\s*<\/script>/gi, "");
-        htmlText = replaceKnownPaths(htmlText, imageMap);
-        cssText = replaceKnownPaths(cssText, imageMap);
-        jsText = replaceKnownPaths(jsText, imageMap);
-        const headExtra = `
-  <base href="${baseUrl}">
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <style>body{font-family:'Tajawal',Arial,sans-serif;direction:rtl;}</style>
-  ${cssText ? `<style>${cssText}<\/style>` : ""}
-  ${buildResolverScript(imageMap)}
-`;
-        const bodyExtra = `${helperScriptBlock(audioUrls)}${jsText ? `<script>${jsText}<\/script>` : ""}`;
-        let finalHtml = htmlText;
-        if (/<\/head>/i.test(finalHtml)) {
-          finalHtml = finalHtml.replace(/<\/head>/i, headExtra + "\n</head>");
-        } else {
-          finalHtml = `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">${headExtra}</head>
-<body>${finalHtml}</body>
-</html>`;
-        }
-        if (/<\/body>/i.test(finalHtml)) {
-          finalHtml = finalHtml.replace(/<\/body>/i, bodyExtra + "\n</body>");
-        } else {
-          finalHtml += bodyExtra;
-        }
-        return finalHtml;
-      }
-
-      function studentInputs() {
-        return {
-          studentName: document.getElementById("studentName").value.trim(),
-          studentCode: document.getElementById("studentCode").value.trim().toUpperCase(),
-          className: document.getElementById("className").value.trim()
-        };
-      }
-
-      function autofillStudentByCode() {
-        const code = document.getElementById("studentCode").value.trim().toUpperCase();
-        if (!code || !allowedStudents[code]) return;
-        document.getElementById("studentName").value = allowedStudents[code].name || "";
-        if (!document.getElementById("className").value && allowedStudents[code].className) {
-          document.getElementById("className").value = allowedStudents[code].className || "";
-        }
-      }
-
-      function validateStudentInputs(showMessage = true) {
-        const inputs = studentInputs();
-        studentMsg.textContent = "";
-        studentMsg.className = "mt-4 text-center font-medium text-slate-700";
-        if (!inputs.studentName) {
-          if (showMessage) { studentMsg.textContent = "⚠️ يرجى كتابة اسم الطالب أولاً"; studentMsg.className = "mt-4 text-center font-medium text-red-600"; }
-          return false;
-        }
-        if (!inputs.studentCode) {
-          if (showMessage) { studentMsg.textContent = "⚠️ يرجى إدخال كود الطالب أولاً"; studentMsg.className = "mt-4 text-center font-medium text-red-600"; }
-          return false;
-        }
-        if (!allowedStudents[inputs.studentCode]) {
-          if (showMessage) { studentMsg.textContent = "❌ هذا الكود غير معتمد لهذه الروضة"; studentMsg.className = "mt-4 text-center font-medium text-red-600"; }
-          return false;
-        }
-        if (normalizeArabicName(inputs.studentName) !== normalizeArabicName(allowedStudents[inputs.studentCode].name)) {
-          if (showMessage) { studentMsg.textContent = "❌ الاسم لا يطابق الكود الخاص بهذا الطالب"; studentMsg.className = "mt-4 text-center font-medium text-red-600"; }
-          return false;
-        }
-        if (!document.getElementById("className").value && allowedStudents[inputs.studentCode].className) {
-          document.getElementById("className").value = allowedStudents[inputs.studentCode].className || "";
-        }
-        if (showMessage) { studentMsg.textContent = "✅ تم التحقق من بيانات الطالب بنجاح"; studentMsg.className = "mt-4 text-center font-medium text-green-600"; }
-        return true;
-      }
-
-      function unlockExercise() {
-        if (!validateStudentInputs(true)) return;
-        exerciseUnlocked = true;
-        playerLock.classList.add("hidden");
-        playerBox.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      async function loadStudents() {
-        const studentsSnap = await db.collection("students").where("kindergartenId", "==", KG_ID).get();
-        allowedStudents = {};
-        studentsSnap.forEach((doc) => {
-          const s = doc.data();
-          allowedStudents[String(s.code || "").toUpperCase()] = { name: s.name || "", className: s.className || "" };
-        });
-        if (Object.keys(allowedStudents).length === 0) {
-          studentMsg.textContent = "📭 لم يتم إضافة أي طلاب لهذه الروضة بعد. يرجى التواصل مع إدارة الروضة.";
-          studentMsg.className = "mt-4 text-center font-medium text-amber-600";
-          if (startExerciseBtn) startExerciseBtn.disabled = true;
-        }
-      }
-
-      async function saveResult(score, total, extraData) {
-        if (resultSaved) return;
-        const inputs = studentInputs();
-        saveStatus.textContent = "";
-        if (!validateStudentInputs(true)) return;
-        const today = getTodayDateOnly();
-        saveStatus.textContent = "⏳ جاري حفظ النتيجة...";
-        try {
-          const existing = await db.collection("results")
-            .where("kindergarten", "==", KG_ID)
-            .where("stage", "==", stage)
-            .where("subject", "==", subject)
-            .where("pageNumber", "==", Number(page))
-            .where("studentCode", "==", inputs.studentCode)
-            .where("dateOnly", "==", today)
-            .get();
-          if (!existing.empty) {
-            saveStatus.textContent = "ℹ️ تم تسجيل نتيجة هذا الطالب لهذه الصفحة اليوم بالفعل";
-            saveStatus.className = "mt-4 font-medium text-amber-600";
-            resultSaved = true;
-            return;
-          }
-          await db.collection("results").add({
-            studentName: inputs.studentName,
-            studentCode: inputs.studentCode,
-            className: inputs.className || allowedStudents[inputs.studentCode].className || "",
-            score: Number(score || 0),
-            total: Number(total || 0),
-            exerciseTitle: currentExerciseTitle || "",
-            kindergarten: KG_ID,
-            kindergartenName: currentKindergarten ? currentKindergarten.name : KG_NAME,
-            stage: stage,
-            subject: subject,
-            pageNumber: Number(page),
-            createdAt: new Date().toISOString(),
-            dateOnly: today,
-            extraData: extraData || {}
-          });
-          saveStatus.textContent = "✅ تم حفظ النتيجة بنجاح";
-          saveStatus.className = "mt-4 font-medium text-green-600";
-          resultSaved = true;
-        } catch (error) {
-          console.error(error);
-          saveStatus.textContent = "❌ حدث خطأ أثناء حفظ النتيجة";
-          saveStatus.className = "mt-4 font-medium text-red-600";
-        }
-      }
-
-      async function loadExercise() {
-        try {
-          if (!stage || !subject || !page) {
-            statusText.textContent = "❌ بيانات الصفحة غير مكتملة";
-            return;
-          }
-          const kgSnap = await db.collection("kindergartens").doc(KG_ID).get();
-          currentKindergarten = kgSnap.exists ? kgSnap.data() : { name: KG_NAME };
-          pageTitle.textContent = `تمرين ${currentKindergarten.name || KG_NAME}`;
-          pageSubtitle.textContent = `${stageLabel(stage)} - ${subjectLabel(subject)} - صفحة ${page}`;
-          heroTitle.textContent = `${currentKindergarten.name || KG_NAME} | ${subjectLabel(subject)}`;
-          await loadStudents();
-          const docId = getDocId(KG_ID, stage, subject, page);
-          const pageSnap = await db.collection("interactive_pages").doc(docId).get();
-          if (!pageSnap.exists) {
-            statusText.textContent = "📭 لا يوجد تمرين محفوظ لهذه الصفحة بعد";
-            return;
-          }
-          const data = pageSnap.data();
-          currentExerciseTitle = data.title || "تمرين تفاعلي";
-          const audioUrls = getAudioUrls(data.audioFiles || []);
-          let finalHtml = "";
-          if (data.uploadMode === "files" && data.files && data.files.html && data.files.html.url) {
-            finalHtml = await buildFilesHtml(data, audioUrls);
-          } else if (data.code && String(data.code).trim()) {
-            finalHtml = buildDirectHtml(data.code, currentExerciseTitle, audioUrls);
-          } else {
-            statusText.textContent = "⚠️ هذه الصفحة موجودة ولكن لا تحتوي ملفات قابلة للعرض";
-            return;
-          }
-          if (!finalHtml) {
-            statusText.textContent = "❌ تعذر تجهيز التمرين للعرض";
-            return;
-          }
-          frame.srcdoc = finalHtml;
-          statusBox.classList.add("hidden");
-          playerBox.classList.remove("hidden");
-          loaderContainer.style.display = 'none';
-          mainContent.style.display = 'block';
-        } catch (error) {
-          console.error(error);
-          statusText.textContent = "❌ حدث خطأ أثناء تحميل التمرين";
-          loaderContainer.style.display = 'none';
-          mainContent.style.display = 'block';
-        }
-      }
-
-      document.getElementById("studentCode").addEventListener("input", autofillStudentByCode);
-      startExerciseBtn.addEventListener("click", unlockExercise);
-      playerLockBtn.addEventListener("click", unlockExercise);
-
-      window.addEventListener("message", function(event) {
-        if (!event.data || event.data.type !== "exerciseResult") return;
-        if (!exerciseUnlocked) {
-          studentMsg.textContent = "⚠️ يجب التحقق من بيانات الطالب أولاً قبل حل التمرين";
-          studentMsg.className = "mt-4 text-center font-medium text-red-600";
-          return;
-        }
-        const score = Number(event.data.score || 0);
-        const total = Number(event.data.total || 0);
-        resultText.textContent = `📊 النتيجة: ${score} / ${total}`;
-        resultBox.classList.remove("hidden");
-        saveResult(score, total, event.data.extraData || {});
-      });
-
-      let lastScrollY = window.scrollY;
-      const mainHeader = document.getElementById("mainHeader");
-      window.addEventListener("scroll", function () {
-        if (!mainHeader) return;
-        const currentScrollY = window.scrollY;
-        if (currentScrollY <= 20) { mainHeader.style.transform = "translateY(0)"; lastScrollY = currentScrollY; return; }
-        if (currentScrollY > lastScrollY && currentScrollY > 80) { mainHeader.style.transform = "translateY(-100%)"; }
-        else if (currentScrollY < lastScrollY) { mainHeader.style.transform = "translateY(0)"; }
-        lastScrollY = currentScrollY;
-      }, { passive: true });
-
-      loadExercise();
-    })();
+    // محاكاة تحميل التمرين
+    document.getElementById("statusText").innerText = "⚠️ هذه نسخة تجريبية. سيتم ربط التمارين لاحقاً.";
+    setTimeout(() => { document.getElementById("statusBox").classList.add("hidden"); document.getElementById("playerBox").classList.remove("hidden"); }, 1000);
   </script>
 </body>
 </html>
