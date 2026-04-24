@@ -31,11 +31,12 @@
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-800">إدارة روضة طلائع المبدعين</h1>
-        <p class="text-sm text-gray-600">لوحة الإدارة الخاصة بالروضة</p>
+        <p id="headerStatus" class="text-sm text-gray-600">مرحباً مديرة الروضة</p>
       </div>
       <div class="flex flex-wrap justify-center gap-3">
         <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة إلى صفحة الروضة</a>
         <a href="results.html" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</a>
+        <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
@@ -85,7 +86,7 @@
     </section>
 
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <h2 class="text-2xl font-bold text-blue-900 mb-4">إحصائيات سريعة</h2>
+      <h2 class="text-2xl font-bold text-blue-900 mb-4">📊 إحصائيات سريعة</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-50 rounded-xl p-4 text-center">
           <p class="text-3xl font-bold text-blue-900">0</p>
@@ -104,8 +105,22 @@
   </main>
 
   <script>
-    // لا يوجد Firebase في هذه الصفحة حالياً
-    console.log("لوحة الإدارة - نسخة تجريبية");
+    // التحقق من تسجيل الدخول
+    const isLoggedIn = sessionStorage.getItem("loggedIn");
+    const userRole = sessionStorage.getItem("userRole");
+    const userName = sessionStorage.getItem("userName");
+
+    if (!isLoggedIn || userRole !== "kindergarten_manager") {
+      window.location.href = "talaea-almobdeeen.html";
+    }
+
+    document.getElementById("headerStatus").innerHTML = `مرحباً ${userName || "مديرة الروضة"}`;
+
+    // تسجيل الخروج
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      sessionStorage.clear();
+      window.location.href = "talaea-almobdeeen.html";
+    });
   </script>
 </body>
 </html>
