@@ -19,11 +19,12 @@
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold text-blue-900">نتائج الطلاب</h1>
-        <p class="text-sm text-gray-600">روضة طلائع المبدعين</p>
+        <p id="headerStatus" class="text-sm text-gray-600">روضة طلائع المبدعين</p>
       </div>
       <div class="flex gap-3">
         <a href="talaea-admin.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة لوحة الإدارة</a>
         <a href="talaea-almobdeeen.html" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">صفحة الروضة</a>
+        <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
@@ -70,7 +71,7 @@
               <th class="p-3 border">المادة</th>
               <th class="p-3 border">رقم الصفحة</th>
               <th class="p-3 border">التاريخ</th>
-            </table>
+            </tr>
           </thead>
           <tbody>
             <tr><td colspan="7" class="p-4 border text-gray-500 text-center">📭 لا توجد نتائج مسجلة بعد</td></tr>
@@ -81,8 +82,22 @@
   </section>
 
   <script>
-    // نسخة تجريبية - بدون Firebase حالياً
-    console.log("صفحة النتائج - نسخة تجريبية");
+    // التحقق من تسجيل الدخول (المديرة أو المعلمة)
+    const isLoggedIn = sessionStorage.getItem("loggedIn");
+    const userRole = sessionStorage.getItem("userRole");
+    const userName = sessionStorage.getItem("userName");
+
+    if (!isLoggedIn || (userRole !== "kindergarten_manager" && userRole !== "teacher")) {
+      window.location.href = "talaea-almobdeeen.html";
+    }
+
+    document.getElementById("headerStatus").innerHTML = `مرحباً ${userName || ""} - نتائج الروضة`;
+
+    // تسجيل الخروج
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      sessionStorage.clear();
+      window.location.href = "talaea-almobdeeen.html";
+    });
   </script>
 </body>
 </html>
