@@ -28,11 +28,14 @@
 
   <header class="sticky top-0 z-40 bg-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
-      <div><h1 class="text-2xl font-bold text-slate-800">لوحة المعلمة</h1><p class="text-sm text-gray-600">واجهة خاصة بالمعلمة - نسخة تجريبية</p></div>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">لوحة المعلمة</h1>
+        <p id="headerStatus" class="text-sm text-gray-600">مرحباً معلمة</p>
+      </div>
       <div class="flex flex-wrap justify-center gap-3">
         <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة إلى صفحة الروضة</a>
-        <button class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">النتائج</button>
-        <button class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل خروج</button>
+        <button class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</button>
+        <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
@@ -61,7 +64,22 @@
   </main>
 
   <script>
-    console.log("لوحة المعلمة - نسخة تجريبية بدون Firebase");
+    // التحقق من تسجيل الدخول
+    const isLoggedIn = sessionStorage.getItem("loggedIn");
+    const userRole = sessionStorage.getItem("userRole");
+    const userName = sessionStorage.getItem("userName");
+
+    if (!isLoggedIn || userRole !== "teacher") {
+      window.location.href = "talaea-almobdeeen.html";
+    }
+
+    document.getElementById("headerStatus").innerHTML = `مرحباً ${userName || "معلمة"}`;
+
+    // تسجيل الخروج
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      sessionStorage.clear();
+      window.location.href = "talaea-almobdeeen.html";
+    });
   </script>
 </body>
 </html>
