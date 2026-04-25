@@ -8,23 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
-    .hero-gradient { background: linear-gradient(135deg, #183153 0%, #24507b 100%); }
-    .card-hover { transition: all .25s ease; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 24px rgba(0,0,0,.08); }
+    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
     .btn-hover { transition: all .2s ease; }
     .btn-hover:hover { transform: scale(1.03); }
-    .soft-card { background: white; border: 1px solid #e5e7eb; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04); }
-    .input-ui { width: 100%; border: 1px solid #d1d5db; border-radius: 18px; padding: 14px 16px; outline: none; transition: .2s; background: #fff; }
-    .input-ui:focus { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(147, 197, 253, .25); }
-    .table-wrap { overflow-x: auto; border-radius: 18px; border: 1px solid #e5e7eb; }
-    table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    th, td { padding: 14px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; }
-    thead th { background: #183153; color: white; font-weight: 700; }
-    tbody tr:nth-child(even) { background: #f8fafc; }
-    .small-btn { border: none; border-radius: 12px; padding: 8px 12px; cursor: pointer; color: white; font-weight: 700; }
+    .status-pending { background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
+    .status-approved { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
+    .status-rejected { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-right text-slate-800">
+<body class="min-h-screen bg-slate-50 text-right">
 
   <header class="sticky top-0 z-40 bg-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
@@ -33,51 +25,221 @@
         <p id="headerStatus" class="text-sm text-gray-600">مرحباً معلمة</p>
       </div>
       <div class="flex flex-wrap justify-center gap-3">
-        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة إلى صفحة الروضة</a>
-        <button class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</button>
+        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة للروضة</a>
         <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
 
-  <section class="hero-gradient text-white py-16 md:py-20 overflow-hidden">
+  <section class="hero-gradient text-white py-12">
     <div class="max-w-6xl mx-auto px-4 text-center">
-      <h2 class="text-4xl md:text-5xl font-bold mb-5">مرحبًا بكِ في لوحة المعلمة</h2>
-      <p class="text-lg md:text-xl opacity-90 leading-9">هذه نسخة تجريبية. سيتم ربط قاعدة البيانات لاحقاً.</p>
+      <h2 class="text-3xl font-bold mb-3">📸 رفع الصور للمعرض</h2>
+      <p class="text-lg opacity-90">اختاري ألبومًا وارفعي الصور لتعرض في معرض الروضة</p>
     </div>
   </section>
 
-  <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
-    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4 text-center">⚠️ هذه نسخة تجريبية من لوحة المعلمة. سيتم ربط قاعدة البيانات لاحقاً.</div>
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h3 class="text-xl font-bold text-blue-900 mb-4">🖼️ رفع صورة جديدة</h3>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block mb-2 font-medium">اختر الألبوم</label>
+          <select id="albumSelect" class="w-full px-4 py-3 rounded-xl border">
+            <option value="">جاري التحميل...</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block mb-2 font-medium">اختر الصورة</label>
+          <input type="file" id="imageFile" accept="image/*" class="w-full px-4 py-3 rounded-xl border">
+        </div>
+        
+        <div id="previewContainer" class="hidden">
+          <img id="imagePreview" class="w-48 h-48 object-cover rounded-xl border">
+        </div>
+        
+        <button id="uploadBtn" class="w-full bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800 btn-hover">🚀 رفع الصورة</button>
+        
+        <div id="uploadStatus" class="text-center font-medium"></div>
+      </div>
+    </div>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-      <div class="card-hover soft-card rounded-2xl p-6 text-center"><div class="w-14 h-14 rounded-full bg-blue-900 text-white flex items-center justify-center text-2xl mb-4 mx-auto">1</div><h3 class="text-xl font-bold text-blue-900 mb-2">بيانات المعلمة</h3><p class="text-gray-600 leading-7">عرض الاسم والمادة والروضة.</p></div>
-      <div class="card-hover soft-card rounded-2xl p-6 text-center"><div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">2</div><h3 class="text-xl font-bold text-blue-900 mb-2">إضافة طالب</h3><p class="text-gray-600 leading-7">إضافة اسم الطالب والكود.</p></div>
-      <div class="card-hover soft-card rounded-2xl p-6 text-center"><div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-4 mx-auto">3</div><h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3><p class="text-gray-600 leading-7">عرض الطلاب، إدخال الدرجات، حذف طالب.</p></div>
-      <div class="card-hover soft-card rounded-2xl p-6 text-center"><div class="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">4</div><h3 class="text-xl font-bold text-blue-900 mb-2">إرسال النتائج</h3><p class="text-gray-600 leading-7">إرسال الدرجات للمديرة.</p></div>
-      <div class="card-hover soft-card rounded-2xl p-6 text-center"><div class="w-14 h-14 rounded-full bg-violet-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">5</div><h3 class="text-xl font-bold text-blue-900 mb-2">صور المعلمة</h3><p class="text-gray-600 leading-7">رفع الصور الخاصة بالأنشطة.</p></div>
-    </section>
-
-    <div class="soft-card rounded-3xl p-8 text-center">
-      <p class="text-gray-500">جميع الوظائف متوقفة مؤقتاً لحين ربط قاعدة البيانات. سيتم تفعيلها قريباً.</p>
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h3 class="text-xl font-bold text-blue-900 mb-4">📋 صوري السابقة</h3>
+      <div id="myImagesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p class="text-gray-500 text-center py-8 col-span-3">جاري التحميل...</p>
+      </div>
     </div>
   </main>
 
-  <script>
-    // التحقق من تسجيل الدخول
-    const isLoggedIn = sessionStorage.getItem("loggedIn");
-    const userRole = sessionStorage.getItem("userRole");
-    const userName = sessionStorage.getItem("userName");
+  <script type="module">
+    import { db, auth } from './js/firebase-config.js';
+    import { collection, query, where, getDocs, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { uploadToImageKit } from './js/imagekit-config.js';
 
-    if (!isLoggedIn || userRole !== "teacher") {
-      window.location.href = "talaea-almobdeeen.html";
+    let currentUser = null;
+    let currentUserEmail = null;
+    let currentUserName = null;
+    let isAutoApprove = false;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "talaea-almobdeeen.html";
+        return;
+      }
+      currentUser = user;
+      currentUserEmail = user.email;
+      currentUserName = user.displayName || user.email.split('@')[0];
+      document.getElementById("headerStatus").innerHTML = `مرحباً المعلمة ${currentUserName}`;
+      
+      // التحقق إذا كانت المعلمة لديها صلاحية النشر التلقائي
+      await checkAutoApproveStatus();
+      await loadAlbums();
+      await loadMyImages();
+    });
+
+    // التحقق من صلاحية النشر التلقائي
+    async function checkAutoApproveStatus() {
+      const settingsRef = collection(db, "approvalSettings");
+      const q = query(settingsRef, where("kgId", "==", "kg_talaea"));
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const autoList = snapshot.docs[0].data().teachersAutoApprove || [];
+        isAutoApprove = autoList.includes(currentUserEmail);
+      }
     }
 
-    document.getElementById("headerStatus").innerHTML = `مرحباً ${userName || "معلمة"}`;
+    // تحميل الألبومات
+    async function loadAlbums() {
+      const albumsRef = collection(db, "albums");
+      const snapshot = await getDocs(albumsRef);
+      const select = document.getElementById("albumSelect");
+      
+      if (snapshot.empty) {
+        select.innerHTML = '<option value="">لا توجد ألبومات بعد</option>';
+        return;
+      }
+      
+      let options = '<option value="">-- اختر الألبوم --</option>';
+      snapshot.forEach(doc => {
+        const album = doc.data();
+        options += `<option value="${doc.id}">📁 ${album.name}</option>`;
+      });
+      select.innerHTML = options;
+    }
+
+    // معاينة الصورة
+    document.getElementById("imageFile").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById("imagePreview").src = event.target.result;
+          document.getElementById("previewContainer").classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // رفع الصورة
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+      const albumId = document.getElementById("albumSelect").value;
+      const file = document.getElementById("imageFile").files[0];
+      const statusDiv = document.getElementById("uploadStatus");
+      
+      if (!albumId) {
+        statusDiv.innerHTML = '<span class="text-red-600">⚠️ الرجاء اختيار الألبوم</span>';
+        return;
+      }
+      if (!file) {
+        statusDiv.innerHTML = '<span class="text-red-600">⚠️ الرجاء اختيار صورة</span>';
+        return;
+      }
+      
+      statusDiv.innerHTML = '<span class="text-blue-600">⏳ جاري رفع الصورة...</span>';
+      
+      try {
+        // رفع الصورة إلى ImageKit
+        const fileName = `${Date.now()}_${file.name}`;
+        const result = await uploadToImageKit(file, fileName);
+        
+        // حفظ معلومات الصورة في Firestore
+        await addDoc(collection(db, "galleryImages"), {
+          imageUrl: result.url,
+          thumbnailUrl: result.thumbnail,
+          albumId: albumId,
+          uploadedBy: currentUser.uid,
+          teacherEmail: currentUserEmail,
+          teacherName: currentUserName,
+          status: isAutoApprove ? "approved" : "pending",
+          createdAt: new Date().toISOString()
+        });
+        
+        statusDiv.innerHTML = isAutoApprove 
+          ? '<span class="text-green-600">✅ تم رفع الصورة ونشرها مباشرة في المعرض</span>'
+          : '<span class="text-yellow-600">⏳ تم رفع الصورة. بانتظار موافقة المديرة</span>';
+        
+        // إعادة تعيين النموذج
+        document.getElementById("imageFile").value = "";
+        document.getElementById("previewContainer").classList.add("hidden");
+        loadMyImages();
+        
+      } catch (error) {
+        console.error(error);
+        statusDiv.innerHTML = '<span class="text-red-600">❌ فشل رفع الصورة. حاول مرة أخرى</span>';
+      }
+    });
+
+    // تحميل صور المعلمة
+    async function loadMyImages() {
+      const imagesRef = collection(db, "galleryImages");
+      const q = query(imagesRef, where("uploadedBy", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      
+      onSnapshot(q, (snapshot) => {
+        const container = document.getElementById("myImagesList");
+        
+        if (snapshot.empty) {
+          container.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-3">لا توجد صور مرفوعة بعد</p>';
+          return;
+        }
+        
+        let html = '';
+        snapshot.forEach(doc => {
+          const img = doc.data();
+          let statusClass = '';
+          let statusText = '';
+          
+          if (img.status === 'pending') {
+            statusClass = 'status-pending';
+            statusText = '⏳ قيد المراجعة';
+          } else if (img.status === 'approved') {
+            statusClass = 'status-approved';
+            statusText = '✅ منشورة';
+          } else {
+            statusClass = 'status-rejected';
+            statusText = '❌ مرفوضة';
+          }
+          
+          html += `
+            <div class="border rounded-xl p-3 bg-white">
+              <img src="${img.thumbnailUrl || img.imageUrl}" class="w-full h-40 object-cover rounded-lg mb-3">
+              <div class="flex justify-between items-center">
+                <span class="${statusClass}">${statusText}</span>
+                <span class="text-xs text-gray-500">${new Date(img.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      });
+    }
 
     // تسجيل الخروج
-    document.getElementById("logoutBtn").addEventListener("click", function() {
-      sessionStorage.clear();
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
       window.location.href = "talaea-almobdeeen.html";
     });
   </script>
