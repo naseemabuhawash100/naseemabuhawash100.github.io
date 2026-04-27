@@ -3,110 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة المديرة - روضة طلائع المبدعين</title>
+  <title>إدارة روضة طلائع المبدعين</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
-    .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+    .hero-gradient { background: linear-gradient(135deg, #183153 0%, #24507b 100%); }
     .card-hover { transition: all .25s ease; }
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 24px rgba(0,0,0,.08); }
     .btn-hover { transition: all .2s ease; }
     .btn-hover:hover { transform: scale(1.03); }
-    .tab-btn.active { background: #1e3a8a; color: white; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    .status-pending { background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
-    .status-approved { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
-    .status-rejected { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
-    .btn-sm { padding: 6px 12px; border-radius: 12px; font-size: 13px; margin: 2px; cursor: pointer; }
+    .section-anchor { scroll-margin-top: 110px; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
   </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-right">
+<body class="min-h-screen bg-slate-50 text-right text-slate-800">
 
   <header class="sticky top-0 z-40 bg-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800">لوحة المديرة</h1>
+        <h1 class="text-2xl font-bold text-slate-800">إدارة روضة طلائع المبدعين</h1>
         <p id="headerStatus" class="text-sm text-gray-600">مرحباً مديرة الروضة</p>
       </div>
       <div class="flex flex-wrap justify-center gap-3">
-        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة للروضة</a>
+        <a href="talaea-almobdeeen.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full font-medium hover:bg-gray-300 btn-hover">العودة إلى صفحة الروضة</a>
         <a href="results.html" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 btn-hover">نتائج الطلاب</a>
         <button id="logoutBtn" class="bg-red-600 text-white px-5 py-2 rounded-full font-medium hover:bg-red-700 btn-hover">تسجيل الخروج</button>
       </div>
     </div>
   </header>
 
-  <section class="hero-gradient text-white py-12">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold mb-3">لوحة إدارة المعرض والألبومات</h2>
-      <p class="text-lg opacity-90">إدارة الألبومات، الموافقة على الصور، وإضافة معلمات للنشر التلقائي</p>
+  <section class="hero-gradient text-white py-14">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-4">لوحة الإدارة الخاصة بالروضة</h2>
+      <p class="text-lg opacity-90 leading-8 max-w-3xl mx-auto">
+        هذه الصفحة مخصصة لإدارة الروضة.
+      </p>
     </div>
   </section>
 
-  <section class="py-8">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="bg-white rounded-2xl shadow-lg p-4 border mb-6">
-        <div class="grid grid-cols-3 gap-3">
-          <button class="tab-btn active px-4 py-3 rounded-xl border font-bold" data-tab="albums">📁 الألبومات</button>
-          <button class="tab-btn px-4 py-3 rounded-xl border font-bold" data-tab="pending">⏳ طلبات الموافقة</button>
-          <button class="tab-btn px-4 py-3 rounded-xl border font-bold" data-tab="teachers">👩‍🏫 صلاحيات المعلمات</button>
-        </div>
+  <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
+    <!-- الأزرار للتبويبات الجديدة -->
+    <div class="flex flex-wrap gap-3 justify-center">
+      <button id="showAlbumsTab" class="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800">الألبومات</button>
+      <button id="showPendingTab" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600">طلبات الموافقة</button>
+      <button id="showTeachersTab" class="bg-green-600 text-white px-5 py-2 rounded-full font-medium hover:bg-green-700">صلاحيات المعلمات</button>
+    </div>
+
+    <!-- تبويب الألبومات -->
+    <div id="albumsSection" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-2xl font-bold text-blue-900 mb-4">إدارة الألبومات</h2>
+      <div class="flex gap-3 mb-6">
+        <input type="text" id="newAlbumName" placeholder="اسم الألبوم الجديد" class="flex-1 px-4 py-3 rounded-xl border">
+        <button id="createAlbumBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800">إنشاء ألبوم</button>
+      </div>
+      <div id="albumsList" class="space-y-2">
+        <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
+      </div>
+    </div>
+
+    <!-- تبويب طلبات الموافقة -->
+    <div id="pendingSection" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hidden">
+      <h2 class="text-2xl font-bold text-blue-900 mb-4">الصور بانتظار الموافقة</h2>
+      <div id="pendingImagesList" class="space-y-4">
+        <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
+      </div>
+    </div>
+
+    <!-- تبويب صلاحيات المعلمات -->
+    <div id="teachersSection" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hidden">
+      <h2 class="text-2xl font-bold text-blue-900 mb-4">صلاحيات النشر التلقائي للمعلمات</h2>
+      <div class="flex gap-3 mb-6">
+        <input type="email" id="teacherEmail" placeholder="البريد الإلكتروني للمعلمة" class="flex-1 px-4 py-3 rounded-xl border">
+        <button id="addAutoApproveBtn" class="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700">إضافة للنشر التلقائي</button>
+      </div>
+      <h3 class="font-bold text-blue-800 mb-3">المعلمات المستثنيات</h3>
+      <div id="autoApproveList" class="space-y-2">
+        <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
+      </div>
+    </div>
+
+    <!-- القسم الأصلي للبطاقات -->
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">📚</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة الطلاب</h3>
+        <p class="text-gray-600 leading-7">إضافة وتعديل وحذف الطلاب</p>
+        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-xl">قريباً</button>
       </div>
 
-      <!-- تبويب الألبومات -->
-      <div id="tab-albums" class="tab-panel active space-y-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">➕ إنشاء ألبوم جديد</h3>
-          <div class="flex gap-3">
-            <input type="text" id="albumName" placeholder="اسم الألبوم (مثال: أنشطة صفية)" class="flex-1 px-4 py-3 rounded-xl border">
-            <button id="createAlbumBtn" class="bg-blue-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800">إنشاء</button>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">📂 قائمة الألبومات</h3>
-          <div id="albumsList" class="space-y-2">
-            <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
-          </div>
-        </div>
+      <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-fuchsia-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">👩‍🏫</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">إدارة المعلمات</h3>
+        <p class="text-gray-600 leading-7">عرض وتفعيل حسابات المعلمات</p>
+        <button class="mt-4 bg-fuchsia-600 text-white px-4 py-2 rounded-xl">قريباً</button>
       </div>
 
-      <!-- تبويب طلبات الموافقة -->
-      <div id="tab-pending" class="tab-panel">
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">⏳ صور بانتظار الموافقة</h3>
-          <div id="pendingImagesList" class="space-y-4">
-            <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
-          </div>
-        </div>
+      <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl mb-4 mx-auto">📊</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">النتائج</h3>
+        <p class="text-gray-600 leading-7">مراجعة نتائج الطلاب</p>
+        <a href="results.html" class="inline-block mt-4 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700">عرض النتائج</a>
       </div>
 
-      <!-- تبويب صلاحيات المعلمات -->
-      <div id="tab-teachers" class="tab-panel">
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-blue-900 mb-4">👩‍🏫 إضافة معلمة للنشر التلقائي</h3>
-          <div class="flex gap-3 mb-6">
-            <input type="email" id="teacherEmail" placeholder="البريد الإلكتروني للمعلمة" class="flex-1 px-4 py-3 rounded-xl border">
-            <button id="addAutoApproveBtn" class="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700">إضافة</button>
-          </div>
-          <h4 class="font-bold text-blue-800 mb-3">📋 المعلمات المستثنيات (نشر تلقائي)</h4>
-          <div id="autoApproveList" class="space-y-2">
-            <p class="text-gray-500 text-center py-4">جاري التحميل...</p>
-          </div>
+      <div class="card-hover bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-2xl mb-4 mx-auto">⚙️</div>
+        <h3 class="text-xl font-bold text-blue-900 mb-2">الإعدادات</h3>
+        <p class="text-gray-600 leading-7">إعدادات الروضة العامة</p>
+        <button class="mt-4 bg-amber-500 text-white px-4 py-2 rounded-xl">قريباً</button>
+      </div>
+    </section>
+
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-2xl font-bold text-blue-900 mb-4">📊 إحصائيات سريعة</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-50 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold text-blue-900">0</p>
+          <p class="text-gray-600">عدد الطلاب</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold text-blue-900">0</p>
+          <p class="text-gray-600">عدد المعلمات</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4 text-center">
+          <p class="text-3xl font-bold text-blue-900">0</p>
+          <p class="text-gray-600">النتائج المسجلة</p>
         </div>
       </div>
     </div>
-  </section>
+  </main>
 
   <script type="module">
     import { db, auth } from './js/firebase-config.js';
-    import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     let currentUser = null;
 
-    // التحقق من تسجيل الدخول
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "talaea-almobdeeen.html";
@@ -114,214 +155,150 @@
       }
       currentUser = user;
       document.getElementById("headerStatus").innerHTML = `مرحباً ${user.email}`;
-      
-      // تحميل البيانات
       loadAlbums();
       loadPendingImages();
       loadAutoApproveTeachers();
     });
 
-    // تحميل الألبومات
+    // تبديل التبويبات
+    document.getElementById("showAlbumsTab").addEventListener("click", () => {
+      document.getElementById("albumsSection").classList.remove("hidden");
+      document.getElementById("pendingSection").classList.add("hidden");
+      document.getElementById("teachersSection").classList.add("hidden");
+    });
+    document.getElementById("showPendingTab").addEventListener("click", () => {
+      document.getElementById("albumsSection").classList.add("hidden");
+      document.getElementById("pendingSection").classList.remove("hidden");
+      document.getElementById("teachersSection").classList.add("hidden");
+    });
+    document.getElementById("showTeachersTab").addEventListener("click", () => {
+      document.getElementById("albumsSection").classList.add("hidden");
+      document.getElementById("pendingSection").classList.add("hidden");
+      document.getElementById("teachersSection").classList.remove("hidden");
+    });
+
     async function loadAlbums() {
       const albumsRef = collection(db, "albums");
       const q = query(albumsRef, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
       const container = document.getElementById("albumsList");
-      
       if (snapshot.empty) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4">لا توجد ألبومات بعد</p>';
         return;
       }
-      
-      let html = '<div class="grid gap-3">';
+      let html = '<div class="space-y-2">';
       snapshot.forEach(doc => {
         const album = doc.data();
-        html += `
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-            <span class="font-bold">📁 ${album.name}</span>
-            <button onclick="deleteAlbum('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-700">حذف</button>
-          </div>
-        `;
+        html += `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl"><span>${album.name}</span><button onclick="deleteAlbum('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm">حذف</button></div>`;
       });
       html += '</div>';
       container.innerHTML = html;
     }
 
-    // إنشاء ألبوم جديد
-    document.getElementById("createAlbumBtn").addEventListener("click", async () => {
-      const name = document.getElementById("albumName").value.trim();
-      if (!name) {
-        alert("الرجاء إدخال اسم الألبوم");
-        return;
-      }
-      
-      await addDoc(collection(db, "albums"), {
-        name: name,
-        createdAt: new Date().toISOString(),
-        createdBy: currentUser.uid
-      });
-      
-      document.getElementById("albumName").value = "";
-      loadAlbums();
-      alert("تم إنشاء الألبوم بنجاح");
-    });
-
-    // حذف ألبوم
-    window.deleteAlbum = async (albumId) => {
-      if (confirm("هل أنت متأكدة من حذف هذا الألبوم؟")) {
-        await deleteDoc(doc(db, "albums", albumId));
+    window.deleteAlbum = async (id) => {
+      if (confirm("تأكيد حذف الألبوم؟")) {
+        await deleteDoc(doc(db, "albums", id));
         loadAlbums();
       }
     };
 
-    // تحميل الصور المنتظرة
+    document.getElementById("createAlbumBtn").addEventListener("click", async () => {
+      const name = document.getElementById("newAlbumName").value.trim();
+      if (!name) { alert("الرجاء إدخال اسم الألبوم"); return; }
+      await addDoc(collection(db, "albums"), { name, createdAt: new Date().toISOString(), createdBy: currentUser.uid });
+      document.getElementById("newAlbumName").value = "";
+      loadAlbums();
+      alert("تم إنشاء الألبوم");
+    });
+
     async function loadPendingImages() {
       const imagesRef = collection(db, "galleryImages");
       const q = query(imagesRef, where("status", "==", "pending"), orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
       const container = document.getElementById("pendingImagesList");
-      
       if (snapshot.empty) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4">لا توجد صور بانتظار الموافقة</p>';
         return;
       }
-      
       let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
       snapshot.forEach(docImg => {
         const img = docImg.data();
-        html += `
-          <div class="border rounded-xl p-3 bg-white">
-            <img src="${img.imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3">
-            <p class="text-sm font-bold">📤 من: ${img.teacherName || 'معلمة'}</p>
-            <p class="text-xs text-gray-500 mb-2">📅 ${new Date(img.createdAt).toLocaleDateString()}</p>
-            <div class="flex gap-2">
-              <button onclick="approveImage('${docImg.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm flex-1 hover:bg-green-700">✅ موافقة</button>
-              <button onclick="rejectImage('${docImg.id}')" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm flex-1 hover:bg-red-700">❌ رفض</button>
-            </div>
-          </div>
-        `;
+        html += `<div class="border rounded-xl p-3 bg-white"><img src="${img.imageUrl}" class="w-full h-48 object-cover rounded-lg mb-3"><p class="text-sm">من: ${img.teacherName || img.teacherEmail}</p><p class="text-xs text-gray-500">${new Date(img.createdAt).toLocaleDateString()}</p><div class="flex gap-2 mt-2"><button onclick="approveImage('${docImg.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm flex-1">موافقة</button><button onclick="rejectImage('${docImg.id}')" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm flex-1">رفض</button></div></div>`;
       });
       html += '</div>';
       container.innerHTML = html;
     }
 
-    // الموافقة على صورة
-    window.approveImage = async (imageId) => {
-      await updateDoc(doc(db, "galleryImages", imageId), {
-        status: "approved",
-        approvedAt: new Date().toISOString(),
-        approvedBy: currentUser.uid
-      });
+    window.approveImage = async (id) => {
+      await updateDoc(doc(db, "galleryImages", id), { status: "approved", approvedAt: new Date().toISOString(), approvedBy: currentUser.uid });
       loadPendingImages();
       alert("تمت الموافقة على الصورة");
     };
-
-    // رفض صورة
-    window.rejectImage = async (imageId) => {
-      if (confirm("هل أنت متأكدة من رفض هذه الصورة؟")) {
-        await updateDoc(doc(db, "galleryImages", imageId), {
-          status: "rejected"
-        });
+    window.rejectImage = async (id) => {
+      if (confirm("تأكيد رفض الصورة؟")) {
+        await updateDoc(doc(db, "galleryImages", id), { status: "rejected" });
         loadPendingImages();
         alert("تم رفض الصورة");
       }
     };
 
-    // تحميل المعلمات المستثنيات
     async function loadAutoApproveTeachers() {
       const settingsRef = collection(db, "approvalSettings");
       const q = query(settingsRef, where("kgId", "==", "kg_talaea"));
       const snapshot = await getDocs(q);
       const container = document.getElementById("autoApproveList");
-      
       let autoList = [];
-      snapshot.forEach(doc => {
-        autoList = doc.data().teachersAutoApprove || [];
-      });
-      
+      snapshot.forEach(doc => { autoList = doc.data().teachersAutoApprove || []; });
       if (autoList.length === 0) {
         container.innerHTML = '<p class="text-gray-500 text-center py-4">لا توجد معلمات مستثنيات</p>';
         return;
       }
-      
       let html = '<div class="space-y-2">';
       for (let email of autoList) {
-        html += `
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-            <span>📧 ${email}</span>
-            <button onclick="removeAutoApprove('${email}')" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm">إزالة</button>
-          </div>
-        `;
+        html += `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl"><span>${email}</span><button onclick="removeAutoApprove('${email}')" class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm">إزالة</button></div>`;
       }
       html += '</div>';
       container.innerHTML = html;
     }
 
-    // إضافة معلمة للنشر التلقائي
     document.getElementById("addAutoApproveBtn").addEventListener("click", async () => {
       const email = document.getElementById("teacherEmail").value.trim();
-      if (!email) {
-        alert("الرجاء إدخال البريد الإلكتروني");
-        return;
-      }
-      
+      if (!email) { alert("الرجاء إدخال البريد الإلكتروني"); return; }
       const settingsRef = collection(db, "approvalSettings");
       const q = query(settingsRef, where("kgId", "==", "kg_talaea"));
       const snapshot = await getDocs(q);
-      
       if (snapshot.empty) {
-        await addDoc(collection(db, "approvalSettings"), {
-          kgId: "kg_talaea",
-          teachersAutoApprove: [email]
-        });
+        await addDoc(collection(db, "approvalSettings"), { kgId: "kg_talaea", teachersAutoApprove: [email] });
       } else {
         const docId = snapshot.docs[0].id;
         const currentList = snapshot.docs[0].data().teachersAutoApprove || [];
         if (!currentList.includes(email)) {
           currentList.push(email);
-          await updateDoc(doc(db, "approvalSettings", docId), {
-            teachersAutoApprove: currentList
-          });
+          await updateDoc(doc(db, "approvalSettings", docId), { teachersAutoApprove: currentList });
         }
       }
-      
       document.getElementById("teacherEmail").value = "";
       loadAutoApproveTeachers();
-      alert("تمت إضافة المعلمة للنشر التلقائي");
+      alert("تمت إضافة المعلمة");
     });
 
-    // إزالة معلمة من الاستثناء
     window.removeAutoApprove = async (email) => {
       const settingsRef = collection(db, "approvalSettings");
       const q = query(settingsRef, where("kgId", "==", "kg_talaea"));
       const snapshot = await getDocs(q);
-      
       if (!snapshot.empty) {
         const docId = snapshot.docs[0].id;
         const currentList = snapshot.docs[0].data().teachersAutoApprove || [];
         const newList = currentList.filter(e => e !== email);
-        await updateDoc(doc(db, "approvalSettings", docId), {
-          teachersAutoApprove: newList
-        });
+        await updateDoc(doc(db, "approvalSettings", docId), { teachersAutoApprove: newList });
         loadAutoApproveTeachers();
         alert("تمت إزالة المعلمة");
       }
     };
 
-    // تسجيل الخروج
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "talaea-almobdeeen.html";
-    });
-
-    // التبويبات
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        this.classList.add('active');
-        document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-      });
     });
   </script>
 </body>
