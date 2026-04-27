@@ -14,14 +14,9 @@
     .btn-hover { transition: all .2s ease; }
     .btn-hover:hover { transform: scale(1.03); }
     .soft-card { background: white; border: 1px solid #e5e7eb; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04); }
-    .input-ui { width: 100%; border: 1px solid #d1d5db; border-radius: 18px; padding: 14px 16px; outline: none; transition: .2s; background: #fff; }
-    .input-ui:focus { border-color: #93c5fd; box-shadow: 0 0 0 4px rgba(147, 197, 253, .25); }
-    .table-wrap { overflow-x: auto; border-radius: 18px; border: 1px solid #e5e7eb; }
-    table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    th, td { padding: 14px 12px; border-bottom: 1px solid #e5e7eb; text-align: center; }
-    thead th { background: #183153; color: white; font-weight: 700; }
-    tbody tr:nth-child(even) { background: #f8fafc; }
-    .small-btn { border: none; border-radius: 12px; padding: 8px 12px; cursor: pointer; color: white; font-weight: 700; }
+    .status-pending { background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
+    .status-approved { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
+    .status-rejected { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: inline-block; }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right text-slate-800">
@@ -48,7 +43,7 @@
   </section>
 
   <main class="max-w-6xl mx-auto px-4 py-12 space-y-8">
-    <!-- قسم رفع الصور الجديد -->
+    <!-- قسم رفع الصور -->
     <div class="soft-card rounded-3xl p-8">
       <h3 class="text-2xl font-bold text-blue-900 mb-5 text-center">رفع صورة جديدة للمعرض</h3>
       <div class="space-y-4">
@@ -92,7 +87,7 @@
     import { db, auth } from './js/firebase-config.js';
     import { collection, query, where, getDocs, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { uploadToImageKit } from './js/imagekit-config.js';
+    import { uploadToImageKit } from './js/imagekit-upload.js';
 
     let currentUser = null;
     let currentUserEmail = null;
@@ -128,10 +123,10 @@
       const snapshot = await getDocs(albumsRef);
       const select = document.getElementById("albumSelect");
       if (snapshot.empty) {
-        select.innerHTML = '<option value="">لا توجد ألبومات بعد</option>';
+        select.innerHTML = '<option value="">لا توجد ألبومات بعد، أنشئ ألبوم من لوحة المديرة</option>';
         return;
       }
-      let options = '<option value="">اختر الألبوم</option>';
+      let options = '<option value="">-- اختر الألبوم --</option>';
       snapshot.forEach(doc => {
         const album = doc.data();
         options += `<option value="${doc.id}">${album.name}</option>`;
@@ -155,12 +150,22 @@
       const albumId = document.getElementById("albumSelect").value;
       const file = document.getElementById("imageFile").files[0];
       const statusDiv = document.getElementById("uploadStatus");
-      if (!albumId) { statusDiv.innerHTML = '<span class="text-red-600">الرجاء اختيار الألبوم</span>'; return; }
-      if (!file) { statusDiv.innerHTML = '<span class="text-red-600">الرجاء اختيار صورة</span>'; return; }
+      
+      if (!albumId) { 
+        statusDiv.innerHTML = '<span class="text-red-600">الرجاء اختيار الألبوم</span>'; 
+        return; 
+      }
+      if (!file) { 
+        statusDiv.innerHTML = '<span class="text-red-600">الرجاء اختيار صورة</span>'; 
+        return; 
+      }
+      
       statusDiv.innerHTML = '<span class="text-blue-600">جاري رفع الصورة...</span>';
+      
       try {
         const fileName = `${Date.now()}_${file.name}`;
         const result = await uploadToImageKit(file, fileName);
+        
         await addDoc(collection(db, "galleryImages"), {
           imageUrl: result.url,
           thumbnailUrl: result.thumbnail,
@@ -171,30 +176,58 @@
           status: isAutoApprove ? "approved" : "pending",
           createdAt: new Date().toISOString()
         });
-        statusDiv.innerHTML = isAutoApprobe ? '<span class="text-green-600">تم رفع الصورة ونشرها مباشرة</span>' : '<span class="text-yellow-600">تم رفع الصورة. بانتظار موافقة المديرة</span>';
+        
+        statusDiv.innerHTML = isAutoApprove 
+          ? '<span class="text-green-600">تم رفع الصورة ونشرها مباشرة</span>' 
+          : '<span class="text-yellow-600">تم رفع الصورة. بانتظار موافقة المديرة</span>';
+        
         document.getElementById("imageFile").value = "";
         document.getElementById("previewContainer").classList.add("hidden");
         loadMyImages();
+        
       } catch (error) {
-        statusDiv.innerHTML = '<span class="text-red-600">فشل رفع الصورة. حاول مرة أخرى</span>';
+        console.error(error);
+        statusDiv.innerHTML = '<span class="text-red-600">فشل رفع الصورة. تأكد من اتصال الإنترنت وحاول مرة أخرى</span>';
       }
     });
 
     function loadMyImages() {
       const imagesRef = collection(db, "galleryImages");
       const q = query(imagesRef, where("uploadedBy", "==", currentUser.uid), orderBy("createdAt", "desc"));
+      
       onSnapshot(q, (snapshot) => {
         const container = document.getElementById("myImagesList");
         if (snapshot.empty) {
           container.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-3">لا توجد صور مرفوعة بعد</p>';
           return;
         }
+        
         let html = '';
         snapshot.forEach(doc => {
           const img = doc.data();
-          let statusText = img.status === 'pending' ? 'قيد المراجعة' : (img.status === 'approved' ? 'منشورة' : 'مرفوضة');
-          let statusColor = img.status === 'pending' ? 'text-yellow-600' : (img.status === 'approved' ? 'text-green-600' : 'text-red-600');
-          html += `<div class="border rounded-xl p-3 bg-white"><img src="${img.thumbnailUrl || img.imageUrl}" class="w-full h-40 object-cover rounded-lg mb-3"><div class="flex justify-between items-center"><span class="${statusColor} font-bold">${statusText}</span><span class="text-xs text-gray-500">${new Date(img.createdAt).toLocaleDateString()}</span></div></div>`;
+          let statusClass = '';
+          let statusText = '';
+          
+          if (img.status === 'pending') {
+            statusClass = 'status-pending';
+            statusText = 'قيد المراجعة';
+          } else if (img.status === 'approved') {
+            statusClass = 'status-approved';
+            statusText = 'منشورة';
+          } else {
+            statusClass = 'status-rejected';
+            statusText = 'مرفوضة';
+          }
+          
+          html += `
+            <div class="border rounded-xl p-3 bg-white">
+              <img src="${img.thumbnailUrl || img.imageUrl}" class="w-full h-40 object-cover rounded-lg mb-3">
+              <div class="flex justify-between items-center">
+                <span class="${statusClass}">${statusText}</span>
+                <span class="text-xs text-gray-500">${new Date(img.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          `;
         });
         container.innerHTML = html;
       });
