@@ -10,12 +10,41 @@
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
     .hero-gradient { background: linear-gradient(135deg, #183153 0%, #24507b 100%); }
     .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-5px) scale(1.01); }
+    .card-hover:hover { transform: translateY(-5px) scale(1.01); box-shadow: 0 20px 25px -5px rgba(0,0,0,.12), 0 10px 10px -5px rgba(0,0,0,.06); }
     .btn-hover { transition: all 0.25s ease; }
     .btn-hover:hover { transform: scale(1.04); }
-    .gallery-image { width: 100%; height: 220px; object-fit: cover; border-radius: 18px; }
-    .logo-img { object-fit: contain; }
-    .section-chip { background: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; }
+    .nav-link { transition: all 0.25s ease; }
+    .nav-link:hover { transform: scale(1.05); }
+    .gallery-image{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      border-radius:18px;
+      display:block;
+      background:#f1f5f9;
+    }
+    .logo-img {
+      object-fit: contain;
+      display: block;
+    }
+    .logo-shell {
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .play-badge {
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .section-chip {
+      background: #eff6ff;
+      color: #1e3a8a;
+      border: 1px solid #bfdbfe;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-50 text-right">
@@ -23,88 +52,235 @@
   <header class="sticky top-0 z-40 bg-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-16 h-16 rounded-2xl bg-slate-100 border p-2 flex items-center justify-center">
-          <img src="talaea-logo.png" class="logo-img w-full h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='شعار'">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 p-2 flex items-center justify-center overflow-hidden">
+          <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-full" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=&quot;text-xs text-slate-500 text-center leading-5&quot;>شعار<br>الروضة</span>';">
         </div>
         <div>
           <h1 class="text-2xl font-bold text-slate-800">روضة طلائع المبدعين</h1>
           <p class="text-sm text-gray-600">الواجهة الخاصة بالروضة</p>
         </div>
       </div>
-      <div class="flex flex-wrap gap-3">
+
+      <nav class="w-full lg:w-auto">
+        <ul class="flex flex-wrap justify-center gap-4 text-center">
+          <li><a href="#home" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الرئيسية</a></li>
+          <li><a href="#sections" class="nav-link text-gray-700 hover:text-blue-900 font-medium">الأقسام</a></li>
+          <li><a href="#about" class="nav-link text-gray-700 hover:text-blue-900 font-medium">التعريف بالروضة</a></li>
+          <li><a href="#gallery" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الصور</a></li>
+          <li><a href="#videos" class="nav-link text-gray-700 hover:text-blue-900 font-medium">معرض الفيديوهات</a></li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-wrap justify-center gap-3">
         <button id="adminLoginBtnTop" class="bg-amber-500 text-white px-5 py-2 rounded-full font-medium hover:bg-amber-600 btn-hover">🔐 خاص بالإدارة</button>
       </div>
     </div>
   </header>
 
-  <section class="hero-gradient text-white py-16">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-      <h2 class="text-4xl font-bold mb-5">أهلًا بكم في روضة طلائع المبدعين</h2>
-      <p class="text-lg opacity-90">بيئة تعليمية ممتعة وآمنة للأطفال</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="exercises.html" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">📚 التمارين التفاعلية</a>
-        <a href="#gallery" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">🖼️ معرض الصور</a>
+  <section id="home" class="hero-gradient text-white py-16 md:py-24 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div class="text-center lg:text-right">
+          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm section-chip mb-5">بيئة تعليمية ممتعة وآمنة للأطفال</span>
+          <h2 class="text-4xl md:text-5xl font-bold mb-5">أهلًا بكم في روضة طلائع المبدعين</h2>
+          <p class="text-lg md:text-xl opacity-90 leading-9 max-w-3xl mx-auto lg:mx-0">
+            هذه الصفحة مخصصة لروضة طلائع المبدعين، ويمكن من خلالها الوصول إلى التمارين التفاعلية وأوراق العمل والتعريف بالروضة ومعرض الصور والفيديوهات.
+          </p>
+          <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+            <a href="exercises.html" class="bg-white text-blue-900 px-8 py-3 rounded-full font-medium hover:bg-gray-100 btn-hover">📚 التمارين التفاعلية</a>
+            <a href="#worksheets" class="border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-blue-900 btn-hover">📄 أوراق العمل</a>
+            <a href="#gallery" class="bg-amber-400 text-slate-900 px-8 py-3 rounded-full font-medium hover:bg-amber-300 btn-hover">🖼️ معرض الصور</a>
+          </div>
+        </div>
+
+        <div class="flex justify-center lg:justify-end">
+          <div class="logo-shell rounded-[32px] p-6 md:p-8 w-full max-w-md shadow-2xl">
+            <div class="bg-white/95 rounded-[28px] p-5 md:p-6">
+              <img src="talaea-logo.png" alt="شعار روضة طلائع المبدعين" class="logo-img w-full h-[280px] md:h-[320px]" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;h-[280px] md:h-[320px] rounded-3xl bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center text-center px-6 text-blue-900 text-2xl font-bold leading-10&quot;>شعار<br>روضة طلائع المبدعين</div>');">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- معرض الصور - قسم الألبومات -->
-  <section id="gallery" class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">🖼️ معرض الصور</h2>
-        <p class="text-gray-600">صور من داخل الروضة توضح بيئتنا التعليمية المميزة</p>
+  <section id="sections" class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">أقسام الصفحة</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">يمكن الوصول إلى المحتوى الخاص بروضة طلائع المبدعين من خلال الأقسام التالية.</p>
       </div>
-      
-      <!-- الألبومات -->
-      <div id="albumsContainer" class="mb-12">
-        <div class="flex flex-wrap gap-3 justify-center border-b pb-4 mb-6">
-          <button data-album="all" class="album-filter-btn bg-blue-900 text-white px-5 py-2 rounded-full text-sm font-medium">📁 جميع الصور</button>
-        </div>
-      </div>
-      
-      <!-- شبكة الصور -->
-      <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div class="col-span-full text-center text-gray-500 py-10">جاري تحميل الصور...</div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <a href="exercises.html" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-blue-900 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">📚</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">التمارين التفاعلية</h3>
+          <p class="text-gray-600 leading-8">الدخول إلى التمارين المضافة لهذه الروضة.</p>
+        </a>
+
+        <a href="#worksheets" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">📄</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">أوراق العمل</h3>
+          <p class="text-gray-600 leading-8">قسم مخصص لأوراق العمل الخاصة بروضة طلائع المبدعين.</p>
+        </a>
+
+        <a href="#about" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">🏫</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">التعريف بالروضة</h3>
+          <p class="text-gray-600 leading-8">نبذة مختصرة عن الروضة ورسالتها وبيئتها التعليمية.</p>
+        </a>
+
+        <a href="#gallery" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-yellow-500 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">🖼️</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الصور</h3>
+          <p class="text-gray-600 leading-8">مساحة لعرض صور الروضة بشكل منظم وأنيق.</p>
+        </a>
+
+        <a href="#videos" class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm text-center block">
+          <div class="w-14 h-14 bg-violet-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4">🎬</div>
+          <h3 class="text-xl font-bold text-blue-900 mb-3">معرض الفيديوهات</h3>
+          <p class="text-gray-600 leading-8">قسم لعرض الفيديوهات التعليمية والترفيهية.</p>
+        </a>
       </div>
     </div>
   </section>
 
   <section id="about" class="py-16 bg-slate-50">
     <div class="max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <div>
-          <h2 class="text-3xl font-bold text-blue-900 mb-6">عن الروضة</h2>
-          <p class="text-gray-700 leading-8 mb-6">روضة طلائع المبدعين هي بيئة تعليمية متكاملة تهدف إلى تنمية مهارات الأطفال من خلال أنشطة تعليمية وترفيهية مبتكرة.</p>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm"><h4 class="font-bold text-blue-900">🌟 رؤيتنا</h4><p class="text-gray-600 text-sm">إعداد جيل مبدع قادر على التعلم والابتكار</p></div>
-            <div class="bg-white p-4 rounded-xl shadow-sm"><h4 class="font-bold text-blue-900">🎯 رسالتنا</h4><p class="text-gray-600 text-sm">تقديم تعليم متميز في بيئة آمنة ومحفزة</p></div>
+          <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-6">التعريف بروضة طلائع المبدعين</h2>
+          <p class="text-gray-700 mb-6 leading-8">
+            روضة طلائع المبدعين هي بيئة تعليمية متكاملة تهدف إلى تنمية مهارات الأطفال من خلال أنشطة تعليمية وترفيهية مبتكرة.
+          </p>
+          <p class="text-gray-700 mb-8 leading-8">
+            نحرص على تقديم محتوى تعليمي ممتع يجمع بين التعلم واللعب، مع متابعة دقيقة لتقدم كل طفل.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-blue-900 mb-2">🌟 رؤيتنا</h4>
+              <p class="text-gray-600 text-sm leading-7">إعداد جيل مبدع قادر على التعلم والابتكار.</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <h4 class="font-bold text-blue-900 mb-2">🎯 رسالتنا</h4>
+              <p class="text-gray-600 text-sm leading-7">تقديم تعليم متميز في بيئة آمنة ومحفزة.</p>
+            </div>
           </div>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-xl text-center">
-          <img src="talaea-logo.png" class="w-64 h-64 object-contain mx-auto mb-4" onerror="this.style.display='none'">
-          <h3 class="text-xl font-bold text-blue-900">لماذا روضتنا؟</h3>
-          <p class="text-gray-600 mt-2">نوفر بيئة تعليمية متكاملة تجمع بين أحدث أساليب التعليم واللعب</p>
+
+        <div class="bg-white p-8 rounded-2xl shadow-xl">
+          <div class="w-full min-h-[290px] rounded-xl mb-6 bg-gradient-to-br from-blue-50 to-slate-100 border border-slate-200 flex items-center justify-center p-4">
+            <img src="talaea-logo.png" alt="شعار الروضة" class="logo-img w-full h-64" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend','<div class=&quot;text-blue-900 text-2xl font-bold text-center leading-10&quot;>شعار روضة<br>طلائع المبدعين</div>');">
+          </div>
+          <h3 class="text-2xl font-bold text-blue-900 mb-4">لماذا روضة طلائع المبدعين؟</h3>
+          <p class="text-gray-700 leading-8">
+            نوفر بيئة تعليمية متكاملة تجمع بين أحدث أساليب التعليم واللعب، مع فريق عمل متخصص ومحب للأطفال.
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <footer class="bg-black text-gray-400 py-8 text-center">
-    <p>&copy; 2026 روضة طلائع المبدعين. جميع الحقوق محفوظة</p>
+  <section id="worksheets" class="py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="bg-slate-50 rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+        <h2 class="text-3xl font-bold text-blue-900 mb-4">📄 أوراق العمل</h2>
+        <p class="text-gray-700 leading-8 max-w-3xl mx-auto">
+          هذا القسم جاهز حاليًا كواجهة مؤقتة، ويمكن لاحقًا ربطه بملفات وأوراق العمل الخاصة بروضة طلائع المبدعين من داخل لوحة الإدارة.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="py-16 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">🖼️ معرض الصور</h2>
+        <p class="text-gray-600">صور من داخل الروضة توضح بيئتنا التعليمية المميزة.</p>
+      </div>
+      <!-- أزرار الألبومات ستظهر هنا ديناميكياً -->
+      <div id="albumsFilter" class="flex flex-wrap gap-2 justify-center mb-8"></div>
+      <!-- شبكة الصور -->
+      <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-3 text-center text-gray-500 py-10">جاري تحميل الصور...</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="videos" class="py-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">🎬 معرض الفيديوهات</h2>
+        <p class="text-gray-600">فيديوهات تعليمية وترفيهية من داخل الروضة.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- فيديوهات ثابتة كما هي -->
+        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+          <div class="relative">
+            <img class="gallery-image" alt="صورة مصغرة لفيديو نشاط صباحي" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Crect width='800' height='500' fill='%23e0f2fe'/%3E%3Crect x='80' y='85' width='640' height='330' rx='30' fill='%23ffffff'/%3E%3Ccircle cx='220' cy='215' r='72' fill='%23facc15'/%3E%3Crect x='350' y='145' width='250' height='28' rx='14' fill='%2393c5fd'/%3E%3Crect x='350' y='205' width='180' height='22' rx='11' fill='%23cbd5e1'/%3E%3Crect x='350' y='250' width='210' height='22' rx='11' fill='%23cbd5e1'/%3E%3Ctext x='400' y='82' font-size='34' text-anchor='middle' fill='%23036aa5' font-family='Arial'%3Eالطابور الصباحي%3C/text%3E%3C/svg%3E">
+            <div class="play-badge">
+              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-blue-900 mr-1"></div>
+              </div>
+            </div>
+          </div>
+          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">نشاط صباحي</h3>
+          <p class="text-gray-600 leading-7 text-sm">فيديو تعريفي أو نشاط صباحي داخل الروضة.</p>
+        </div>
+        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+          <div class="relative">
+            <img class="gallery-image" alt="صورة مصغرة لفيديو أعمال الأطفال" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Crect width='800' height='500' fill='%23fdf2f8'/%3E%3Crect x='90' y='95' width='620' height='310' rx='28' fill='%23ffffff'/%3E%3Crect x='145' y='145' width='140' height='210' rx='20' fill='%23bfdbfe'/%3E%3Crect x='330' y='145' width='140' height='210' rx='20' fill='%23fde68a'/%3E%3Crect x='515' y='145' width='140' height='210' rx='20' fill='%23fecaca'/%3E%3Ctext x='400' y='82' font-size='34' text-anchor='middle' fill='%239d174d' font-family='Arial'%3Eأعمال الأطفال%3C/text%3E%3C/svg%3E">
+            <div class="play-badge">
+              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-rose-600 mr-1"></div>
+              </div>
+            </div>
+          </div>
+          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">عرض الأعمال</h3>
+          <p class="text-gray-600 leading-7 text-sm">فيديو يعرض رسومات الأطفال وإنجازاتهم.</p>
+        </div>
+        <div class="bg-slate-50 rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
+          <div class="relative">
+            <img class="gallery-image" alt="صورة مصغرة لفيديو تعريفي بالروضة" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Crect width='800' height='500' fill='%23eef2ff'/%3E%3Crect x='85' y='90' width='630' height='320' rx='30' fill='%23ffffff'/%3E%3Crect x='125' y='140' width='260' height='220' rx='24' fill='%23c7d2fe'/%3E%3Crect x='425' y='150' width='210' height='24' rx='12' fill='%2394a3b8'/%3E%3Crect x='425' y='205' width='180' height='20' rx='10' fill='%23cbd5e1'/%3E%3Crect x='425' y='245' width='190' height='20' rx='10' fill='%23cbd5e1'/%3E%3Crect x='425' y='285' width='150' height='20' rx='10' fill='%23cbd5e1'/%3E%3Ctext x='400' y='78' font-size='34' text-anchor='middle' fill='%234c1d95' font-family='Arial'%3Eفيديو تعريفي%3C/text%3E%3C/svg%3E">
+            <div class="play-badge">
+              <div class="w-20 h-20 rounded-full bg-white/85 shadow-lg flex items-center justify-center">
+                <div class="w-0 h-0 border-t-[16px] border-t-transparent border-b-[16px] border-b-transparent border-r-0 border-l-[26px] border-l-violet-600 mr-1"></div>
+              </div>
+            </div>
+          </div>
+          <h3 class="text-lg font-bold text-blue-900 mt-4 mb-2">فيديو تعريفي</h3>
+          <p class="text-gray-600 leading-7 text-sm">فيديو تعريفي عن الروضة ومرافقها.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black text-gray-400 py-10">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p>&copy; 2026 روضة طلائع المبدعين. جميع الحقوق محفوظة.</p>
+    </div>
   </footer>
 
-  <!-- نافذة تسجيل الدخول -->
+  <!-- نافذة تسجيل الدخول (تم استبدال منطقها بـ Firebase Auth) -->
   <div id="loginModal" class="fixed inset-0 bg-black/50 z-[999] hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl">
-      <div class="bg-amber-500 text-white px-6 py-4 rounded-t-3xl"><h3 class="text-2xl font-bold">🔐 دخول الإدارة</h3></div>
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div class="bg-amber-500 text-white px-6 py-4">
+        <h3 class="text-2xl font-bold">🔐 دخول الإدارة</h3>
+        <p class="text-sm opacity-90 mt-1">للمديرة والمعلمات فقط - روضة طلائع المبدعين</p>
+      </div>
       <div class="p-6 space-y-4">
-        <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" class="w-full rounded-2xl border px-4 py-3">
-        <input type="password" id="loginPassword" placeholder="كلمة المرور" class="w-full rounded-2xl border px-4 py-3">
-        <p id="loginError" class="text-sm text-red-600"></p>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">📧 البريد الإلكتروني</label>
+          <input type="email" id="loginEmail" placeholder="example@email.com" class="w-full rounded-2xl border border-gray-200 px-4 py-3">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">🔒 كلمة المرور</label>
+          <input type="password" id="loginPassword" placeholder="********" class="w-full rounded-2xl border border-gray-200 px-4 py-3">
+        </div>
+        <p id="loginError" class="text-sm font-medium text-red-600 min-h-[24px]"></p>
         <div class="flex gap-3">
-          <button id="loginSubmitBtn" class="flex-1 bg-blue-900 text-white py-3 rounded-2xl font-medium">دخول</button>
-          <button id="loginCloseBtn" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-2xl font-medium">إغلاق</button>
+          <button id="loginSubmitBtn" class="flex-1 bg-blue-900 text-white px-5 py-3 rounded-2xl font-medium hover:bg-blue-800">دخول</button>
+          <button id="loginCloseBtn" class="flex-1 bg-gray-100 text-gray-700 px-5 py-3 rounded-2xl font-medium hover:bg-gray-200">إغلاق</button>
         </div>
       </div>
     </div>
@@ -119,7 +295,7 @@
     let albumsData = [];
     let allImages = [];
 
-    // تحميل الألبومات من Firestore
+    // تحميل الألبومات من Firestore وعرضها كأزرار فلتر
     async function loadAlbums() {
       const albumsRef = collection(db, "albums");
       const snapshot = await getDocs(albumsRef);
@@ -128,21 +304,18 @@
         albumsData.push({ id: doc.id, name: doc.data().name });
       });
       
-      const container = document.getElementById("albumsContainer");
-      let buttons = '<div class="flex flex-wrap gap-3 justify-center border-b pb-4 mb-6">';
-      buttons += `<button data-album="all" class="album-filter-btn ${currentAlbum === 'all' ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700'} px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-800 hover:text-white transition">📁 جميع الصور</button>`;
+      const container = document.getElementById("albumsFilter");
+      let buttons = `<button data-album="all" class="album-filter-btn ${currentAlbum === 'all' ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-800 transition">📁 جميع الصور</button>`;
       
       albumsData.forEach(album => {
-        buttons += `<button data-album="${album.id}" class="album-filter-btn ${currentAlbum === album.id ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700'} px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-800 hover:text-white transition">📂 ${album.name}</button>`;
+        buttons += `<button data-album="${album.id}" class="album-filter-btn ${currentAlbum === album.id ? 'bg-blue-900 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-800 transition">📂 ${album.name}</button>`;
       });
-      buttons += '</div>';
       container.innerHTML = buttons;
       
-      // إضافة أحداث للأزرار
       document.querySelectorAll('.album-filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', () => {
           currentAlbum = btn.dataset.album;
-          loadAlbums(); // إعادة تحميل الأزرار لتحديث الحالة
+          loadAlbums(); // تحديث الأزرار
           filterAndDisplayImages();
         });
       });
@@ -162,7 +335,7 @@
       });
     }
 
-    // تصفية وعرض الصور حسب الألبوم المختار
+    // تصفية وعرض الصور
     function filterAndDisplayImages() {
       const container = document.getElementById("galleryGrid");
       let filtered = allImages;
@@ -172,30 +345,23 @@
       }
       
       if (filtered.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">📭 لا توجد صور في هذا الألبوم بعد</div>';
+        container.innerHTML = '<div class="col-span-3 text-center text-gray-500 py-10">📭 لا توجد صور في هذا الألبوم بعد</div>';
         return;
       }
       
       let html = '';
       filtered.forEach(img => {
         html += `
-          <div class="bg-white rounded-2xl shadow-sm border overflow-hidden card-hover">
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 card-hover">
             <img src="${img.thumbnailUrl || img.imageUrl}" class="gallery-image w-full h-56 object-cover">
-            <div class="p-3 text-center">
-              <p class="text-xs text-gray-500">📅 ${new Date(img.createdAt).toLocaleDateString()}</p>
-            </div>
+            <p class="text-center text-gray-500 text-sm mt-2">📅 ${new Date(img.createdAt).toLocaleDateString()}</p>
           </div>
         `;
       });
       container.innerHTML = html;
     }
 
-    // نافذة تسجيل الدخول
-    const usersRoleMap = {
-      "director@talaea.com": "kindergarten_manager",
-      "teacher@talaea.com": "teacher"
-    };
-    
+    // نافذة تسجيل الدخول بـ Firebase Auth
     function openLoginModal() {
       document.getElementById("loginModal").classList.remove("hidden");
       document.getElementById("loginModal").classList.add("flex");
@@ -218,19 +384,29 @@
       
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const role = usersRoleMap[email];
+        const userEmail = userCredential.user.email;
+        
+        // تحديد الدور بناءً على البريد الإلكتروني
+        let role = null;
+        let page = null;
+        
+        if (userEmail === "director@talaea.com") {
+          role = "kindergarten_manager";
+          page = "talaea-admin.html";
+        } else if (userEmail === "teacher@talaea.com") {
+          role = "teacher";
+          page = "teacher-dashboard.html";
+        } else {
+          errorEl.innerText = "لا تملك صلاحية الدخول إلى لوحة الإدارة";
+          return;
+        }
         
         sessionStorage.setItem("loggedIn", "true");
-        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userEmail", userEmail);
         sessionStorage.setItem("userRole", role);
+        sessionStorage.setItem("userName", role === "kindergarten_manager" ? "مديرة الروضة" : "معلمة");
         
-        if (role === "kindergarten_manager") {
-          window.location.href = "talaea-admin.html";
-        } else if (role === "teacher") {
-          window.location.href = "teacher-dashboard.html";
-        } else {
-          errorEl.innerText = "لا تملك صلاحية الدخول";
-        }
+        window.location.href = page;
       } catch (error) {
         errorEl.innerText = "البريد أو كلمة المرور غير صحيحة";
       }
@@ -239,8 +415,20 @@
     document.getElementById("adminLoginBtnTop")?.addEventListener("click", openLoginModal);
     document.getElementById("loginCloseBtn")?.addEventListener("click", closeLoginModal);
     document.getElementById("loginSubmitBtn")?.addEventListener("click", loginUser);
+
+    // التنقل السلس للأقسام
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('href');
+        if (!targetId || targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
     
-    // تحميل البيانات عند بدء الصفحة
+    // تحميل البيانات
     await loadAlbums();
     loadImages();
   </script>
