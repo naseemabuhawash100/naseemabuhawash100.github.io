@@ -1,43 +1,45 @@
 // js/imagekit-upload.js
-// حل نهائي وموثوق لرفع الصور إلى ImageKit مباشرة من المتصفح
-
 export const IMAGEKIT_CONFIG = {
   publicKey: "public_4XqRraihKdGc0zQMHPbVtjjQiiM=",
   urlEndpoint: "https://ik.imagekit.io/6swx5frcc"
 };
 
 export async function uploadToImageKit(file, fileName) {
-  console.log("بدء رفع الصورة:", fileName);
-
-  // تحضير البيانات
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("fileName", fileName);
-  formData.append("publicKey", IMAGEKIT_CONFIG.publicKey);
-  formData.append("useUniqueFileName", "true");
-
-  try {
-    // إرسال الطلب
-    const response = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-      method: "POST",
-      body: formData
-      // لا نحتاج headers مخصصة، FormData يحددها تلقائياً
-    });
-
-    const result = await response.json();
-
-    if (response.ok && result.url) {
-      console.log("تم الرفع بنجاح:", result.url);
-      return {
-        url: result.url,
-        thumbnail: result.thumbnailUrl || result.url
-      };
-    } else {
-      console.error("خطأ من ImageKit:", result);
-      throw new Error(result.message || "فشل الرفع، يرجى التأكد من المفتاح العام");
-    }
-  } catch (error) {
-    console.error("خطأ في الاتصال:", error);
-    throw new Error("مشكلة في الاتصال بالإنترنت أو بالخادم");
-  }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = async function(event) {
+      const base64String = event.target.result.split(',')[1];
+      
+      try {
+        // استخدام خدمة CORS proxy مجانية لتجاوز مشكلة CORS
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const apiUrl = 'https://upload.imagekit.io/api/v1/files/upload';
+        
+        const formData = new FormData();
+        formData.append('file', base64String);
+        formData.append('fileName', fileName);
+        formData.append('publicKey', IMAGEKIT_CONFIG.publicKey);
+        formData.append('useUniqueFileName', 'true');
+        
+        const response = await fetch(proxyUrl + apiUrl, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.url) {
+          resolve({ url: data.url, thumbnail: data.thumbnailUrl || data.url });
+        } else {
+          reject(new Error(data.message || 'فشل الرفع'));
+        }
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    reader.onerror = () => reject(new Error('فشل قراءة الملف'));
+    reader.readAsDataURL(file);
+  });
 }
