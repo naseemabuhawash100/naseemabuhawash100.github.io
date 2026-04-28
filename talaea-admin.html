@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>لوحة إدارة روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- إضافة مكتبة AOS للحركات -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     :root {
       --navy: #0f2d5c;
@@ -25,6 +27,7 @@
       --shadow: 0 4px 6px rgba(0,0,0,0.07);
       --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
       --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+      --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
       --radius: 16px;
       --radius-lg: 24px;
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -223,7 +226,6 @@
     /* EMPTY STATE */
     .empty-state { text-align: center; padding: 48px 24px; color: var(--gray-600); }
     .empty-state .icon { font-size: 52px; margin-bottom: 14px; }
-    .empty-state p { font-size: 15px; }
 
     /* FILTERS */
     .filter-grid {
@@ -314,11 +316,11 @@
 
   <section class="hero">
     <div class="hero-inner">
-      <div>
+      <div data-aos="fade-right">
         <h2>لوحة الإدارة</h2>
         <p>إدارة الطلاب والمعلمات ومتابعة النتائج من مكان واحد</p>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" data-aos="fade-left">
         <div class="stat-chip">
           <div class="num" id="statStudents">0</div>
           <div class="lbl">طالب</div>
@@ -336,7 +338,7 @@
   </section>
 
   <div class="tabs-wrap">
-    <div class="tabs">
+    <div class="tabs" data-aos="fade-up">
       <button class="tab-btn active" data-tab="students">👧 إدارة الطلاب</button>
       <button class="tab-btn" data-tab="teachers">👩‍🏫 المعلمات</button>
       <button class="tab-btn" data-tab="results">📊 النتائج</button>
@@ -347,7 +349,7 @@
 
     <!-- ── تبويب الطلاب ── -->
     <div id="panel-students" class="panel active">
-      <div class="card">
+      <div class="card" data-aos="fade-up">
         <div class="card-title">➕ إضافة طالب جديد</div>
         <div class="form-grid">
           <div class="form-field">
@@ -367,7 +369,7 @@
         <p class="form-msg" id="studentMsg"></p>
       </div>
 
-      <div class="card">
+      <div class="card" data-aos="fade-up" data-aos-delay="100">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
           <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
           <div class="search-box">
@@ -385,7 +387,7 @@
 
     <!-- ── تبويب المعلمات ── -->
     <div id="panel-teachers" class="panel">
-      <div class="card">
+      <div class="card" data-aos="fade-up">
         <div class="card-title">👩‍🏫 معلمات الروضة</div>
         <p style="color:var(--gray-600);font-size:14px;margin-bottom:18px;">
           لإضافة معلمة جديدة، يرجى التواصل مع إدارة النظام.
@@ -401,7 +403,7 @@
 
     <!-- ── تبويب النتائج ── -->
     <div id="panel-results" class="panel">
-      <div class="card">
+      <div class="card" data-aos="fade-up">
         <div class="card-title">🔍 فلاتر البحث</div>
         <div class="filter-grid">
           <div class="form-field"><label>التاريخ</label><input id="fDate" type="date"></div>
@@ -423,7 +425,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" data-aos="fade-up" data-aos-delay="100">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
           <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
         </div>
@@ -549,7 +551,7 @@
       document.getElementById("studentCount").textContent = `(${filtered.length})`;
       const tbody = document.getElementById("studentsTable");
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب مطابقون</p></div></td></tr>`;
+        tbody.innerHTML = `<td><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب مطابقون</p></div></td></tr>`;
         return;
       }
       tbody.innerHTML = filtered.map((s, i) => `
@@ -692,8 +694,17 @@
       document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
     });
 
+    // ── AOS Initialization ──
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+
     // ── Init ──
     loadData();
   </script>
+  <!-- إضافة مكتبة AOS للحركات -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
