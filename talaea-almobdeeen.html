@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- إضافة مكتبة AOS للحركات -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     :root {
       --navy: #0f2d5c;
@@ -753,7 +755,7 @@
   <section id="home" class="hero">
     <div class="hero-inner">
       <div class="hero-grid">
-        <div class="animate-fade-in-up">
+        <div class="animate-fade-in-up" data-aos="fade-up" data-aos-duration="800">
           <span class="hero-badge">✨ بيئة تعليمية ممتعة وآمنة</span>
           <h2>أهلًا بكم في روضة<br>طلائع المبدعين</h2>
           <p>نقدم تجربة تعليمية متكاملة تجمع بين التعلم والمتعة، مع تمارين تفاعلية رقمية مرتبطة بالكتاب المطبوع مباشرة.</p>
@@ -762,7 +764,7 @@
             <a href="#gallery" class="btn-outline">🖼️ معرض الصور</a>
           </div>
         </div>
-        <div class="hero-visual animate-scale-in">
+        <div class="hero-visual animate-scale-in" data-aos="zoom-in" data-aos-duration="800">
           <div class="hero-logo-placeholder">🌈</div>
         </div>
       </div>
@@ -772,32 +774,32 @@
 
   <section id="sections">
     <div class="sections-grid">
-      <div class="section-title">
+      <div class="section-title" data-aos="fade-down">
         <h2>أقسام الصفحة</h2>
         <p>يمكن الوصول إلى كل محتوى الروضة من هنا</p>
       </div>
       <div class="cards-grid">
-        <a href="exercises.html" class="section-card">
+        <a href="exercises.html" class="section-card" data-aos="fade-up" data-aos-delay="0">
           <div class="card-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">📚</div>
           <h3>التمارين التفاعلية</h3>
           <p>تمارين رقمية تفاعلية مرتبطة بالكتاب المطبوع.</p>
         </a>
-        <a href="#worksheets" class="section-card">
+        <a href="#worksheets" class="section-card" data-aos="fade-up" data-aos-delay="100">
           <div class="card-icon" style="background:linear-gradient(135deg, #fce7f3, #fbcfe8);">📄</div>
           <h3>أوراق العمل</h3>
           <p>أوراق عمل إضافية وأنشطة ترفيهية للأطفال.</p>
         </a>
-        <a href="#about" class="section-card">
+        <a href="#about" class="section-card" data-aos="fade-up" data-aos-delay="200">
           <div class="card-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">🏫</div>
           <h3>عن الروضة</h3>
           <p>رؤية الروضة ورسالتها والتعريف بها.</p>
         </a>
-        <a href="#gallery" class="section-card">
+        <a href="#gallery" class="section-card" data-aos="fade-up" data-aos-delay="300">
           <div class="card-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">🖼️</div>
           <h3>معرض الصور</h3>
           <p>صور من البيئة التعليمية وأنشطة الأطفال.</p>
         </a>
-        <a href="#videos" class="section-card">
+        <a href="#videos" class="section-card" data-aos="fade-up" data-aos-delay="400">
           <div class="card-icon" style="background:linear-gradient(135deg, #ede9fe, #ddd6fe);">🎬</div>
           <h3>الفيديوهات</h3>
           <p>فيديوهات تعليمية وترفيهية مختارة.</p>
@@ -808,7 +810,7 @@
 
   <section id="about" class="about-section">
     <div class="about-inner">
-      <div class="about-text">
+      <div class="about-text" data-aos="fade-right">
         <span class="about-badge">🏫 التعريف بالروضة</span>
         <h2>روضة طلائع المبدعين</h2>
         <p>بيئة تعليمية متكاملة تهدف إلى تنمية مهارات الأطفال من خلال أنشطة تعليمية مبتكرة تجمع بين التعلم واللعب.</p>
@@ -824,7 +826,7 @@
           </div>
         </div>
       </div>
-      <div class="about-visual">
+      <div class="about-visual" data-aos="fade-left">
         <div class="big-icon">🌈</div>
         <h3>لماذا طلائع المبدعين؟</h3>
         <p>نوفر تجربة تعليمية فريدة تدمج التكنولوجيا مع المنهج الدراسي بأسلوب ممتع ومحفز للأطفال.</p>
@@ -833,7 +835,7 @@
   </section>
 
   <section id="worksheets" class="worksheets-section">
-    <div class="worksheets-inner">
+    <div class="worksheets-inner" data-aos="zoom-in">
       <div class="big-icon">📄</div>
       <h2>أوراق العمل</h2>
       <p>هذا القسم جاهز لاستقبال أوراق العمل والأنشطة الخاصة بالروضة. سيتم إضافة المحتوى قريبًا من لوحة الإدارة.</p>
@@ -842,26 +844,26 @@
 
   <section id="gallery" class="gallery-section">
     <div class="gallery-inner">
-      <div class="section-title">
+      <div class="section-title" data-aos="fade-down">
         <h2>🖼️ معرض الصور</h2>
         <p>لحظات من داخل الروضة وأنشطة الأطفال</p>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-card">
+        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600">
           <div class="gallery-img" style="background:linear-gradient(135deg,#dbeafe,#fef3c7);">🎨</div>
           <div class="gallery-info">
             <h3>أنشطة صفية</h3>
             <p>نشاطات تعليمية تفاعلية داخل الصفوف الدراسية.</p>
           </div>
         </div>
-        <div class="gallery-card">
+        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600" data-aos-delay="100">
           <div class="gallery-img" style="background:linear-gradient(135deg,#fce7f3,#fef3c7);">🖍️</div>
           <div class="gallery-info">
             <h3>أعمال فنية</h3>
             <p>إبداعات الأطفال الفنية المميزة داخل الروضة.</p>
           </div>
         </div>
-        <div class="gallery-card">
+        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600" data-aos-delay="200">
           <div class="gallery-img" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);">🧩</div>
           <div class="gallery-info">
             <h3>أركان تعليمية</h3>
@@ -874,12 +876,12 @@
 
   <section id="videos" class="videos-section">
     <div class="videos-inner">
-      <div class="section-title">
+      <div class="section-title" data-aos="fade-down">
         <h2>🎬 معرض الفيديوهات</h2>
         <p>فيديوهات تعليمية وترفيهية من داخل الروضة</p>
       </div>
       <div class="gallery-grid" style="margin-top:40px;">
-        <div class="video-card">
+        <div class="video-card" data-aos="zoom-in" data-aos-duration="600">
           <div class="video-thumb" style="background:linear-gradient(135deg,#e0f2fe,#bfdbfe);">
             ☀️
             <div class="play-btn"><div class="play-triangle"></div></div>
@@ -889,7 +891,7 @@
             <p>فيديو يوضح روتين الطابور والنشاط الصباحي.</p>
           </div>
         </div>
-        <div class="video-card">
+        <div class="video-card" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="100">
           <div class="video-thumb" style="background:linear-gradient(135deg,#fdf4ff,#fce7f3);">
             🎨
             <div class="play-btn"><div class="play-triangle" style="border-left-color:#9333ea;"></div></div>
@@ -899,7 +901,7 @@
             <p>فيديو يعرض رسومات الأطفال وإنجازاتهم.</p>
           </div>
         </div>
-        <div class="video-card">
+        <div class="video-card" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
           <div class="video-thumb" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
             🌟
             <div class="play-btn"><div class="play-triangle" style="border-left-color:#16a34a;"></div></div>
@@ -1050,6 +1052,13 @@
     passEl.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
     modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
 
+    // ── AOS Initialization ──
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+
     // ── Auth State Listener ──
     onAuthStateChange(user => {
       if (user) {
@@ -1078,5 +1087,7 @@
       });
     });
   </script>
+  <!-- إضافة مكتبة AOS للحركات -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
