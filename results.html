@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>نتائج الطلاب - روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- إضافة مكتبة AOS للحركات -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     :root {
       --navy: #0f2d5c;
@@ -94,7 +96,10 @@
       content: ''; position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
-    .hero-inner { max-width: 1280px; margin: auto; position: relative; z-index: 1; }
+    .hero-inner {
+      max-width: 1280px; margin: auto;
+      position: relative; z-index: 1;
+    }
     .hero h2 { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
     .hero p { font-size: 15px; opacity: 0.9; line-height: 1.8; }
 
@@ -245,21 +250,21 @@
   </header>
 
   <section class="hero">
-    <div class="hero-inner">
+    <div class="hero-inner" data-aos="fade-down">
       <h2>📊 نتائج طلاب روضة طلائع المبدعين</h2>
       <p id="heroSub">يتم عرض النتائج المحفوظة من جلسات التمارين التفاعلية.</p>
     </div>
   </section>
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">إجمالي النتائج</div></div>
-    <div class="stat-card"><div class="stat-num" id="stStudents">0</div><div class="stat-lbl">طلاب مشاركون</div></div>
-    <div class="stat-card"><div class="stat-num" id="stAvg">—</div><div class="stat-lbl">متوسط الدرجات</div></div>
-    <div class="stat-card"><div class="stat-num" id="stHigh">0</div><div class="stat-lbl">درجات ممتازة ≥80%</div></div>
+    <div class="stat-card" data-aos="zoom-in" data-aos-delay="0"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">إجمالي النتائج</div></div>
+    <div class="stat-card" data-aos="zoom-in" data-aos-delay="100"><div class="stat-num" id="stStudents">0</div><div class="stat-lbl">طلاب مشاركون</div></div>
+    <div class="stat-card" data-aos="zoom-in" data-aos-delay="200"><div class="stat-num" id="stAvg">—</div><div class="stat-lbl">متوسط الدرجات</div></div>
+    <div class="stat-card" data-aos="zoom-in" data-aos-delay="300"><div class="stat-num" id="stHigh">0</div><div class="stat-lbl">درجات ممتازة ≥80%</div></div>
   </div>
 
   <div class="content">
-    <div class="card">
+    <div class="card" data-aos="fade-up">
       <div class="card-title">🔍 فلاتر البحث</div>
       <div class="filter-grid">
         <div class="form-field"><label>التاريخ</label><input id="fDate" type="date"></div>
@@ -289,7 +294,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
       <div class="export-bar">
         <div class="card-title" style="margin-bottom:0;">📋 جدول النتائج</div>
         <span class="results-meta" id="resultsMeta"></span>
@@ -406,7 +411,7 @@
       document.getElementById("resultsMeta").textContent = `عدد النتائج: ${list.length}`;
       const tbody = document.getElementById("resultsTable");
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><p>لا توجد نتائج مطابقة</p></div></td></tr>`;
+        tbody.innerHTML = `<td><td colspan="9"><div class="empty-state"><div class="icon">📭</div><p>لا توجد نتائج مطابقة</p></div></td></tr>`;
         return;
       }
       const sorted = [...list].sort((a, b) => {
@@ -469,8 +474,17 @@
       document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
     });
 
+    // ── AOS Initialization ──
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+
     // ── Init ──
     loadResults();
   </script>
+  <!-- إضافة مكتبة AOS للحركات -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
