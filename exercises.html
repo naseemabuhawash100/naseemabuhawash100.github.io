@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>اختيار التمرين - روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- إضافة مكتبة AOS للحركات -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
     :root {
       --navy: #0f2d5c;
@@ -36,22 +38,27 @@
       direction: rtl;
       background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
       color: var(--gray-800);
-      min-height: 100vh;
+      overflow-x: hidden;
       line-height: 1.6;
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .animate-fade-in { animation: fadeIn 0.6s ease; }
-    .animate-fade-in-up { animation: fadeInUp 0.7s ease; }
-    .animate-fade-in-down { animation: fadeInDown 0.7s ease; }
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    .animate-fade-in-up { animation: fadeInUp 0.7s ease-out; }
+    .animate-fade-in-down { animation: fadeInDown 0.7s ease-out; }
+    .animate-scale-in { animation: scaleIn 0.5s ease-out; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
 
     /* HEADER */
     header {
-      background: white;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px) saturate(180%);
       border-bottom: 2px solid var(--gold);
       box-shadow: var(--shadow);
       position: sticky;
@@ -59,7 +66,7 @@
       z-index: 50;
       transition: var(--transition);
     }
-    header.scrolled { box-shadow: var(--shadow-md); }
+    header.scrolled { background: rgba(255,255,255,0.98); box-shadow: var(--shadow-md); }
     .header-inner {
       max-width: 1100px; margin: auto;
       padding: 14px 24px;
@@ -152,7 +159,6 @@
       margin-bottom: 28px; text-align: center;
     }
 
-    /* FORM STEP */
     .form-step {
       display: flex; align-items: flex-start; gap: 18px;
       margin-bottom: 28px;
@@ -191,7 +197,6 @@
       margin: 4px 0 28px 56px;
     }
 
-    /* START BUTTON */
     .start-btn {
       display: block; width: 100%;
       background: linear-gradient(135deg, var(--navy), var(--teal));
@@ -216,7 +221,6 @@
       color: var(--coral); min-height: 24px; margin-top: 14px;
     }
 
-    /* HOW CARDS */
     .how-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -248,7 +252,6 @@
       font-size: 13px; color: var(--gray-600); line-height: 1.8;
     }
 
-    /* TOAST */
     .toast-container {
       position: fixed; top: 100px; left: 24px; z-index: 10000;
       display: flex; flex-direction: column; gap: 12px;
@@ -283,7 +286,7 @@
         <div class="logo-circle">📚</div>
         <div class="logo-text">
           <h1>اختيار التمرين</h1>
-          <p>روضة طلائع المبدعين</p>
+          <p id="kgNameDisplay">روضة طلائع المبدعين</p>
         </div>
       </div>
       <a href="talaea-almobdeeen.html" class="btn btn-gray">🏠 العودة للروضة</a>
@@ -291,7 +294,7 @@
   </header>
 
   <section class="hero">
-    <div class="hero-inner">
+    <div class="hero-inner" data-aos="fade-down">
       <span class="hero-badge">📖 التمارين التفاعلية</span>
       <h2>اختر التمرين المناسب لطفلك</h2>
       <p>اختر المرحلة والمادة ورقم الصفحة للانتقال إلى التمرين التفاعلي المرتبط بالكتاب المطبوع.</p>
@@ -300,7 +303,7 @@
   <div class="wave"></div>
 
   <div class="main-content">
-    <div class="form-card animate-fade-in-up">
+    <div class="form-card animate-fade-in-up" data-aos="fade-up">
       <h3>📋 بيانات التمرين</h3>
 
       <div class="form-step">
@@ -343,17 +346,17 @@
     </div>
 
     <div class="how-cards">
-      <div class="how-card">
+      <div class="how-card" data-aos="zoom-in" data-aos-delay="0">
         <div class="how-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">1️⃣</div>
         <h4>اختر المرحلة</h4>
         <p>التمهيدي أو التحضيري حسب مرحلة طفلك.</p>
       </div>
-      <div class="how-card">
+      <div class="how-card" data-aos="zoom-in" data-aos-delay="100">
         <div class="how-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">2️⃣</div>
         <h4>اختر المادة</h4>
         <p>رياضيات أو عربي أو إنجليزي.</p>
       </div>
-      <div class="how-card">
+      <div class="how-card" data-aos="zoom-in" data-aos-delay="200">
         <div class="how-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">3️⃣</div>
         <h4>أدخل رقم الصفحة</h4>
         <p>الرقم الموجود في الكتاب المطبوع أمامك.</p>
@@ -361,7 +364,23 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    // استيراد Firebase
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const KG_ID = "kg_talaea";
     const KG_NAME = "روضة طلائع المبدعين";
 
@@ -376,6 +395,23 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
+    // جلب اسم الروضة من Firebase
+    async function loadKindergartenName() {
+      try {
+        const kgDoc = await getDoc(doc(db, "kindergartens", KG_ID));
+        if (kgDoc.exists()) {
+          const kgData = kgDoc.data();
+          document.getElementById("kgNameDisplay").textContent = kgData.name || KG_NAME;
+        } else {
+          document.getElementById("kgNameDisplay").textContent = KG_NAME;
+        }
+      } catch (error) {
+        console.error("خطأ في جلب اسم الروضة:", error);
+        document.getElementById("kgNameDisplay").textContent = KG_NAME;
+      }
+    }
+
+    // بدء التمرين
     document.getElementById("startBtn").addEventListener("click", function() {
       const stage = document.getElementById("stageSelect").value;
       const subject = document.getElementById("subjectSelect").value;
@@ -406,6 +442,7 @@
         return;
       }
 
+      // حفظ البيانات في sessionStorage
       sessionStorage.setItem("familyKindergarten", KG_ID);
       sessionStorage.setItem("familyKindergartenName", KG_NAME);
       sessionStorage.setItem("selectedStage", stage);
@@ -427,6 +464,18 @@
     window.addEventListener('scroll', () => {
       document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
     });
+
+    // AOS Initialization
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
+    });
+
+    // تحميل اسم الروضة
+    loadKindergartenName();
   </script>
+  <!-- إضافة مكتبة AOS للحركات -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
