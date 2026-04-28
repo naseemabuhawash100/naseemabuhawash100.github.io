@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعداد Firebase - روضة طلائع المبدعين (كامل)</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; direction: rtl; background: #f0f6ff; padding: 30px; text-align: center; }
+        .container { max-width: 800px; margin: auto; background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        button { background: #0f2d5c; color: white; border: none; border-radius: 12px; padding: 12px 28px; font-size: 16px; cursor: pointer; margin: 15px 0 20px; }
+        button:hover { background: #1a4a8a; }
+        .status { margin: 20px 0; padding: 15px; border-radius: 12px; background: #f1f5f9; text-align: right; font-size: 14px; }
+        .success { color: #16a34a; }
+        .error { color: #dc2626; }
+        .info { color: #d97706; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 12px; overflow-x: auto; font-size: 12px; text-align: left; max-height: 400px; overflow-y: auto; }
+        hr { margin: 20px 0; }
+        .collection-list { background: #e0f2fe; padding: 10px; border-radius: 12px; margin: 15px 0; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 الإعداد التلقائي الكامل لـ Firebase</h1>
+        <p>سيتم إنشاء جميع الـ Collections اللازمة للمشروع:</p>
+        <div class="collection-list">
+            <strong>📁 الـ Collections التي سيتم إنشاؤها:</strong><br>
+            • kindergartens (الروضة)<br>
+            • users (المديرة والمعلمات)<br>
+            • students (الطلاب)<br>
+            • results (نتائج التمارين)<br>
+            • interactive_pages (التمارين التفاعلية)<br>
+            • gallery_images (الصور المعتمدة - تظهر في الصفحة الرئيسية) ✅<br>
+            • pending_images (الصور المعلقة - تنتظر موافقة المديرة) ✅<br>
+            • videos (الفيديوهات) ✅
+        </div>
+        
+        <button id="setupBtn" onclick="setupFirebase()">▶️ بدء الإعداد الشامل</button>
+        
+        <div class="status" id="status">
+            <p>⏳ اضغط على الزر لبدء الإعداد.</p>
+        </div>
+        
+        <pre id="log">📋 سجل العمليات سيكون هنا...</pre>
+        <hr>
+        <p>⚠️ <strong>ملاحظة:</strong> بعد الإعداد، يجب إضافة <strong>كلمة المرور</strong> للمستخدمين يدويًا في قسم <strong>"Authentication"</strong>.</p>
+    </div>
+
+    <script>
+        // إعدادات مشروعك على Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+            authDomain: "interactive-book-37270.firebaseapp.com",
+            projectId: "interactive-book-37270",
+            storageBucket: "interactive-book-37270.firebasestorage.app",
+            messagingSenderId: "350364566140",
+            appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+        };
+
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+
+        function addLog(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            let icon = '';
+            if (type === 'success') icon = '✅ ';
+            else if (type === 'error') icon = '❌ ';
+            else icon = '🔹 ';
+            logEntry.innerHTML = `${icon} ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(message, type = 'loading') {
+            let icon = '';
+            if (type === 'success') icon = '✅';
+            else if (type === 'error') icon = '❌';
+            else icon = '⏳';
+            statusDiv.innerHTML = `<p class="${type}">${icon} ${message}</p>`;
+        }
+
+        async function setupFirebase() {
+            const btn = document.getElementById('setupBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري العمل...';
+            logDiv.innerHTML = '';
+            updateStatus('جاري إنشاء هيكل Firebase بالكامل...', 'loading');
+            
+            try {
+                // ========== 1. kindergartens ==========
+                addLog('📁 إنشاء Collection: kindergartens');
+                await db.collection("kindergartens").doc("kg_talaea").set({
+                    id: "kg_talaea",
+                    name: "روضة طلائع المبدعين",
+                    active: true,
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إنشاء روضة "طلائع المبدعين"', 'success');
+
+                // ========== 2. users ==========
+                addLog('📁 إنشاء Collection: users');
+                await db.collection("users").doc("director_uid").set({
+                    name: "مديرة الروضة",
+                    email: "director@talaea.com",
+                    role: "manager",
+                    kindergartenId: "kg_talaea",
+                    isActive: true,
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة حساب المديرة', 'success');
+                
+                await db.collection("users").doc("teacher_uid").set({
+                    name: "نور محمد",
+                    email: "teacher@talaea.com",
+                    role: "teacher",
+                    kindergartenId: "kg_talaea",
+                    subject: "math",
+                    isActive: true,
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة حساب المعلمة', 'success');
+
+                // ========== 3. students ==========
+                addLog('📁 إنشاء Collection: students');
+                await db.collection("students").add({
+                    kindergartenId: "kg_talaea",
+                    name: "أحمد محمد",
+                    code: "ST001",
+                    className: "التمهيدي أ",
+                    createdAt: new Date()
+                });
+                await db.collection("students").add({
+                    kindergartenId: "kg_talaea",
+                    name: "سارة أحمد",
+                    code: "ST002",
+                    className: "التمهيدي أ",
+                    createdAt: new Date()
+                });
+                await db.collection("students").add({
+                    kindergartenId: "kg_talaea",
+                    name: "محمد علي",
+                    code: "ST003",
+                    className: "التحضيري ب",
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة 3 طلاب تجريبيين', 'success');
+
+                // ========== 4. interactive_pages ==========
+                addLog('📁 إنشاء Collection: interactive_pages (التمارين)');
+                const demoExerciseCode = `<!DOCTYPE html>
+<html dir="rtl">
+<head><meta charset="UTF-8"><title>تمرين تجريبي</title>
+<style>
+body{font-family:'Tajawal';background:#f0f6ff;text-align:center;padding:30px;}
+.exercise-box{background:white;border-radius:20px;padding:30px;max-width:500px;margin:auto;}
+button{background:#0f2d5c;color:white;border:none;border-radius:12px;padding:10px 25px;margin:10px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="exercise-box">
+<h2>⭐ تمرين تجريبي ⭐</h2>
+<p>كم عدد أصابع اليد الواحدة؟</p>
+<button onclick="check('5')">5</button><button onclick="check('4')">4</button><button onclick="check('6')">6</button>
+</div>
+<script>
+function check(a){if(a==='5'){alert('✅ إجابة صحيحة!');window.parent.postMessage({type:'EXERCISE_RESULT',score:1,total:1},'*');}
+else{alert('❌ إجابة خاطئة');}}
+<\/script>
+</body>
+</html>`;
+                await db.collection("interactive_pages").doc("kg_talaea__tamheedi__math__p01").set({
+                    kindergartenId: "kg_talaea",
+                    stage: "tamheedi",
+                    subject: "math",
+                    pageNumber: 1,
+                    title: "تمرين تجريبي",
+                    code: demoExerciseCode,
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة تمرين تجريبي واحد', 'success');
+
+                // ========== 5. results ==========
+                addLog('📁 إنشاء Collection: results');
+                await db.collection("results").add({
+                    studentName: "أحمد محمد",
+                    studentCode: "ST001",
+                    className: "التمهيدي أ",
+                    score: 8, total: 10,
+                    subject: "math", stage: "tamheedi", pageNumber: 1,
+                    kindergartenId: "kg_talaea",
+                    createdAt: new Date()
+                });
+                await db.collection("results").add({
+                    studentName: "سارة أحمد",
+                    studentCode: "ST002",
+                    className: "التمهيدي أ",
+                    score: 9, total: 10,
+                    subject: "arabic", stage: "tamheedi", pageNumber: 2,
+                    kindergartenId: "kg_talaea",
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة نتيجتين تجريبيتين', 'success');
+
+                // ========== 6. gallery_images (الصور المعتمدة) ==========
+                addLog('📁 إنشاء Collection: gallery_images (الصور المعتمدة)');
+                await db.collection("gallery_images").add({
+                    title: "نشاط صفي",
+                    description: "أنشطة تعليمية تفاعلية داخل الصفوف الدراسية",
+                    imageUrl: "https://via.placeholder.com/400x300/0f2d5c/white?text=نشاط+تعليمي",
+                    uploadedBy: "director@talaea.com",
+                    uploadedByName: "مديرة الروضة",
+                    status: "approved",
+                    approvedBy: "director@talaea.com",
+                    approvedAt: new Date(),
+                    createdAt: new Date()
+                });
+                await db.collection("gallery_images").add({
+                    title: "أعمال فنية",
+                    description: "إبداعات الأطفال الفنية المميزة داخل الروضة",
+                    imageUrl: "https://via.placeholder.com/400x300/4ecdc4/white?text=أعمال+فنية",
+                    uploadedBy: "director@talaea.com",
+                    uploadedByName: "مديرة الروضة",
+                    status: "approved",
+                    approvedBy: "director@talaea.com",
+                    approvedAt: new Date(),
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة صورتين معتمدتين في معرض الصور', 'success');
+
+                // ========== 7. pending_images (الصور المعلقة) ==========
+                addLog('📁 إنشاء Collection: pending_images (الصور المعلقة)');
+                await db.collection("pending_images").add({
+                    title: "نشاط انتظار موافقة",
+                    description: "هذه الصورة رفعتها المعلمة وتنتظر موافقة المديرة",
+                    imageUrl: "https://via.placeholder.com/400x300/f5a623/white?text=قيد+الموافقة",
+                    uploadedBy: "teacher@talaea.com",
+                    uploadedByName: "نور محمد",
+                    uploadedByRole: "teacher",
+                    status: "pending",
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة صورة معلقة تنتظر موافقة المديرة', 'success');
+
+                // ========== 8. videos (الفيديوهات) ==========
+                addLog('📁 إنشاء Collection: videos');
+                await db.collection("videos").add({
+                    title: "النشاط الصباحي في الروضة",
+                    description: "فيديو يوضح روتين الطابور والنشاط الصباحي",
+                    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+                    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
+                    uploadedBy: "director@talaea.com",
+                    uploadedByName: "مديرة الروضة",
+                    status: "approved",
+                    createdAt: new Date()
+                });
+                addLog('✅ تم إضافة فيديو تجريبي واحد', 'success');
+
+                // ========== تعليمات إضافة المستخدمين ==========
+                addLog('🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐', 'info');
+                addLog('الخطوة الأخيرة: أضف المستخدمين في قسم Authentication:', 'info');
+                addLog('📧 director@talaea.com | كلمة المرور: 123456', 'info');
+                addLog('📧 teacher@talaea.com | كلمة المرور: 123456', 'info');
+                addLog('🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐', 'info');
+                
+                updateStatus('✅ تم إعداد Firebase بالكامل! تم إنشاء 8 Collections. اتبع التعليمات لإضافة كلمات المرور.', 'success');
+                addLog('🎉🎉🎉 اكتمل الإعداد بنجاح! 🎉🎉🎉', 'success');
+                
+            } catch (error) {
+                console.error(error);
+                updateStatus('❌ حدث خطأ: ' + error.message, 'error');
+                addLog('❌ خطأ: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 إعادة الإعداد';
+            }
+        }
+    </script>
+</body>
+</html>
