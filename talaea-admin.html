@@ -7,101 +7,293 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy:#0f2d5c; --navy2:#183153; --gold:#f5a623; --gold2:#fbbf24;
-      --teal:#0e7490; --light:#f0f6ff; --white:#fff; --gray:#64748b;
-      --border:#e2e8f0; --green:#16a34a; --red:#dc2626; --amber:#d97706;
+      --navy: #0f2d5c;
+      --navy-light: #1a4a8a;
+      --gold: #f5a623;
+      --gold-light: #fbbf24;
+      --teal: #0e7490;
+      --teal-light: #159db9;
+      --coral: #ff6b6b;
+      --mint: #4ecdc4;
+      --light: #f0f6ff;
+      --gray-100: #f1f5f9;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-lg: 24px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Tajawal',sans-serif;direction:rtl;background:#f8fafd;color:#1e293b;min-height:100vh;}
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .animate-fade-in { animation: fadeIn 0.5s ease; }
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease; }
 
     /* HEADER */
-    header{background:white;border-bottom:2px solid var(--gold);box-shadow:0 2px 16px rgba(15,45,92,.08);position:sticky;top:0;z-index:50;}
-    .header-inner{max-width:1280px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    .logo-area{display:flex;align-items:center;gap:12px;}
-    .logo-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;font-size:20px;color:white;font-weight:900;box-shadow:0 4px 12px rgba(15,45,92,.25);flex-shrink:0;}
-    .logo-text h1{font-size:16px;font-weight:800;color:var(--navy);}
-    .logo-text p{font-size:12px;color:var(--gray);}
-    .header-btns{display:flex;flex-wrap:wrap;gap:10px;}
-    .btn{border:none;border-radius:999px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;text-decoration:none;display:inline-block;transition:all .2s;}
-    .btn-gray{background:#f1f5f9;color:#475569;} .btn-gray:hover{background:var(--border);}
-    .btn-blue{background:var(--navy);color:white;} .btn-blue:hover{background:#0f3d8a;}
-    .btn-red{background:var(--red);color:white;} .btn-red:hover{background:#b91c1c;}
-    .btn-green{background:var(--green);color:white;} .btn-green:hover{background:#15803d;}
-    .btn-gold{background:var(--gold);color:var(--navy);} .btn-gold:hover{filter:brightness(1.05);}
+    header {
+      background: white;
+      border-bottom: 2px solid var(--gold);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: var(--transition);
+    }
+    header.scrolled { box-shadow: var(--shadow-md); }
+    .header-inner {
+      max-width: 1280px; margin: auto;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-circle {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: white; font-weight: 900;
+      box-shadow: 0 4px 12px rgba(15,45,92,0.25);
+    }
+    .logo-text h1 { font-size: 16px; font-weight: 800; color: var(--navy); }
+    .logo-text p { font-size: 12px; color: var(--gray-600); }
+    .header-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      border: none; border-radius: 99px; padding: 9px 20px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'Tajawal', sans-serif; text-decoration: none;
+      display: inline-block; transition: var(--transition);
+    }
+    .btn-gray { background: var(--gray-100); color: var(--gray-600); }
+    .btn-gray:hover { background: var(--border); transform: translateY(-1px); }
+    .btn-blue { background: var(--navy); color: white; box-shadow: 0 4px 12px rgba(15,45,92,0.2); }
+    .btn-blue:hover { background: var(--navy-light); transform: translateY(-2px); }
+    .btn-red { background: var(--coral); color: white; }
+    .btn-red:hover { background: #ff5252; transform: translateY(-2px); }
+    .btn-green { background: var(--mint); color: white; }
+    .btn-green:hover { background: #45b7aa; transform: translateY(-2px); }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { filter: brightness(1.05); transform: translateY(-2px); }
 
     /* HERO */
-    .hero{background:linear-gradient(145deg,var(--navy2) 0%,#1a4a8a 60%,var(--teal) 100%);color:white;padding:50px 24px;}
-    .hero-inner{max-width:1280px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
-    .hero h2{font-size:28px;font-weight:900;margin-bottom:8px;}
-    .hero p{font-size:15px;opacity:.85;line-height:1.8;}
-    .hero-stats{display:flex;gap:20px;flex-wrap:wrap;}
-    .stat-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:14px 20px;text-align:center;min-width:100px;}
-    .stat-chip .num{font-size:28px;font-weight:900;color:var(--gold2);}
-    .stat-chip .lbl{font-size:12px;opacity:.8;margin-top:2px;}
+    .hero {
+      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 60%, var(--teal) 100%);
+      color: white; padding: 50px 24px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-inner {
+      max-width: 1280px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap; position: relative; z-index: 1;
+    }
+    .hero h2 { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .hero p { font-size: 15px; opacity: 0.9; line-height: 1.8; }
+    .hero-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat-chip {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 16px; padding: 14px 20px;
+      text-align: center; min-width: 100px;
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+    .stat-chip:hover { transform: translateY(-3px); background: rgba(255,255,255,0.2); }
+    .stat-chip .num { font-size: 28px; font-weight: 900; color: var(--gold-light); }
+    .stat-chip .lbl { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
     /* TABS */
-    .tabs-wrap{max-width:1280px;margin:24px auto 0;padding:0 24px;}
-    .tabs{display:flex;gap:8px;background:white;border-radius:16px;padding:8px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04);flex-wrap:wrap;}
-    .tab-btn{flex:1;min-width:140px;padding:11px 16px;border-radius:12px;border:none;background:transparent;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;color:var(--gray);cursor:pointer;transition:all .2s;}
-    .tab-btn.active{background:var(--navy);color:white;box-shadow:0 4px 12px rgba(15,45,92,.2);}
-    .tab-btn:hover:not(.active){background:var(--light);color:var(--navy);}
+    .tabs-wrap { max-width: 1280px; margin: 24px auto 0; padding: 0 24px; }
+    .tabs {
+      display: flex; gap: 8px; background: white;
+      border-radius: 16px; padding: 8px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1; min-width: 140px; padding: 11px 16px;
+      border-radius: 12px; border: none; background: transparent;
+      font-family: 'Tajawal', sans-serif; font-size: 14px;
+      font-weight: 700; color: var(--gray-600); cursor: pointer;
+      transition: var(--transition);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white; box-shadow: 0 4px 12px rgba(15,45,92,0.25);
+    }
+    .tab-btn:hover:not(.active) {
+      background: var(--light); color: var(--navy);
+    }
 
     /* PANELS */
-    .panels{max-width:1280px;margin:0 auto;padding:20px 24px 40px;}
-    .panel{display:none;} .panel.active{display:block;}
+    .panels { max-width: 1280px; margin: 0 auto; padding: 20px 24px 40px; }
+    .panel { display: none; animation: fadeIn 0.4s ease; }
+    .panel.active { display: block; }
 
     /* CARDS */
-    .card{background:white;border-radius:20px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04);padding:28px;margin-bottom:20px;}
-    .card-title{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+    .card {
+      background: white; border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 28px; margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+    .card-title {
+      font-size: 20px; font-weight: 900; color: var(--navy);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+    }
 
     /* FORM GRID */
-    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px;}
-    .form-field label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:7px;}
-    .form-field input,.form-field select{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:.2s;background:white;}
-    .form-field input:focus,.form-field select:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.2);}
-    .form-msg{font-size:13px;font-weight:600;min-height:22px;margin-top:10px;}
-    .msg-ok{color:var(--green);} .msg-err{color:var(--red);}
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px; margin-bottom: 18px;
+    }
+    .form-field label {
+      display: block; font-size: 13px; font-weight: 700;
+      color: var(--gray-800); margin-bottom: 7px;
+    }
+    .form-field input, .form-field select {
+      width: 100%; border: 2px solid var(--border);
+      border-radius: 12px; padding: 11px 14px;
+      font-family: 'Tajawal', sans-serif; font-size: 14px;
+      outline: none; transition: var(--transition); background: white;
+    }
+    .form-field input:focus, .form-field select:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(14,116,144,0.15);
+    }
+    .form-msg { font-size: 13px; font-weight: 700; min-height: 22px; margin-top: 10px; }
+    .msg-ok { color: var(--mint); }
+    .msg-err { color: var(--coral); }
 
     /* TABLE */
-    .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
-    table{width:100%;border-collapse:collapse;min-width:600px;}
-    thead th{background:var(--navy);color:white;padding:13px 14px;font-size:13px;font-weight:700;text-align:center;}
-    tbody td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px;text-align:center;color:#374151;}
-    tbody tr:last-child td{border-bottom:none;}
-    tbody tr:hover{background:#f8fafc;}
-    .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;}
-    .badge-green{background:#dcfce7;color:var(--green);}
-    .badge-red{background:#fee2e2;color:var(--red);}
-    .action-btn{border:none;border-radius:10px;padding:6px 12px;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
-    .action-delete{background:#fee2e2;color:var(--red);} .action-delete:hover{background:#fecaca;}
-    .action-toggle{background:#fef3c7;color:var(--amber);} .action-toggle:hover{background:#fde68a;}
+    .table-wrap {
+      overflow-x: auto; border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    thead th {
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white; padding: 13px 14px; font-size: 13px;
+      font-weight: 800; text-align: center;
+    }
+    tbody td {
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      font-size: 14px; text-align: center; color: var(--gray-600);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+    .badge {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 99px; font-size: 12px; font-weight: 700;
+    }
+    .badge-green { background: #dcfce7; color: #16a34a; }
+    .badge-red { background: #fee2e2; color: #dc2626; }
+    .action-btn {
+      border: none; border-radius: 10px; padding: 6px 12px;
+      font-family: 'Tajawal', sans-serif; font-size: 12px;
+      font-weight: 700; cursor: pointer; transition: var(--transition);
+    }
+    .action-delete { background: #fee2e2; color: var(--coral); }
+    .action-delete:hover { background: #fecaca; transform: scale(1.05); }
 
     /* EMPTY STATE */
-    .empty-state{text-align:center;padding:48px 24px;color:var(--gray);}
-    .empty-state .icon{font-size:52px;margin-bottom:14px;}
-    .empty-state p{font-size:15px;}
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--gray-600); }
+    .empty-state .icon { font-size: 52px; margin-bottom: 14px; }
+    .empty-state p { font-size: 15px; }
 
-    /* RESULTS FILTERS */
-    .filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+    /* FILTERS */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px; margin-bottom: 16px;
+    }
 
-    /* STATS CARDS */
-    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px;}
-    .stat-card{background:white;border-radius:18px;padding:22px;border:1px solid var(--border);text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);}
-    .stat-card .big-num{font-size:36px;font-weight:900;color:var(--navy);}
-    .stat-card .stat-lbl{font-size:13px;color:var(--gray);margin-top:4px;}
+    /* STATS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white; border-radius: 18px; padding: 22px;
+      border: 1px solid var(--border); text-align: center;
+      box-shadow: var(--shadow); transition: var(--transition);
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .stat-card .big-num { font-size: 36px; font-weight: 900; color: var(--navy); }
+    .stat-card .stat-lbl { font-size: 13px; color: var(--gray-600); margin-top: 4px; }
 
     /* SEARCH */
-    .search-box{position:relative;max-width:300px;}
-    .search-box input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:.2s;}
-    .search-box input:focus{border-color:#93c5fd;}
+    .search-box { position: relative; max-width: 300px; }
+    .search-box input {
+      width: 100%; border: 2px solid var(--border);
+      border-radius: 12px; padding: 10px 14px;
+      font-family: 'Tajawal', sans-serif; font-size: 14px;
+      outline: none; transition: var(--transition);
+    }
+    .search-box input:focus { border-color: var(--teal); }
 
-    @media(max-width:768px){
-      .hero-inner{flex-direction:column;}
-      .hero-stats{justify-content:center;}
+    /* LOADING */
+    .loading-spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed; top: 100px; left: 24px; z-index: 10000;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .toast {
+      background: white; border-radius: 12px; padding: 16px 20px;
+      box-shadow: var(--shadow-lg);
+      border-right: 4px solid var(--navy);
+      display: flex; align-items: center; gap: 12px;
+      min-width: 300px; animation: fadeIn 0.3s ease;
+    }
+    .toast.success { border-right-color: var(--mint); }
+    .toast.error { border-right-color: var(--coral); }
+    .toast-icon { font-size: 20px; }
+    .toast-message { font-size: 14px; font-weight: 700; }
+
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; }
+      .hero-stats { justify-content: center; }
+      .form-grid { grid-template-columns: 1fr; }
+      .tabs { flex-direction: column; }
+      .tab-btn { min-width: 100%; }
     }
   </style>
 </head>
 <body>
+
+  <div class="toast-container" id="toastContainer"></div>
 
   <header>
     <div class="header-inner">
@@ -177,7 +369,7 @@
 
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
-          <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray);font-weight:500;"></span></div>
+          <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
           <div class="search-box">
             <input id="searchStudent" type="text" placeholder="🔍 ابحث باسم أو كود...">
           </div>
@@ -195,10 +387,12 @@
     <div id="panel-teachers" class="panel">
       <div class="card">
         <div class="card-title">👩‍🏫 معلمات الروضة</div>
-        <p style="color:var(--gray);font-size:14px;margin-bottom:18px;">يمكن مراجعة المعلمات وتفعيل أو تعطيل حساباتهن. البيانات محفوظة في sessionStorage (نسخة تجريبية).</p>
+        <p style="color:var(--gray-600);font-size:14px;margin-bottom:18px;">
+          لإضافة معلمة جديدة، يرجى التواصل مع إدارة النظام.
+        </p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th></tr></thead>
             <tbody id="teachersTable"></tbody>
           </table>
         </div>
@@ -231,7 +425,7 @@
 
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-          <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray);font-weight:500;"></span></div>
+          <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
         </div>
         <div class="table-wrap">
           <table>
@@ -244,32 +438,83 @@
 
   </div>
 
-  <script>
-    // ── حماية الصفحة ──
+  <script type="module">
+    import {
+      signOutUser,
+      onAuthStateChange,
+      getUserData,
+      addStudent,
+      getStudents,
+      deleteStudent,
+      getResults,
+      getTeachers,
+      formatShortDate
+    } from './firebase-config.js';
+
+    const toastContainer = document.getElementById('toastContainer');
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+      toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // ── Auth Check ──
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
     const userName = sessionStorage.getItem("userName") || "مديرة الروضة";
-    if (!loggedIn || userRole !== "kindergarten_manager") {
+
+    onAuthStateChange(user => {
+      if (!user && loggedIn) {
+        // User logged out from Firebase but session still active
+        sessionStorage.clear();
+        window.location.href = 'talaea-almobdeeen.html';
+      }
+    });
+
+    if (!loggedIn || userRole !== "manager") {
       window.location.replace("talaea-almobdeeen.html");
     }
+
     document.getElementById("headerStatus").textContent = "مرحباً " + userName;
 
-    // ── بيانات (localStorage للثبات) ──
-    const KG_KEY = "talaea_students";
-    const RESULTS_KEY = "talaea_results";
+    // ── Data ──
+    let students = [];
+    let allResults = [];
+    let teachers = [];
 
-    function loadStudents() {
-      try { return JSON.parse(localStorage.getItem(KG_KEY) || "[]"); } catch{ return []; }
+    async function loadData() {
+      // Load students
+      const studentsResult = await getStudents("kg_talaea");
+      if (studentsResult.success) {
+        students = studentsResult.data;
+        renderStudents();
+        updateStats();
+      } else {
+        showToast("فشل تحميل بيانات الطلاب", "error");
+      }
+
+      // Load results
+      const resultsResult = await getResults("kg_talaea");
+      if (resultsResult.success) {
+        allResults = resultsResult.data;
+        renderResults();
+        updateStats();
+      }
+
+      // Load teachers
+      const teachersResult = await getTeachers("kg_talaea");
+      if (teachersResult.success) {
+        teachers = teachersResult.data;
+        renderTeachers();
+        updateStats();
+      }
     }
-    function saveStudents(list) { localStorage.setItem(KG_KEY, JSON.stringify(list)); }
-    function loadResults() {
-      try { return JSON.parse(localStorage.getItem(RESULTS_KEY) || "[]"); } catch{ return []; }
-    }
 
-    let students = loadStudents();
-    let allResults = loadResults();
-
-    // ── تبويبات ──
+    // ── Tabs ──
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", function() {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -279,24 +524,27 @@
       });
     });
 
-    // ── helpers ──
-    function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function subjectLabel(v){ return v==="math"?"الرياضيات":v==="arabic"?"العربي":v==="english"?"الإنجليزي":(v||""); }
-    function formatDate(v){ if(!v) return ""; const d=new Date(v); return isNaN(d)?v:d.toLocaleDateString("ar-EG"); }
+    // ── Helpers ──
+    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
+    }
+    function stageLabel(v) {
+      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : (v || "");
+    }
 
-    // ── إحصائيات ──
-    function updateStats(){
+    // ── Stats ──
+    function updateStats() {
       document.getElementById("statStudents").textContent = students.length;
-      // معلمات (ثابتة تجريبياً)
-      document.getElementById("statTeachers").textContent = 2;
+      document.getElementById("statTeachers").textContent = teachers.length;
       document.getElementById("statResults").textContent = allResults.length;
     }
 
-    // ── عرض الطلاب ──
-    function renderStudents(){
+    // ── Render Students ──
+    function renderStudents() {
       const search = document.getElementById("searchStudent").value.trim().toLowerCase();
       const filtered = students.filter(s =>
-        !search || (s.name||"").toLowerCase().includes(search) || (s.code||"").toLowerCase().includes(search)
+        !search || (s.name || "").toLowerCase().includes(search) || (s.code || "").toLowerCase().includes(search)
       );
       document.getElementById("studentCount").textContent = `(${filtered.length})`;
       const tbody = document.getElementById("studentsTable");
@@ -304,70 +552,89 @@
         tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب مطابقون</p></div></td></tr>`;
         return;
       }
-      tbody.innerHTML = filtered.map((s,i) => `
+      tbody.innerHTML = filtered.map((s, i) => `
         <tr>
           <td style="font-weight:700;">${esc(s.name)}</td>
           <td><code style="background:#f1f5f9;padding:3px 10px;border-radius:8px;font-size:13px;">${esc(s.code)}</code></td>
-          <td>${esc(s.className||"—")}</td>
-          <td><button class="action-btn action-delete" data-idx="${i}">🗑️ حذف</button></td>
+          <td>${esc(s.className || "—")}</td>
+          <td><button class="action-btn action-delete" data-id="${s.id}">🗑️ حذف</button></td>
         </tr>`).join("");
+
       tbody.querySelectorAll(".action-delete").forEach(btn => {
-        btn.addEventListener("click", function(){
-          if(!confirm("هل تريد حذف هذا الطالب؟")) return;
-          students.splice(Number(this.dataset.idx),1);
-          saveStudents(students);
-          updateStats(); renderStudents();
+        btn.addEventListener("click", async function() {
+          if (!confirm("هل تريد حذف هذا الطالب؟")) return;
+          const result = await deleteStudent(this.dataset.id);
+          if (result.success) {
+            showToast("تم حذف الطالب بنجاح", "success");
+            students = students.filter(s => s.id !== this.dataset.id);
+            renderStudents();
+            updateStats();
+          } else {
+            showToast("فشل حذف الطالب", "error");
+          }
         });
       });
     }
 
-    // ── إضافة طالب ──
-    document.getElementById("addStudentBtn").addEventListener("click", function(){
-      const name  = document.getElementById("sName").value.trim();
-      const code  = document.getElementById("sCode").value.trim().toUpperCase();
-      const cls   = document.getElementById("sClass").value.trim();
-      const msg   = document.getElementById("studentMsg");
-      if (!name || !code) { msg.textContent="⚠️ يرجى إدخال الاسم والكود على الأقل"; msg.className="form-msg msg-err"; return; }
-      if (students.find(s=>s.code===code)) { msg.textContent="⚠️ هذا الكود مستخدم بالفعل"; msg.className="form-msg msg-err"; return; }
-      students.push({ name, code, className: cls, createdAt: new Date().toISOString() });
-      saveStudents(students);
-      ["sName","sCode","sClass"].forEach(id => document.getElementById(id).value="");
-      msg.textContent="✅ تم إضافة الطالب بنجاح"; msg.className="form-msg msg-ok";
-      updateStats(); renderStudents();
+    // ── Add Student ──
+    document.getElementById("addStudentBtn").addEventListener("click", async function() {
+      const name = document.getElementById("sName").value.trim();
+      const code = document.getElementById("sCode").value.trim().toUpperCase();
+      const cls = document.getElementById("sClass").value.trim();
+      const msg = document.getElementById("studentMsg");
+
+      if (!name || !code) {
+        msg.textContent = "⚠️ يرجى إدخال الاسم والكود على الأقل";
+        msg.className = "form-msg msg-err";
+        return;
+      }
+      if (students.find(s => s.code === code)) {
+        msg.textContent = "⚠️ هذا الكود مستخدم بالفعل";
+        msg.className = "form-msg msg-err";
+        return;
+      }
+
+      const result = await addStudent({
+        name, code,
+        className: cls,
+        kindergartenId: "kg_talaea"
+      });
+
+      if (result.success) {
+        msg.textContent = "✅ تم إضافة الطالب بنجاح";
+        msg.className = "form-msg msg-ok";
+        showToast("تم إضافة الطالب بنجاح", "success");
+        students.unshift({ id: result.id, name, code, className: cls, kindergartenId: "kg_talaea" });
+        ["sName", "sCode", "sClass"].forEach(id => document.getElementById(id).value = "");
+        renderStudents();
+        updateStats();
+      } else {
+        msg.textContent = "⚠️ فشل إضافة الطالب: " + result.error;
+        msg.className = "form-msg msg-err";
+        showToast("فشل إضافة الطالب", "error");
+      }
     });
 
     document.getElementById("searchStudent").addEventListener("input", renderStudents);
 
-    // ── المعلمات (بيانات تجريبية) ──
-    const TEACHERS = [
-      { name:"المعلمة سارة", email:"teacher@talaea.com", subject:"arabic", active:true },
-      { name:"المعلمة منى",  email:"mona@talaea.com",    subject:"math",   active:false },
-    ];
-    function renderTeachers(){
+    // ── Render Teachers ──
+    function renderTeachers() {
       const tbody = document.getElementById("teachersTable");
-      tbody.innerHTML = TEACHERS.map((t,i) => `
+      if (!teachers.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">👩‍🏫</div><p>لا يوجد معلمات</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = teachers.map(t => `
         <tr>
-          <td style="font-weight:700;">${esc(t.name)}</td>
-          <td style="direction:ltr;">${esc(t.email)}</td>
+          <td style="font-weight:700;">${esc(t.name || "—")}</td>
+          <td style="direction:ltr;">${esc(t.email || "")}</td>
           <td>${subjectLabel(t.subject)}</td>
-          <td><span class="badge ${t.active?'badge-green':'badge-red'}">${t.active?"مفعل":"معطل"}</span></td>
-          <td>
-            <button class="action-btn action-toggle" data-idx="${i}">
-              ${t.active?"⏸️ تعطيل":"▶️ تفعيل"}
-            </button>
-          </td>
+          <td><span class="badge ${t.active !== false ? 'badge-green' : 'badge-red'}">${t.active !== false ? "مفعل" : "معطل"}</span></td>
         </tr>`).join("");
-      tbody.querySelectorAll(".action-toggle").forEach(btn => {
-        btn.addEventListener("click", function(){
-          const i = Number(this.dataset.idx);
-          TEACHERS[i].active = !TEACHERS[i].active;
-          renderTeachers();
-        });
-      });
     }
 
-    // ── النتائج ──
-    function renderResults(list){
+    // ── Render Results ──
+    function renderResults(list = allResults) {
       document.getElementById("resultsCount").textContent = `(${list.length})`;
       const tbody = document.getElementById("resultsTable");
       if (!list.length) {
@@ -376,45 +643,57 @@
       }
       tbody.innerHTML = list.map(r => `
         <tr>
-          <td style="font-weight:700;">${esc(r.studentName||"")}</td>
-          <td><code style="background:#f1f5f9;padding:3px 10px;border-radius:8px;font-size:13px;">${esc(r.studentCode||"")}</code></td>
-          <td>${esc(r.className||"")}</td>
-          <td><strong>${esc(r.score??"")} / ${esc(r.total??"")}</strong></td>
+          <td style="font-weight:700;">${esc(r.studentName || "")}</td>
+          <td><code style="background:#f1f5f9;padding:3px 10px;border-radius:8px;font-size:13px;">${esc(r.studentCode || "")}</code></td>
+          <td>${esc(r.className || "")}</td>
+          <td><strong>${esc(r.score ?? "")} / ${esc(r.total ?? "")}</strong></td>
           <td>${subjectLabel(r.subject)}</td>
-          <td>${esc(r.pageNumber??"")}</td>
-          <td style="direction:ltr;font-size:13px;">${formatDate(r.createdAt)}</td>
+          <td>${esc(r.pageNumber ?? "")}</td>
+          <td style="direction:ltr;font-size:13px;">${formatShortDate(r.createdAt)}</td>
         </tr>`).join("");
     }
 
-    function applyFilters(){
-      const fd=document.getElementById("fDate").value;
-      const fp=document.getElementById("fPage").value.trim();
-      const fs=document.getElementById("fStudent").value.trim().toLowerCase();
-      const fsub=document.getElementById("fSubject").value;
+    // ── Filters ──
+    function applyFilters() {
+      const fd = document.getElementById("fDate").value;
+      const fp = document.getElementById("fPage").value.trim();
+      const fs = document.getElementById("fStudent").value.trim().toLowerCase();
+      const fsub = document.getElementById("fSubject").value;
+
       const filtered = allResults.filter(r => {
-        if(fd){ const d=new Date(r.createdAt||0); if(isNaN(d)||d.toISOString().slice(0,10)!==fd) return false; }
-        if(fp && String(r.pageNumber??"")!==fp) return false;
-        if(fs && !(r.studentName||"").toLowerCase().includes(fs)) return false;
-        if(fsub && r.subject!==fsub) return false;
+        if (fd) {
+          const d = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.createdAt || 0);
+          if (isNaN(d) || d.toISOString().slice(0, 10) !== fd) return false;
+        }
+        if (fp && String(r.pageNumber ?? "") !== fp) return false;
+        if (fs && !(r.studentName || "").toLowerCase().includes(fs)) return false;
+        if (fsub && r.subject !== fsub) return false;
         return true;
       });
       renderResults(filtered);
     }
 
     document.getElementById("applyFilters").addEventListener("click", applyFilters);
-    document.getElementById("resetFilters").addEventListener("click", ()=>{
-      ["fDate","fPage","fStudent"].forEach(id=>document.getElementById(id).value="");
-      document.getElementById("fSubject").value="";
+    document.getElementById("resetFilters").addEventListener("click", () => {
+      ["fDate", "fPage", "fStudent"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("fSubject").value = "";
       renderResults(allResults);
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+    // ── Logout ──
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOutUser();
       sessionStorage.clear();
-      window.location.href="talaea-almobdeeen.html";
+      window.location.href = "talaea-almobdeeen.html";
     });
 
-    // ── init ──
-    updateStats(); renderStudents(); renderTeachers(); renderResults(allResults);
+    // ── Header Scroll ──
+    window.addEventListener('scroll', () => {
+      document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ── Init ──
+    loadData();
   </script>
 </body>
 </html>
