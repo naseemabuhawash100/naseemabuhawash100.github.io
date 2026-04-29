@@ -48,36 +48,18 @@
       line-height: 1.6;
     }
 
-    /* تأثيرات يدوية بدل AOS */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes zoomIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
+    /* تأثيرات بسيطة باستخدام CSS (بديل AOS لضمان ظهور النصوص) */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-    .fade-up {
-      animation: fadeInUp 0.7s ease forwards;
-    }
-    .fade-down {
-      animation: fadeInDown 0.7s ease forwards;
-    }
-    .zoom-in {
-      animation: zoomIn 0.5s ease forwards;
-    }
-    .float {
-      animation: float 3s ease-in-out infinite;
-    }
+    .animate-fade-in { animation: fadeIn 0.6s ease forwards; }
+    .animate-fade-in-up { animation: fadeInUp 0.7s ease forwards; }
+    .animate-fade-in-down { animation: fadeInDown 0.7s ease forwards; }
+    .animate-scale-in { animation: scaleIn 0.5s ease forwards; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
 
     /* HEADER */
     header {
@@ -95,10 +77,7 @@
     .header-inner {
       max-width: 1280px; margin: auto;
       padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
       flex-wrap: wrap;
     }
     .logo-area { display: flex; align-items: center; gap: 16px; }
@@ -135,29 +114,23 @@
     .btn-admin {
       background: linear-gradient(135deg, var(--gold), #f97316);
       color: white; border: none; border-radius: 99px;
-      padding: 10px 24px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
+      padding: 10px 24px; font-size: 14px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
       box-shadow: 0 4px 15px rgba(245,166,35,0.35);
       transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
     }
     .btn-admin:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(245,166,35,0.45);
     }
+    .btn-admin:active { transform: translateY(0); }
 
     /* HERO */
     .hero {
       background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 50%, var(--teal) 100%);
-      color: white;
-      padding: 100px 24px 120px;
-      position: relative;
-      overflow: hidden;
+      color: white; padding: 100px 24px 120px;
+      position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; inset: 0;
@@ -172,76 +145,38 @@
     }
     .hero-inner { max-width: 1280px; margin: auto; position: relative; z-index: 1; }
     .hero-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
       align-items: center;
     }
     .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      display: inline-flex; align-items: center; gap: 8px;
       background: rgba(245,166,35,0.2);
       border: 1px solid rgba(245,166,35,0.4);
       color: var(--gold-light);
-      padding: 8px 20px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 800;
+      padding: 8px 20px; border-radius: 99px;
+      font-size: 13px; font-weight: 800;
       margin-bottom: 28px;
       backdrop-filter: blur(8px);
     }
     .hero h2 {
       font-size: clamp(32px, 5vw, 56px);
-      font-weight: 900;
-      line-height: 1.2;
+      font-weight: 900; line-height: 1.2;
       margin-bottom: 24px;
       text-shadow: 0 2px 20px rgba(0,0,0,0.2);
     }
     .hero p {
-      font-size: 17px;
-      opacity: 0.92;
-      line-height: 2;
+      font-size: 17px; opacity: 0.92; line-height: 2;
       margin-bottom: 40px;
     }
     .hero-btns { display: flex; flex-wrap: wrap; gap: 16px; }
 
-    .btn-download {
-      background: linear-gradient(135deg, var(--teal), #0e7490);
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 6px 20px rgba(14,116,144,0.4);
-      transition: var(--transition);
-    }
-    .btn-download:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(14,116,144,0.5);
-    }
-
     .btn-primary {
       background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      color: white; border: none; border-radius: 99px;
+      padding: 14px 32px; font-size: 15px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 10px;
       box-shadow: 0 6px 20px rgba(245,166,35,0.4);
       transition: var(--transition);
     }
@@ -249,21 +184,14 @@
       transform: translateY(-3px);
       box-shadow: 0 12px 35px rgba(245,166,35,0.5);
     }
-
     .btn-outline {
-      background: transparent;
-      color: white;
+      background: transparent; color: white;
       border: 2px solid rgba(255,255,255,0.4);
-      border-radius: 99px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      border-radius: 99px; padding: 14px 32px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 10px;
       transition: var(--transition);
       backdrop-filter: blur(8px);
     }
@@ -278,21 +206,15 @@
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: var(--radius-lg);
       padding: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(10px);
       min-height: 320px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
     .hero-logo-placeholder {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
+      width: 220px; height: 220px; border-radius: 50%;
       background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(245,166,35,0.35));
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 90px;
       border: 4px solid rgba(255,255,255,0.3);
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -309,18 +231,15 @@
     /* SECTIONS */
     .sections-grid { max-width: 1280px; margin: auto; padding: 80px 24px; }
     .section-title {
-      text-align: center;
-      margin-bottom: 60px;
+      text-align: center; margin-bottom: 60px;
+      animation: fadeInDown 0.7s ease forwards;
     }
     .section-title h2 {
-      font-size: 36px;
-      font-weight: 900;
-      color: var(--navy);
+      font-size: 36px; font-weight: 900; color: var(--navy);
       margin-bottom: 12px;
     }
     .section-title p {
-      color: var(--gray-600);
-      font-size: 17px;
+      color: var(--gray-600); font-size: 17px;
     }
 
     .cards-grid {
@@ -340,13 +259,10 @@
       box-shadow: var(--shadow-sm);
       position: relative;
       overflow: hidden;
+      animation: fadeInUp 0.6s ease forwards;
     }
     .section-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
       height: 4px;
       background: linear-gradient(90deg, var(--navy), var(--teal));
       transform: scaleX(0);
@@ -359,27 +275,19 @@
       border-color: transparent;
     }
     .card-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
+      width: 72px; height: 72px; border-radius: 20px;
       margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 32px;
       transition: var(--transition);
     }
     .section-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
     .section-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--navy);
+      font-size: 18px; font-weight: 800; color: var(--navy);
       margin-bottom: 10px;
     }
     .section-card p {
-      font-size: 14px;
-      color: var(--gray-600);
-      line-height: 1.8;
+      font-size: 14px; color: var(--gray-600); line-height: 1.8;
     }
 
     /* ABOUT */
@@ -389,12 +297,9 @@
       position: relative;
     }
     .about-inner {
-      max-width: 1280px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
+      max-width: 1280px; margin: auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
     }
     .about-badge {
       display: inline-block;
@@ -402,27 +307,20 @@
       color: var(--navy);
       border: 1px solid #bfdbfe;
       border-radius: 99px;
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 13px; font-weight: 800;
       padding: 6px 18px;
       margin-bottom: 20px;
     }
     .about-text h2 {
-      font-size: 34px;
-      font-weight: 900;
-      color: var(--navy);
+      font-size: 34px; font-weight: 900; color: var(--navy);
       margin-bottom: 20px;
     }
     .about-text p {
-      font-size: 16px;
-      color: var(--gray-600);
-      line-height: 2;
+      font-size: 16px; color: var(--gray-600); line-height: 2;
       margin-bottom: 16px;
     }
     .about-features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
       margin-top: 28px;
     }
     .feature-card {
@@ -434,63 +332,49 @@
     }
     .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
     .feature-card h4 {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 15px; font-weight: 800; color: var(--navy);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
     }
     .feature-card p {
-      font-size: 13px;
-      color: var(--gray-600);
-      line-height: 1.7;
+      font-size: 13px; color: var(--gray-600); line-height: 1.7;
     }
     .about-visual {
       background: linear-gradient(135deg, #f0f6ff, #e0f2fe);
       border-radius: var(--radius-lg);
       padding: 50px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 400px; text-align: center;
       border: 1px solid #bfdbfe;
       box-shadow: var(--shadow-md);
     }
     .about-visual .big-icon {
-      font-size: 110px;
-      margin-bottom: 24px;
+      font-size: 110px; margin-bottom: 24px;
       animation: float 3s ease-in-out infinite;
     }
     .about-visual h3 {
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--navy);
+      font-size: 24px; font-weight: 900; color: var(--navy);
       margin-bottom: 14px;
     }
     .about-visual p {
-      font-size: 15px;
-      color: var(--gray-600);
-      line-height: 1.8;
+      font-size: 15px; color: var(--gray-600); line-height: 1.8;
       max-width: 300px;
     }
 
-    /* GALLERY SECTION */
-    .gallery-section {
+    /* GALLERY + VIDEOS (نماذج ثابتة) */
+    .gallery-section, .videos-section {
       padding: 100px 24px;
-      background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%);
     }
-    .gallery-inner { max-width: 1280px; margin: auto; }
-    .gallery-grid {
+    .gallery-section { background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%); }
+    .videos-section { background: white; }
+    .gallery-inner, .videos-inner { max-width: 1280px; margin: auto; }
+    .gallery-grid, .videos-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 24px;
       margin-top: 50px;
     }
-    .gallery-card {
+    .gallery-card, .video-card {
       background: white;
       border-radius: var(--radius-lg);
       overflow: hidden;
@@ -499,13 +383,12 @@
       border: 1px solid var(--border);
       cursor: pointer;
     }
-    .gallery-card:hover {
+    .gallery-card:hover, .video-card:hover {
       transform: translateY(-6px) scale(1.02);
       box-shadow: var(--shadow-xl);
     }
-    .gallery-img {
-      width: 100%;
-      height: 220px;
+    .gallery-img, .video-thumb {
+      width: 100%; height: 220px;
       background-size: cover;
       background-position: center;
       display: flex;
@@ -514,117 +397,13 @@
       font-size: 70px;
       transition: var(--transition);
     }
-    .gallery-card:hover .gallery-img { transform: scale(1.05); }
-    .gallery-info { padding: 20px; }
-    .gallery-info h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--navy);
+    .gallery-info, .video-info { padding: 20px; }
+    .gallery-info h3, .video-info h3 {
+      font-size: 18px; font-weight: 800; color: var(--navy);
       margin-bottom: 8px;
     }
-    .gallery-info p {
-      font-size: 14px;
-      color: var(--gray-600);
-      line-height: 1.7;
-    }
-    .view-all-btn {
-      display: block;
-      width: fit-content;
-      margin: 40px auto 0;
-      background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 12px 32px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    .view-all-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* VIDEOS SECTION */
-    .videos-section {
-      padding: 100px 24px;
-      background: white;
-    }
-    .videos-inner { max-width: 1280px; margin: auto; }
-    .videos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-      margin-top: 50px;
-    }
-    .video-card {
-      background: var(--gray-100);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-      cursor: pointer;
-    }
-    .video-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-xl);
-    }
-    .video-thumb {
-      width: 100%;
-      height: 200px;
-      position: relative;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      overflow: hidden;
-    }
-    .video-thumb::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
-      transition: var(--transition);
-    }
-    .video-card:hover .video-thumb::before { background: rgba(0,0,0,0.3); }
-    .play-btn {
-      position: absolute;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-lg);
-      transition: var(--transition);
-      z-index: 1;
-    }
-    .video-card:hover .play-btn { transform: scale(1.15); }
-    .play-triangle {
-      width: 0;
-      height: 0;
-      border-top: 12px solid transparent;
-      border-bottom: 12px solid transparent;
-      border-left: 22px solid var(--navy);
-      margin-right: -4px;
-    }
-    .video-info { padding: 20px; }
-    .video-info h3 {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 8px;
-    }
-    .video-info p {
-      font-size: 14px;
-      color: var(--gray-600);
-      line-height: 1.7;
+    .gallery-info p, .video-info p {
+      font-size: 14px; color: var(--gray-600); line-height: 1.7;
     }
 
     /* WORKSHEETS */
@@ -633,8 +412,7 @@
       background: linear-gradient(135deg, var(--light), #e0f2fe);
     }
     .worksheets-inner {
-      max-width: 900px;
-      margin: auto;
+      max-width: 900px; margin: auto;
       background: white;
       border-radius: var(--radius-lg);
       padding: 60px 48px;
@@ -643,20 +421,15 @@
       box-shadow: var(--shadow-md);
     }
     .worksheets-inner .big-icon {
-      font-size: 80px;
-      margin-bottom: 24px;
+      font-size: 80px; margin-bottom: 24px;
       animation: float 3s ease-in-out infinite;
     }
     .worksheets-inner h2 {
-      font-size: 30px;
-      font-weight: 900;
-      color: var(--navy);
+      font-size: 30px; font-weight: 900; color: var(--navy);
       margin-bottom: 16px;
     }
     .worksheets-inner p {
-      color: var(--gray-600);
-      line-height: 1.9;
-      font-size: 16px;
+      color: var(--gray-600); line-height: 1.9; font-size: 16px;
     }
 
     /* FOOTER */
@@ -671,8 +444,7 @@
 
     /* MODAL */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.6);
       z-index: 9999;
       display: none;
@@ -683,45 +455,32 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-    .modal-overlay.open {
-      display: flex;
-      opacity: 1;
-    }
+    .modal-overlay.open { display: flex; opacity: 1; }
     .modal-box {
       background: white;
       border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 460px;
+      width: 100%; max-width: 460px;
       overflow: hidden;
       box-shadow: var(--shadow-xl);
       transform: scale(0.9) translateY(20px);
       transition: transform 0.3s ease;
     }
-    .modal-overlay.open .modal-box {
-      transform: scale(1) translateY(0);
-    }
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
     .modal-header {
       background: linear-gradient(135deg, var(--navy), var(--teal));
       color: white;
       padding: 32px;
-      position: relative;
     }
     .modal-header h3 {
-      font-size: 24px;
-      font-weight: 900;
+      font-size: 24px; font-weight: 900;
       margin-bottom: 8px;
     }
-    .modal-header p {
-      font-size: 14px;
-      opacity: 0.85;
-    }
+    .modal-header p { font-size: 14px; opacity: 0.85; }
     .modal-body { padding: 32px; }
-
     .input-group { margin-bottom: 20px; }
     .input-group label {
       display: block;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 14px; font-weight: 700;
       color: var(--gray-800);
       margin-bottom: 10px;
     }
@@ -740,47 +499,29 @@
       border-color: var(--teal);
       box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
     }
-    .input-group input::placeholder { color: var(--gray-400); }
-
     .error-msg {
       color: var(--coral);
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 14px; font-weight: 700;
       min-height: 22px;
       margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-
     .modal-btns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: grid; grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
     .btn-login {
       background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      color: white;
-      border: none;
+      color: white; border: none;
       border-radius: 14px;
       padding: 14px;
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 15px; font-weight: 800;
       cursor: pointer;
       font-family: 'Tajawal', sans-serif;
       transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
     }
     .btn-login:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(15,45,92,0.3);
-    }
-    .btn-login:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
     }
     .btn-close-modal {
       background: var(--gray-100);
@@ -788,33 +529,21 @@
       border: none;
       border-radius: 14px;
       padding: 14px;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 15px; font-weight: 700;
       cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      transition: var(--transition);
     }
-    .btn-close-modal:hover {
-      background: var(--border);
-    }
-
     .modal-hint {
       margin-top: 24px;
       background: linear-gradient(135deg, #f8fafc, #f1f5f9);
       border-radius: 12px;
       padding: 16px;
       font-size: 12px;
-      color: var(--gray-600);
       text-align: center;
       line-height: 2;
-      border: 1px solid var(--border);
     }
-    .modal-hint strong { color: var(--navy); }
-
     .spinner {
       display: inline-block;
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border: 2.5px solid rgba(255,255,255,0.3);
       border-top-color: white;
       border-radius: 50%;
@@ -824,32 +553,21 @@
 
     /* TOAST */
     .toast-container {
-      position: fixed;
-      top: 100px;
-      left: 24px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      position: fixed; top: 100px; left: 24px; z-index: 10000;
+      display: flex; flex-direction: column; gap: 12px;
     }
     .toast {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
+      background: white; border-radius: 12px; padding: 16px 20px;
       box-shadow: var(--shadow-lg);
       border-right: 4px solid var(--navy);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       min-width: 300px;
-      max-width: 400px;
       animation: slideInLeft 0.3s ease;
     }
     .toast.success { border-right-color: var(--mint); }
     .toast.error { border-right-color: var(--coral); }
-    .toast.warning { border-right-color: var(--gold); }
     .toast-icon { font-size: 20px; }
-    .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+    .toast-message { font-size: 14px; font-weight: 700; }
     @keyframes slideInLeft {
       from { opacity: 0; transform: translateX(-30px); }
       to { opacity: 1; transform: translateX(0); }
@@ -857,8 +575,7 @@
 
     /* LOADING */
     .loading-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(255,255,255,0.95);
       z-index: 9998;
       display: none;
@@ -869,17 +586,11 @@
     }
     .loading-overlay.active { display: flex; }
     .loading-spinner {
-      width: 50px;
-      height: 50px;
+      width: 50px; height: 50px;
       border: 3px solid var(--gray-100);
       border-top-color: var(--navy);
       border-radius: 50%;
       animation: spin 1s linear infinite;
-    }
-    .loading-text {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--navy);
     }
 
     /* RESPONSIVE */
@@ -888,7 +599,6 @@
       .hero-visual { display: none; }
       .about-inner { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 768px) {
       .header-inner { padding: 12px 16px; flex-direction: column; text-align: center; }
       .logo-circle { width: 48px; height: 48px; font-size: 22px; }
@@ -909,12 +619,10 @@
       .about-visual h3 { font-size: 18px; }
       .modal-btns { grid-template-columns: 1fr; }
       .toast { min-width: auto; max-width: calc(100vw - 48px); }
-      .gallery-grid { grid-template-columns: 1fr; }
-      .videos-grid { grid-template-columns: 1fr; }
+      .gallery-grid, .videos-grid { grid-template-columns: 1fr; }
       .worksheets-inner { padding: 30px 20px; }
       .worksheets-inner h2 { font-size: 22px; }
     }
-
     @media (max-width: 480px) {
       .logo-area { gap: 10px; }
       .logo-text h1 { font-size: 14px; }
@@ -932,13 +640,11 @@
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">جاري التحميل...</div>
   </div>
 
-  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
   <header>
@@ -955,31 +661,29 @@
           <li><a href="#home">الرئيسية</a></li>
           <li><a href="#sections">الأقسام</a></li>
           <li><a href="#about">التعريف</a></li>
-          <li><a href="gallery.html">الصور</a></li>
-          <li><a href="videos.html">الفيديوهات</a></li>
+          <li><a href="#gallery">الصور</a></li>
+          <li><a href="#videos">الفيديوهات</a></li>
         </ul>
       </nav>
-      <button class="btn-admin" id="adminLoginBtn">
-        <span>🔐</span> دخول الإدارة
-      </button>
+      <button class="btn-admin" id="adminLoginBtn">🔐 دخول الإدارة</button>
     </div>
   </header>
 
   <section id="home" class="hero">
     <div class="hero-inner">
       <div class="hero-grid">
-        <div class="fade-up">
+        <div class="animate-fade-in-up">
           <span class="hero-badge">✨ بيئة تعليمية ممتعة وآمنة</span>
           <h2>أهلًا بكم في روضة<br>طلائع المبدعين</h2>
           <p>نقدم تجربة تعليمية متكاملة تجمع بين التعلم والمتعة، مع تمارين تفاعلية رقمية مرتبطة بالكتاب المطبوع مباشرة.</p>
           <div class="hero-btns">
             <a href="exercises.html" class="btn-primary">📚 التمارين التفاعلية</a>
-            <a href="gallery.html" class="btn-outline">🖼️ معرض الصور</a>
-            <a href="videos.html" class="btn-download">🎬 معرض الفيديوهات</a>
+            <a href="#gallery" class="btn-outline">🖼️ معرض الصور</a>
+            <a href="#videos" class="btn-outline">🎬 معرض الفيديوهات</a>
           </div>
         </div>
-        <div class="hero-visual zoom-in">
-          <div class="hero-logo-placeholder float">🌈</div>
+        <div class="hero-visual animate-scale-in">
+          <div class="hero-logo-placeholder">🌈</div>
         </div>
       </div>
     </div>
@@ -988,32 +692,32 @@
 
   <section id="sections">
     <div class="sections-grid">
-      <div class="section-title fade-down">
+      <div class="section-title">
         <h2>أقسام الصفحة</h2>
         <p>يمكن الوصول إلى كل محتوى الروضة من هنا</p>
       </div>
       <div class="cards-grid">
-        <a href="exercises.html" class="section-card fade-up" style="animation-delay: 0s;">
+        <a href="exercises.html" class="section-card">
           <div class="card-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">📚</div>
           <h3>التمارين التفاعلية</h3>
           <p>تمارين رقمية تفاعلية مرتبطة بالكتاب المطبوع.</p>
         </a>
-        <a href="#worksheets" class="section-card fade-up" style="animation-delay: 0.1s;">
+        <a href="#worksheets" class="section-card">
           <div class="card-icon" style="background:linear-gradient(135deg, #fce7f3, #fbcfe8);">📄</div>
           <h3>أوراق العمل</h3>
           <p>أوراق عمل إضافية وأنشطة ترفيهية للأطفال.</p>
         </a>
-        <a href="#about" class="section-card fade-up" style="animation-delay: 0.2s;">
+        <a href="#about" class="section-card">
           <div class="card-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">🏫</div>
           <h3>عن الروضة</h3>
           <p>رؤية الروضة ورسالتها والتعريف بها.</p>
         </a>
-        <a href="gallery.html" class="section-card fade-up" style="animation-delay: 0.3s;">
+        <a href="#gallery" class="section-card">
           <div class="card-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">🖼️</div>
           <h3>معرض الصور</h3>
           <p>صور من البيئة التعليمية وأنشطة الأطفال.</p>
         </a>
-        <a href="videos.html" class="section-card fade-up" style="animation-delay: 0.4s;">
+        <a href="#videos" class="section-card">
           <div class="card-icon" style="background:linear-gradient(135deg, #ede9fe, #ddd6fe);">🎬</div>
           <h3>الفيديوهات</h3>
           <p>فيديوهات تعليمية وترفيهية مختارة.</p>
@@ -1024,24 +728,18 @@
 
   <section id="about" class="about-section">
     <div class="about-inner">
-      <div class="about-text fade-right">
+      <div class="about-text">
         <span class="about-badge">🏫 التعريف بالروضة</span>
         <h2>روضة طلائع المبدعين</h2>
         <p>بيئة تعليمية متكاملة تهدف إلى تنمية مهارات الأطفال من خلال أنشطة تعليمية مبتكرة تجمع بين التعلم واللعب.</p>
         <p>نحرص على متابعة دقيقة لتقدم كل طفل مع توفير محتوى رقمي تفاعلي مرتبط بالمناهج الدراسية.</p>
         <div class="about-features">
-          <div class="feature-card">
-            <h4>🌟 رؤيتنا</h4>
-            <p>إعداد جيل مبدع قادر على التعلم والابتكار في بيئة آمنة.</p>
-          </div>
-          <div class="feature-card">
-            <h4>🎯 رسالتنا</h4>
-            <p>تقديم تعليم متميز يجمع بين الجانب الرقمي والمطبوع.</p>
-          </div>
+          <div class="feature-card"><h4>🌟 رؤيتنا</h4><p>إعداد جيل مبدع قادر على التعلم والابتكار في بيئة آمنة.</p></div>
+          <div class="feature-card"><h4>🎯 رسالتنا</h4><p>تقديم تعليم متميز يجمع بين الجانب الرقمي والمطبوع.</p></div>
         </div>
       </div>
-      <div class="about-visual fade-left">
-        <div class="big-icon float">🌈</div>
+      <div class="about-visual">
+        <div class="big-icon">🌈</div>
         <h3>لماذا طلائع المبدعين؟</h3>
         <p>نوفر تجربة تعليمية فريدة تدمج التكنولوجيا مع المنهج الدراسي بأسلوب ممتع ومحفز للأطفال.</p>
       </div>
@@ -1049,10 +747,38 @@
   </section>
 
   <section id="worksheets" class="worksheets-section">
-    <div class="worksheets-inner zoom-in">
-      <div class="big-icon float">📄</div>
+    <div class="worksheets-inner">
+      <div class="big-icon">📄</div>
       <h2>أوراق العمل</h2>
       <p>هذا القسم جاهز لاستقبال أوراق العمل والأنشطة الخاصة بالروضة. سيتم إضافة المحتوى قريبًا من لوحة الإدارة.</p>
+    </div>
+  </section>
+
+  <section id="gallery" class="gallery-section">
+    <div class="gallery-inner">
+      <div class="section-title">
+        <h2>🖼️ معرض الصور</h2>
+        <p>لحظات من داخل الروضة وأنشطة الأطفال</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-card"><div class="gallery-img" style="background:linear-gradient(135deg,#dbeafe,#fef3c7);">🎨</div><div class="gallery-info"><h3>أنشطة صفية</h3><p>نشاطات تعليمية تفاعلية داخل الصفوف الدراسية.</p></div></div>
+        <div class="gallery-card"><div class="gallery-img" style="background:linear-gradient(135deg,#fce7f3,#fef3c7);">🖍️</div><div class="gallery-info"><h3>أعمال فنية</h3><p>إبداعات الأطفال الفنية المميزة داخل الروضة.</p></div></div>
+        <div class="gallery-card"><div class="gallery-img" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);">🧩</div><div class="gallery-info"><h3>أركان تعليمية</h3><p>زوايا تعليمية تفاعلية ومجهزة بالكامل.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="videos" class="videos-section">
+    <div class="videos-inner">
+      <div class="section-title">
+        <h2>🎬 معرض الفيديوهات</h2>
+        <p>فيديوهات تعليمية وترفيهية من داخل الروضة</p>
+      </div>
+      <div class="videos-grid">
+        <div class="video-card"><div class="video-thumb" style="background:linear-gradient(135deg,#e0f2fe,#bfdbfe);">☀️</div><div class="video-info"><h3>النشاط الصباحي</h3><p>فيديو يوضح روتين الطابور والنشاط الصباحي.</p></div></div>
+        <div class="video-card"><div class="video-thumb" style="background:linear-gradient(135deg,#fdf4ff,#fce7f3);">🎨</div><div class="video-info"><h3>عرض الأعمال</h3><p>فيديو يعرض رسومات الأطفال وإنجازاتهم.</p></div></div>
+        <div class="video-card"><div class="video-thumb" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🌟</div><div class="video-info"><h3>التعريف بالروضة</h3><p>فيديو تعريفي عن الروضة ومرافقها ومنهجها.</p></div></div>
+      </div>
     </div>
   </section>
 
@@ -1063,36 +789,22 @@
   <!-- Login Modal -->
   <div class="modal-overlay" id="loginModal">
     <div class="modal-box">
-      <div class="modal-header">
-        <h3>🔐 دخول الإدارة</h3>
-        <p>للمديرة والمعلمات فقط</p>
-      </div>
+      <div class="modal-header"><h3>🔐 دخول الإدارة</h3><p>للمديرة والمعلمات فقط</p></div>
       <div class="modal-body">
-        <div class="input-group">
-          <label>📧 البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email">
-        </div>
-        <div class="input-group">
-          <label>🔒 كلمة المرور</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
-        </div>
+        <div class="input-group"><label>📧 البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email"></div>
+        <div class="input-group"><label>🔒 كلمة المرور</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"></div>
         <p class="error-msg" id="loginError"></p>
         <div class="modal-btns">
-          <button class="btn-login" id="loginSubmitBtn">
-            <span>دخول</span>
-          </button>
+          <button class="btn-login" id="loginSubmitBtn">دخول</button>
           <button class="btn-close-modal" id="loginCloseBtn">إغلاق</button>
         </div>
-        <div class="modal-hint">
-          <div><strong>مديرة:</strong> director@talaea.com / 123456</div>
-          <div><strong>معلمة:</strong> teacher@talaea.com / 123456</div>
-        </div>
+        <div class="modal-hint"><div><strong>مديرة:</strong> director@talaea.com / 123456</div><div><strong>معلمة:</strong> teacher@talaea.com / 123456</div></div>
       </div>
     </div>
   </div>
 
   <script>
-    // Firebase Config
+    // ========== Firebase Config مضمن (يعمل بكامل طاقته) ==========
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -1101,16 +813,11 @@
       messagingSenderId: "350364566140",
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
     };
-
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
     const KG_ID = "kg_talaea";
-    const KG_NAME = "روضة طلائع المبدعين";
-
-    // DOM Elements
     const modal = document.getElementById("loginModal");
     const loadingOverlay = document.getElementById("loadingOverlay");
     const toastContainer = document.getElementById("toastContainer");
@@ -1119,7 +826,6 @@
     const passEl = document.getElementById("loginPassword");
     const submitBtn = document.getElementById("loginSubmitBtn");
 
-    // Toast Notifications
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
@@ -1132,76 +838,53 @@
       }, 4000);
     }
 
-    // Loading
     function showLoading(show = true) {
       loadingOverlay.classList.toggle('active', show);
     }
 
-    // Modal Controls
-    function openModal() {
-      modal.classList.add("open");
-      errEl.textContent = "";
-      emailEl.focus();
-    }
-    function closeModal() {
-      modal.classList.remove("open");
-      errEl.textContent = "";
-      emailEl.value = "";
-      passEl.value = "";
-    }
+    function openModal() { modal.classList.add("open"); errEl.textContent = ""; emailEl.focus(); }
+    function closeModal() { modal.classList.remove("open"); errEl.textContent = ""; emailEl.value = ""; passEl.value = ""; }
 
-    // Login Handler
     async function doLogin() {
       const email = emailEl.value.trim();
       const pass = passEl.value;
       errEl.textContent = "";
-
       if (!email || !pass) {
         errEl.textContent = "⚠️ يرجى إدخال البريد الإلكتروني وكلمة المرور";
         return;
       }
-
       submitBtn.disabled = true;
       submitBtn.innerHTML = "<span class='spinner'></span> جاري الدخول...";
       showLoading(true);
-
       try {
         const userCred = await auth.signInWithEmailAndPassword(email, pass);
         const uid = userCred.user.uid;
-        
         const userDoc = await db.collection("users").doc(uid).get();
         if (!userDoc.exists) throw new Error("المستخدم غير موجود في النظام");
-        
         const data = userDoc.data();
         if (data.isActive !== true) throw new Error("الحساب غير مفعل");
         if (data.kindergartenId !== KG_ID) throw new Error("هذا الحساب لا ينتمي لهذه الروضة");
-
         sessionStorage.setItem("loggedIn", "true");
         sessionStorage.setItem("userRole", data.role);
         sessionStorage.setItem("userName", data.name);
         sessionStorage.setItem("userEmail", email);
-        
         closeModal();
         showToast("تم تسجيل الدخول بنجاح!", "success");
-        
         setTimeout(() => {
           if (data.role === "manager") window.location.href = "talaea-admin.html";
           else if (data.role === "teacher") window.location.href = "teacher-dashboard.html";
           else window.location.href = "talaea-almobdeeen.html";
         }, 500);
-        
       } catch (error) {
-        console.error(error);
         errEl.textContent = error.message || "فشل تسجيل الدخول";
         showToast(error.message || "فشل تسجيل الدخول", "error");
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = "<span>دخول</span>";
+        submitBtn.innerHTML = "دخول";
         showLoading(false);
       }
     }
 
-    // Event Listeners
     document.getElementById("adminLoginBtn").addEventListener("click", openModal);
     document.getElementById("loginCloseBtn").addEventListener("click", closeModal);
     submitBtn.addEventListener("click", doLogin);
