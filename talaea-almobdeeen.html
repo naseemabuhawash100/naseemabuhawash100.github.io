@@ -7,6 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
   <!-- إضافة مكتبة AOS للحركات -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --navy: #0f2d5c;
@@ -169,6 +173,21 @@
       margin-bottom: 40px;
     }
     .hero-btns { display: flex; flex-wrap: wrap; gap: 16px; }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--teal), #0e7490);
+      color: white; border: none; border-radius: 99px;
+      padding: 14px 32px; font-size: 15px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 10px;
+      box-shadow: 0 6px 20px rgba(14,116,144,0.4);
+      transition: var(--transition);
+    }
+    .btn-download:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(14,116,144,0.5);
+    }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--gold), #f97316);
@@ -361,15 +380,17 @@
       max-width: 300px;
     }
 
-    /* ─── GALLERY ─── */
+    /* ─── GALLERY SECTION (معرض الصور) ─── */
     .gallery-section {
       padding: 100px 24px;
       background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%);
     }
     .gallery-inner { max-width: 1280px; margin: auto; }
     .gallery-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 24px; margin-top: 50px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 50px;
     }
     .gallery-card {
       background: white;
@@ -378,6 +399,7 @@
       box-shadow: var(--shadow);
       transition: var(--transition);
       border: 1px solid var(--border);
+      cursor: pointer;
     }
     .gallery-card:hover {
       transform: translateY(-6px) scale(1.02);
@@ -385,32 +407,63 @@
     }
     .gallery-img {
       width: 100%; height: 220px;
-      display: flex; align-items: center; justify-content: center;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 70px;
       transition: var(--transition);
     }
     .gallery-card:hover .gallery-img { transform: scale(1.05); }
     .gallery-info { padding: 20px; }
     .gallery-info h3 {
-      font-size: 17px; font-weight: 800; color: var(--navy);
+      font-size: 18px; font-weight: 800; color: var(--navy);
       margin-bottom: 8px;
     }
     .gallery-info p {
       font-size: 14px; color: var(--gray-600); line-height: 1.7;
     }
+    .view-all-btn {
+      display: block;
+      width: fit-content;
+      margin: 40px auto 0;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white;
+      border: none;
+      border-radius: 99px;
+      padding: 12px 32px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Tajawal', sans-serif;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .view-all-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
 
-    /* ─── VIDEOS ─── */
+    /* ─── VIDEOS SECTION ─── */
     .videos-section {
       padding: 100px 24px;
       background: white;
     }
     .videos-inner { max-width: 1280px; margin: auto; }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 50px;
+    }
     .video-card {
       background: var(--gray-100);
       border-radius: var(--radius-lg);
       overflow: hidden;
       border: 1px solid var(--border);
       transition: var(--transition);
+      cursor: pointer;
     }
     .video-card:hover {
       transform: translateY(-6px);
@@ -419,8 +472,11 @@
     .video-thumb {
       width: 100%; height: 200px;
       position: relative;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 60px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       overflow: hidden;
     }
@@ -686,7 +742,6 @@
       .hero-grid { grid-template-columns: 1fr; gap: 50px; }
       .hero-visual { display: none; }
       .about-inner { grid-template-columns: 1fr; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 768px) {
@@ -702,10 +757,11 @@
       .sections-grid { padding: 50px 16px; }
       .section-title h2 { font-size: 28px; }
       .cards-grid { grid-template-columns: 1fr; }
-      .gallery-grid { grid-template-columns: 1fr; }
       .about-features { grid-template-columns: 1fr; }
       .modal-btns { grid-template-columns: 1fr; }
       .toast { min-width: auto; max-width: calc(100vw - 48px); }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .videos-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -742,8 +798,8 @@
           <li><a href="#home">الرئيسية</a></li>
           <li><a href="#sections">الأقسام</a></li>
           <li><a href="#about">التعريف</a></li>
-          <li><a href="#gallery">الصور</a></li>
-          <li><a href="#videos">الفيديوهات</a></li>
+          <li><a href="gallery.html">الصور</a></li>
+          <li><a href="videos.html">الفيديوهات</a></li>
         </ul>
       </nav>
       <button class="btn-admin" id="adminLoginBtn">
@@ -761,7 +817,8 @@
           <p>نقدم تجربة تعليمية متكاملة تجمع بين التعلم والمتعة، مع تمارين تفاعلية رقمية مرتبطة بالكتاب المطبوع مباشرة.</p>
           <div class="hero-btns">
             <a href="exercises.html" class="btn-primary">📚 التمارين التفاعلية</a>
-            <a href="#gallery" class="btn-outline">🖼️ معرض الصور</a>
+            <a href="gallery.html" class="btn-outline">🖼️ معرض الصور</a>
+            <a href="videos.html" class="btn-download">🎬 معرض الفيديوهات</a>
           </div>
         </div>
         <div class="hero-visual animate-scale-in" data-aos="zoom-in" data-aos-duration="800">
@@ -794,12 +851,12 @@
           <h3>عن الروضة</h3>
           <p>رؤية الروضة ورسالتها والتعريف بها.</p>
         </a>
-        <a href="#gallery" class="section-card" data-aos="fade-up" data-aos-delay="300">
+        <a href="gallery.html" class="section-card" data-aos="fade-up" data-aos-delay="300">
           <div class="card-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">🖼️</div>
           <h3>معرض الصور</h3>
           <p>صور من البيئة التعليمية وأنشطة الأطفال.</p>
         </a>
-        <a href="#videos" class="section-card" data-aos="fade-up" data-aos-delay="400">
+        <a href="videos.html" class="section-card" data-aos="fade-up" data-aos-delay="400">
           <div class="card-icon" style="background:linear-gradient(135deg, #ede9fe, #ddd6fe);">🎬</div>
           <h3>الفيديوهات</h3>
           <p>فيديوهات تعليمية وترفيهية مختارة.</p>
@@ -842,79 +899,6 @@
     </div>
   </section>
 
-  <section id="gallery" class="gallery-section">
-    <div class="gallery-inner">
-      <div class="section-title" data-aos="fade-down">
-        <h2>🖼️ معرض الصور</h2>
-        <p>لحظات من داخل الروضة وأنشطة الأطفال</p>
-      </div>
-      <div class="gallery-grid">
-        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#dbeafe,#fef3c7);">🎨</div>
-          <div class="gallery-info">
-            <h3>أنشطة صفية</h3>
-            <p>نشاطات تعليمية تفاعلية داخل الصفوف الدراسية.</p>
-          </div>
-        </div>
-        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600" data-aos-delay="100">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#fce7f3,#fef3c7);">🖍️</div>
-          <div class="gallery-info">
-            <h3>أعمال فنية</h3>
-            <p>إبداعات الأطفال الفنية المميزة داخل الروضة.</p>
-          </div>
-        </div>
-        <div class="gallery-card" data-aos="flip-right" data-aos-duration="600" data-aos-delay="200">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);">🧩</div>
-          <div class="gallery-info">
-            <h3>أركان تعليمية</h3>
-            <p>زوايا تعليمية تفاعلية ومجهزة بالكامل.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="videos" class="videos-section">
-    <div class="videos-inner">
-      <div class="section-title" data-aos="fade-down">
-        <h2>🎬 معرض الفيديوهات</h2>
-        <p>فيديوهات تعليمية وترفيهية من داخل الروضة</p>
-      </div>
-      <div class="gallery-grid" style="margin-top:40px;">
-        <div class="video-card" data-aos="zoom-in" data-aos-duration="600">
-          <div class="video-thumb" style="background:linear-gradient(135deg,#e0f2fe,#bfdbfe);">
-            ☀️
-            <div class="play-btn"><div class="play-triangle"></div></div>
-          </div>
-          <div class="video-info">
-            <h3>النشاط الصباحي</h3>
-            <p>فيديو يوضح روتين الطابور والنشاط الصباحي.</p>
-          </div>
-        </div>
-        <div class="video-card" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="100">
-          <div class="video-thumb" style="background:linear-gradient(135deg,#fdf4ff,#fce7f3);">
-            🎨
-            <div class="play-btn"><div class="play-triangle" style="border-left-color:#9333ea;"></div></div>
-          </div>
-          <div class="video-info">
-            <h3>عرض الأعمال</h3>
-            <p>فيديو يعرض رسومات الأطفال وإنجازاتهم.</p>
-          </div>
-        </div>
-        <div class="video-card" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
-          <div class="video-thumb" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
-            🌟
-            <div class="play-btn"><div class="play-triangle" style="border-left-color:#16a34a;"></div></div>
-          </div>
-          <div class="video-info">
-            <h3>التعريف بالروضة</h3>
-            <p>فيديو تعريفي عن الروضة ومرافقها ومنهجها.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <footer>
     <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
   </footer>
@@ -950,15 +934,26 @@
     </div>
   </div>
 
-  <script type="module">
-    import {
-      signIn,
-      signOutUser,
-      onAuthStateChange,
-      getUserData
-    } from './firebase-config.js';
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
 
-    // ── Elements ──
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const KG_ID = "kg_talaea";
+    const KG_NAME = "روضة طلائع المبدعين";
+
+    // DOM Elements
     const modal = document.getElementById("loginModal");
     const loadingOverlay = document.getElementById("loadingOverlay");
     const toastContainer = document.getElementById("toastContainer");
@@ -967,15 +962,12 @@
     const passEl = document.getElementById("loginPassword");
     const submitBtn = document.getElementById("loginSubmitBtn");
 
-    // ── Toast Notifications ──
+    // Toast Notifications
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-      toast.innerHTML = `
-        <span class="toast-icon">${icons[type]}</span>
-        <span class="toast-message">${message}</span>
-      `;
+      toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
       toastContainer.appendChild(toast);
       setTimeout(() => {
         toast.style.animation = 'slideInLeft 0.3s ease reverse';
@@ -983,12 +975,12 @@
       }, 4000);
     }
 
-    // ── Loading ──
+    // Loading
     function showLoading(show = true) {
       loadingOverlay.classList.toggle('active', show);
     }
 
-    // ── Modal Controls ──
+    // Modal Controls
     function openModal() {
       modal.classList.add("open");
       errEl.textContent = "";
@@ -1001,7 +993,7 @@
       passEl.value = "";
     }
 
-    // ── Login Handler ──
+    // Login Handler
     async function doLogin() {
       const email = emailEl.value.trim();
       const pass = passEl.value;
@@ -1016,65 +1008,72 @@
       submitBtn.innerHTML = "<span class='spinner'></span> جاري الدخول...";
       showLoading(true);
 
-      const result = await signIn(email, pass);
+      try {
+        const userCred = await auth.signInWithEmailAndPassword(email, pass);
+        const uid = userCred.user.uid;
+        
+        const userDoc = await db.collection("users").doc(uid).get();
+        if (!userDoc.exists) throw new Error("المستخدم غير موجود في النظام");
+        
+        const data = userDoc.data();
+        if (data.isActive !== true) throw new Error("الحساب غير مفعل");
+        if (data.kindergartenId !== KG_ID) throw new Error("هذا الحساب لا ينتمي لهذه الروضة");
 
-      if (result.success) {
+        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("userRole", data.role);
+        sessionStorage.setItem("userName", data.name);
+        sessionStorage.setItem("userEmail", email);
+        
+        closeModal();
         showToast("تم تسجيل الدخول بنجاح!", "success");
-        // Get user data and redirect
-        const userData = await getUserData(result.user.uid);
-        if (userData.success) {
-          sessionStorage.setItem("loggedIn", "true");
-          sessionStorage.setItem("userRole", userData.data.role);
-          sessionStorage.setItem("userName", userData.data.name);
-          sessionStorage.setItem("userEmail", email);
-          closeModal();
-          setTimeout(() => {
-            window.location.href = userData.data.role === 'manager' ? 'talaea-admin.html' : 'teacher-dashboard.html';
-          }, 500);
-        } else {
-          errEl.textContent = "⚠️ بيانات المستخدم غير موجودة";
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = "<span>دخول</span>";
-        }
-      } else {
-        errEl.textContent = result.error;
+        
+        setTimeout(() => {
+          if (data.role === "manager") window.location.href = "talaea-admin.html";
+          else if (data.role === "teacher") window.location.href = "teacher-dashboard.html";
+          else window.location.href = "talaea-almobdeeen.html";
+        }, 500);
+        
+      } catch (error) {
+        console.error(error);
+        errEl.textContent = error.message || "فشل تسجيل الدخول";
+        showToast(error.message || "فشل تسجيل الدخول", "error");
+      } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = "<span>دخول</span>";
-        showToast(result.error, "error");
+        showLoading(false);
       }
-      showLoading(false);
     }
 
-    // ── Event Listeners ──
+    // Event Listeners
     document.getElementById("adminLoginBtn").addEventListener("click", openModal);
     document.getElementById("loginCloseBtn").addEventListener("click", closeModal);
     submitBtn.addEventListener("click", doLogin);
     passEl.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
     modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
 
-    // ── AOS Initialization ──
+    // AOS Initialization
     AOS.init({
       duration: 800,
       once: true,
       offset: 100
     });
 
-    // ── Auth State Listener ──
-    onAuthStateChange(user => {
-      if (user) {
-        console.log("User logged in:", user.email);
+    // Auth State Listener
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        console.log("مستخدم غير مسجل دخول");
       } else {
-        console.log("User logged out");
+        console.log("مسجل دخول:", user.email);
       }
     });
 
-    // ── Header Scroll Effect ──
+    // Header Scroll Effect
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
       header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // ── Smooth Scroll ──
+    // Smooth Scroll
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener("click", e => {
         const href = a.getAttribute("href");
@@ -1087,7 +1086,6 @@
       });
     });
   </script>
-  <!-- إضافة مكتبة AOS للحركات -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
