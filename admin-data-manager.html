@@ -6,8 +6,10 @@
   <title>لوحة التحكم الرئيسية</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <!-- إضافة مكتبة AOS للحركات -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
@@ -158,7 +160,7 @@
         </div>
       </div>
 
-      <!-- تبويب التمارين -->
+      <!-- تبويب التمارين - ✅ ميزة تحميل وحفظ التمارين موجودة هنا -->
       <div id="tab-pages" class="tab-panel space-y-6">
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100" data-aos="fade-up">
           <h3 class="text-2xl font-bold text-blue-900 mb-5">📖 إضافة / تعديل تمرين</h3>
@@ -182,10 +184,10 @@
           <div class="mt-4">
             <input id="pageTitle" type="text" placeholder="عنوان التمرين" class="w-full px-4 py-3 rounded-xl border border-gray-300">
           </div>
-          <textarea id="exerciseCode" rows="6" placeholder="الصق هنا كود HTML للتمرين..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300"></textarea>
+          <textarea id="exerciseCode" rows="8" placeholder="📤 الصق هنا كود HTML للتمرين..." class="w-full mt-4 px-4 py-3 rounded-xl border border-gray-300 font-mono text-sm"></textarea>
           <div class="mt-4 flex gap-3">
-            <button id="loadPageBtn" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 btn-hover">تحميل التمرين</button>
-            <button id="savePageBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 btn-hover">حفظ التمرين</button>
+            <button id="loadPageBtn" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 btn-hover">📥 تحميل التمرين</button>
+            <button id="savePageBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-700 btn-hover">💾 حفظ التمرين</button>
           </div>
           <p id="pageMsg" class="mt-4 text-sm"></p>
         </div>
@@ -211,38 +213,51 @@
     </div>
   </section>
 
-  <script type="module">
-    import {
-      signOutUser,
-      onAuthStateChange,
-      getUserData,
-      addStudent,
-      getStudents,
-      deleteStudent,
-      getResults,
-      getTeachers,
-      formatShortDate
-    } from './firebase-config.js';
+  <script>
+    // ============================================================
+    // Firebase Configuration (مضمنة مثل باقي الملفات)
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
 
-    // ── Auth Check ──
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ============================================================
+    // Helper Functions
+    // ============================================================
+    function showToast(message, type = 'info') {
+      let toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'fixed top-24 left-4 z-50 flex flex-col gap-2';
+        document.body.appendChild(toastContainer);
+      }
+      const toast = document.createElement('div');
+      const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+      toast.className = `${colors[type]} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-bold animate-fade-in`;
+      toast.textContent = message;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Auth Check
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
-
-    onAuthStateChange(user => {
-      if (!user && loggedIn) {
-        sessionStorage.clear();
-        window.location.href = 'talaea-almobdeeen.html';
-      }
-    });
 
     if (!loggedIn || userRole !== "manager") {
       window.location.replace("talaea-almobdeeen.html");
     }
 
-    // ── Firebase References ──
-    const db = firebase.firestore();
-
-    // ── DOM Elements ──
+    // DOM Elements
     const kgName = document.getElementById("kgName");
     const kgId = document.getElementById("kgId");
     const kgActive = document.getElementById("kgActive");
@@ -254,7 +269,9 @@
     let allTeachers = [];
     let allPages = [];
 
-    // ── Load Kindergartens ──
+    // ============================================================
+    // Kindergartens
+    // ============================================================
     async function loadKindergartens() {
       const snapshot = await db.collection("kindergartens").get();
       kindergartens = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -297,7 +314,6 @@
       });
     }
 
-    // ── Add Kindergarten ──
     document.getElementById("addKgBtn").addEventListener("click", async () => {
       const name = kgName.value.trim();
       const id = kgId.value.trim().toLowerCase();
@@ -322,7 +338,9 @@
       }
     });
 
-    // ── Load Students ──
+    // ============================================================
+    // Students
+    // ============================================================
     async function loadStudents() {
       const snapshot = await db.collection("students").get();
       allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -396,7 +414,9 @@
     document.getElementById("filterKgStudents").addEventListener("change", renderStudents);
     document.getElementById("searchStudent").addEventListener("input", renderStudents);
 
-    // ── Load Teachers ──
+    // ============================================================
+    // Teachers
+    // ============================================================
     async function loadTeachers() {
       const snapshot = await db.collection("users").where("role", "==", "teacher").get();
       allTeachers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -467,7 +487,9 @@
 
     document.getElementById("filterKgTeachers").addEventListener("change", renderTeachers);
 
-    // ── Load Pages (Exercises) ──
+    // ============================================================
+    // Pages (Exercises) - ✅ ميزة تحميل وحفظ التمارين
+    // ============================================================
     async function loadPages() {
       const snapshot = await db.collection("interactive_pages").get();
       allPages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -500,6 +522,7 @@
           if (confirm("هل تريد حذف هذا التمرين؟")) {
             await db.collection("interactive_pages").doc(this.dataset.id).delete();
             loadPages();
+            showToast("تم حذف التمرين", "success");
           }
         });
       });
@@ -509,6 +532,7 @@
       return `${kindergartenId}__${stage}__${subject}__p${String(pageNumber).padStart(2, "0")}`;
     }
 
+    // حفظ التمرين
     document.getElementById("savePageBtn").addEventListener("click", async () => {
       const kindergartenId = document.getElementById("pageKgSelect").value;
       const stage = document.getElementById("pageStage").value;
@@ -524,15 +548,23 @@
         return;
       }
 
+      if (!code.trim()) {
+        msg.textContent = "⚠️ يرجى لصق كود HTML للتمرين";
+        msg.className = "mt-4 text-sm text-red-600";
+        return;
+      }
+
       const docId = pageDocId(kindergartenId, stage, subject, pageNumber);
       await db.collection("interactive_pages").doc(docId).set({
         kindergartenId, stage, subject, pageNumber: Number(pageNumber), title, code
       });
       msg.textContent = "✅ تم حفظ التمرين بنجاح";
       msg.className = "mt-4 text-sm text-green-600";
+      showToast("تم حفظ التمرين", "success");
       loadPages();
     });
 
+    // تحميل التمرين
     document.getElementById("loadPageBtn").addEventListener("click", async () => {
       const kindergartenId = document.getElementById("pageKgSelect").value;
       const stage = document.getElementById("pageStage").value;
@@ -558,9 +590,10 @@
       document.getElementById("exerciseCode").value = data.code || "";
       msg.textContent = "✅ تم تحميل التمرين";
       msg.className = "mt-4 text-sm text-green-600";
+      showToast("تم تحميل التمرين", "success");
     });
 
-    // ── Refresh ──
+    // Refresh
     document.getElementById("refreshBtn").addEventListener("click", () => {
       loadKindergartens();
       loadStudents();
@@ -572,14 +605,10 @@
       }, 2000);
     });
 
-    // ── AOS Initialization ──
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100
-    });
+    // AOS
+    AOS.init({ duration: 800, once: true, offset: 100 });
 
-    // ── Tabs ──
+    // Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -589,14 +618,13 @@
       });
     });
 
-    // ── Initial Load ──
+    // Initial Load
     loadKindergartens();
     loadStudents();
     loadTeachers();
     loadPages();
     document.getElementById("connectionStatus").textContent = "✅ قاعدة البيانات متصلة";
   </script>
-  <!-- إضافة مكتبة AOS للحركات -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
