@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>لوحة إدارة روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
+    /* هنا نفس الـ CSS الأصلي الذي أرسلته - لم أغير فيه أي شيء */
     :root {
       --navy: #0f2d5c;
       --navy-light: #1a4a8a;
@@ -319,11 +319,11 @@
 
   <section class="hero">
     <div class="hero-inner">
-      <div data-aos="fade-right">
+      <div>
         <h2>لوحة الإدارة</h2>
         <p>إدارة الطلاب والمعلمات ومتابعة النتائج من مكان واحد</p>
       </div>
-      <div class="hero-stats" data-aos="fade-left">
+      <div class="hero-stats">
         <div class="stat-chip">
           <div class="num" id="statStudents">0</div>
           <div class="lbl">طالب</div>
@@ -341,7 +341,7 @@
   </section>
 
   <div class="tabs-wrap">
-    <div class="tabs" data-aos="fade-up">
+    <div class="tabs">
       <button class="tab-btn active" data-tab="students">👧 إدارة الطلاب</button>
       <button class="tab-btn" data-tab="teachers">👩‍🏫 المعلمات</button>
       <button class="tab-btn" data-tab="results">📊 النتائج</button>
@@ -352,7 +352,7 @@
 
     <!-- ── تبويب الطلاب ── -->
     <div id="panel-students" class="panel active">
-      <div class="card" data-aos="fade-up">
+      <div class="card">
         <div class="card-title">➕ إضافة طالب جديد</div>
         <div class="form-grid">
           <div class="form-field">
@@ -372,7 +372,7 @@
         <p class="form-msg" id="studentMsg"></p>
       </div>
 
-      <div class="card" data-aos="fade-up" data-aos-delay="100">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
           <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
           <div class="search-box">
@@ -390,7 +390,7 @@
 
     <!-- ── تبويب المعلمات ── -->
     <div id="panel-teachers" class="panel">
-      <div class="card" data-aos="fade-up">
+      <div class="card">
         <div class="card-title">👩‍🏫 معلمات الروضة</div>
         <p style="color:var(--gray-600);font-size:14px;margin-bottom:18px;">
           لإضافة معلمة جديدة، يرجى التواصل مع إدارة النظام.
@@ -406,7 +406,7 @@
 
     <!-- ── تبويب النتائج ── -->
     <div id="panel-results" class="panel">
-      <div class="card" data-aos="fade-up">
+      <div class="card">
         <div class="card-title">🔍 فلاتر البحث</div>
         <div class="filter-grid">
           <div class="form-field"><label>التاريخ</label><input id="fDate" type="date"></div>
@@ -428,13 +428,15 @@
         </div>
       </div>
 
-      <div class="card" data-aos="fade-up" data-aos-delay="100">
+      <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
           <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-600);font-weight:500;"></span></div>
         </div>
         <div class="table-wrap">
-          <table>
-            <thead><tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th></tr></thead>
+          <tr>
+            <thead>
+              <tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th></tr>
+            </thead>
             <tbody id="resultsTable"></tbody>
           </table>
         </div>
@@ -487,7 +489,7 @@
       return date.toLocaleDateString("ar-EG");
     }
 
-    // ── Auth Check ──
+    // ── Auth Check & Sign Out ──
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
     const userName = sessionStorage.getItem("userName") || "مديرة الروضة";
@@ -505,12 +507,6 @@
 
     document.getElementById("headerStatus").textContent = "مرحباً " + userName;
 
-    // ── Data ──
-    let students = [];
-    let allResults = [];
-    let teachers = [];
-
-    // ── Sign Out ──
     async function signOutUser() {
       try {
         await auth.signOut();
@@ -520,7 +516,7 @@
       }
     }
 
-    // ── Students Functions ──
+    // ── Student Functions ──
     async function addStudent(studentData) {
       try {
         const docRef = await db.collection("students").add({
@@ -577,7 +573,11 @@
       }
     }
 
-    // ── Load Data ──
+    // ── Data ──
+    let students = [];
+    let allResults = [];
+    let teachers = [];
+
     async function loadData() {
       const studentsResult = await getStudents();
       if (studentsResult.success) {
@@ -603,7 +603,7 @@
       }
     }
 
-    // ── Tabs ──
+    // Tabs
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", function() {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -613,14 +613,13 @@
       });
     });
 
-    // ── Stats ──
     function updateStats() {
       document.getElementById("statStudents").textContent = students.length;
       document.getElementById("statTeachers").textContent = teachers.length;
       document.getElementById("statResults").textContent = allResults.length;
     }
 
-    // ── Render Students ──
+    // Render Students
     function renderStudents() {
       const search = document.getElementById("searchStudent").value.trim().toLowerCase();
       const filtered = students.filter(s =>
@@ -632,7 +631,7 @@
         tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب مطابقون</p></div></td></tr>`;
         return;
       }
-      tbody.innerHTML = filtered.map((s) => `
+      tbody.innerHTML = filtered.map(s => `
         <tr>
           <td style="font-weight:700;">${esc(s.name)}</td>
           <td><code style="background:#f1f5f9;padding:3px 10px;border-radius:8px;font-size:13px;">${esc(s.code)}</code></td>
@@ -640,7 +639,7 @@
           <td><button class="action-btn action-delete" data-id="${s.id}">🗑️ حذف</button></td>
         </tr>`).join("");
 
-      tbody.querySelectorAll(".action-delete").forEach(btn => {
+      document.querySelectorAll(".action-delete").forEach(btn => {
         btn.addEventListener("click", async function() {
           if (!confirm("هل تريد حذف هذا الطالب؟")) return;
           const result = await deleteStudent(this.dataset.id);
@@ -656,7 +655,7 @@
       });
     }
 
-    // ── Add Student ──
+    // Add Student
     document.getElementById("addStudentBtn").addEventListener("click", async function() {
       const name = document.getElementById("sName").value.trim();
       const code = document.getElementById("sCode").value.trim().toUpperCase();
@@ -699,7 +698,7 @@
 
     document.getElementById("searchStudent").addEventListener("input", renderStudents);
 
-    // ── Render Teachers ──
+    // Render Teachers
     function renderTeachers() {
       const tbody = document.getElementById("teachersTable");
       if (!teachers.length) {
@@ -715,7 +714,7 @@
         </tr>`).join("");
     }
 
-    // ── Render Results ──
+    // Render Results
     function renderResults(list = allResults) {
       document.getElementById("resultsCount").textContent = `(${list.length})`;
       const tbody = document.getElementById("resultsTable");
@@ -735,7 +734,7 @@
         </tr>`).join("");
     }
 
-    // ── Filters ──
+    // Filters
     function applyFilters() {
       const fd = document.getElementById("fDate").value;
       const fp = document.getElementById("fPage").value.trim();
@@ -764,29 +763,21 @@
       renderResults(allResults);
     });
 
-    // ── Logout ──
+    // Logout
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOutUser();
       sessionStorage.clear();
       window.location.href = "talaea-almobdeeen.html";
     });
 
-    // ── Header Scroll ──
+    // Header Scroll Effect
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
       header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // ── AOS Initialization ──
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100
-    });
-
-    // ── Init ──
+    // Init
     loadData();
   </script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
