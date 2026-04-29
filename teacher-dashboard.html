@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>لوحة المعلمة - روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-  <!-- إضافة مكتبة AOS للحركات -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --navy: #0f2d5c;
@@ -421,30 +424,39 @@
         <div class="card-title">📊 سجل النتائج</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>الطالب</th><th>الكود</th><th>النتيجة</th><th>المادة</th><th>صفحة</th><th>التاريخ</th><tr></thead>
+            <thead><tr><th>الطالب</th><th>الكود</th><th>النتيجة</th><th>المادة</th><th>صفحة</th><th>التاريخ</th></tr></thead>
             <tbody id="resultsTable"></tbody>
-          </table>
+          <table>
         </div>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import {
-      signOutUser,
-      onAuthStateChange,
-      getUserData,
-      addStudent,
-      getStudents,
-      deleteStudent,
-      addResult,
-      getResults,
-      formatShortDate
-    } from './firebase-config.js';
+  <script>
+    // ============================================================
+    // Firebase Configuration (مضمنة)
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
 
-    const toastContainer = document.getElementById('toastContainer');
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ============================================================
+    // Helper Functions
+    // ============================================================
+    const KG_ID = "kg_talaea";
 
     function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
@@ -453,12 +465,23 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
+    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
+    }
+    function formatShortDate(timestamp) {
+      if (!timestamp) return "";
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      if (isNaN(date)) return "";
+      return date.toLocaleDateString("ar-EG");
+    }
+
     // ── Auth Check ──
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
     const userName = sessionStorage.getItem("userName") || "المعلمة";
 
-    onAuthStateChange(user => {
+    auth.onAuthStateChanged(user => {
       if (!user && loggedIn) {
         sessionStorage.clear();
         window.location.href = 'talaea-almobdeeen.html';
@@ -473,18 +496,85 @@
     document.getElementById("teacherNameCard").textContent = userName;
     document.getElementById("teacherMetaCard").textContent = "معلمة - روضة طلائع المبدعين";
 
+    // ── Sign Out ──
+    async function signOutUser() {
+      try {
+        await auth.signOut();
+        return { success: true };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    // ── Students Functions ──
+    async function addStudent(studentData) {
+      try {
+        const docRef = await db.collection("students").add({
+          ...studentData,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    async function getStudents() {
+      try {
+        const snapshot = await db.collection("students").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").get();
+        const students = [];
+        snapshot.forEach(doc => students.push({ id: doc.id, ...doc.data() }));
+        return { success: true, data: students };
+      } catch (error) {
+        return { success: false, error: error.message, data: [] };
+      }
+    }
+
+    async function deleteStudent(studentId) {
+      try {
+        await db.collection("students").doc(studentId).delete();
+        return { success: true };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    // ── Results Functions ──
+    async function addResult(resultData) {
+      try {
+        const docRef = await db.collection("results").add({
+          ...resultData,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    async function getResults() {
+      try {
+        const snapshot = await db.collection("results").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").limit(500).get();
+        const results = [];
+        snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
+        return { success: true, data: results };
+      } catch (error) {
+        return { success: false, error: error.message, data: [] };
+      }
+    }
+
     // ── Data ──
     let students = [];
     let allResults = [];
 
     async function loadData() {
-      const studentsResult = await getStudents("kg_talaea");
+      const studentsResult = await getStudents();
       if (studentsResult.success) {
         students = studentsResult.data;
         renderStudents();
       }
 
-      const resultsResult = await getResults("kg_talaea");
+      const resultsResult = await getResults();
       if (resultsResult.success) {
         allResults = resultsResult.data;
         renderResults();
@@ -502,15 +592,6 @@
       });
     });
 
-    // ── Helpers ──
-    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-    function subjectLabel(v) {
-      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
-    }
-    function stageLabel(v) {
-      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : (v || "");
-    }
-
     // ── Render Students ──
     function renderStudents() {
       const search = document.getElementById("searchStudent").value.trim().toLowerCase();
@@ -520,7 +601,7 @@
       document.getElementById("studentCount").textContent = `(${filtered.length})`;
       const tbody = document.getElementById("studentsTable");
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب</p></div></td></td>`;
         return;
       }
       tbody.innerHTML = filtered.map((s) => `
@@ -567,13 +648,15 @@
       const result = await addStudent({
         name, code,
         className: cls,
-        kindergartenId: "kg_talaea"
+        kindergartenId: KG_ID
       });
 
       if (result.success) {
         showToast("تم إضافة الطالب بنجاح", "success");
         students.unshift({ id: result.id, name, code, className: cls });
-        ["tSName", "tSCode", "tSClass"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("tSName").value = "";
+        document.getElementById("tSCode").value = "";
+        document.getElementById("tSClass").value = "";
         msg.textContent = "✅ تم إضافة الطالب";
         msg.className = "form-msg msg-ok";
         renderStudents();
@@ -608,16 +691,15 @@
         return;
       }
 
-      wrap.innerHTML = `<div class="table-wrap"><table>
-        <thead><tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>الدرجة من ${esc(total)}</th></td></thead>
-        <tbody id="gradeRows">${students.map(s => `
-          <tr>
+      wrap.innerHTML = `<div class="table-wrap">` +
+        `<table><thead><tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>الدرجة من ${esc(total)}</th></tr></thead>` +
+        `<tbody id="gradeRows">${students.map(s => `
+          </tr>
             <td style="font-weight:700;">${esc(s.name)}</td>
             <td><code style="background:#f1f5f9;padding:3px 10px;border-radius:8px;font-size:13px;">${esc(s.code)}</code></td>
             <td>${esc(s.className || "—")}</td>
             <td><input class="score-input" type="number" min="0" max="${esc(total)}" data-id="${s.id}" placeholder="0"></td>
-          </tr>`).join("")}
-        </tbody></table></div>`;
+          </tr>`).join("")}</tbody></table></div>`;
       saveWrap.style.display = "block";
     }
 
@@ -658,7 +740,7 @@
           stage,
           subject,
           pageNumber: page,
-          kindergartenId: "kg_talaea",
+          kindergartenId: KG_ID,
           teacherId: sessionStorage.getItem("userEmail") || ""
         });
 
@@ -669,8 +751,7 @@
         msg.textContent = `✅ تم حفظ ${saved} نتيجة بنجاح`;
         msg.className = "form-msg msg-ok";
         showToast(`تم حفظ ${saved} نتيجة`, "success");
-        // Refresh results
-        const resultsResult = await getResults("kg_talaea");
+        const resultsResult = await getResults();
         if (resultsResult.success) {
           allResults = resultsResult.data;
           renderResults();
@@ -727,7 +808,8 @@
 
     // ── Header Scroll ──
     window.addEventListener('scroll', () => {
-      document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
+      const header = document.querySelector('header');
+      header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
     // ── AOS Initialization ──
@@ -740,7 +822,6 @@
     // ── Init ──
     loadData();
   </script>
-  <!-- إضافة مكتبة AOS للحركات -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
