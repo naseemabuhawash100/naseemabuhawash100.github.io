@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>نتائج الطلاب - روضة طلائع المبدعين</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-  <!-- إضافة مكتبة AOS للحركات -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --navy: #0f2d5c;
@@ -148,7 +151,8 @@
     .filter-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px; margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
     .form-field label {
       display: block; font-size: 13px; font-weight: 700;
@@ -167,7 +171,8 @@
 
     /* TABLE */
     .table-wrap {
-      overflow-x: auto; border-radius: 14px;
+      overflow-x: auto;
+      border-radius: 14px;
       border: 1px solid var(--border);
     }
     table { width: 100%; border-collapse: collapse; min-width: 650px; }
@@ -225,6 +230,7 @@
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .filter-grid { grid-template-columns: 1fr; }
       .export-bar { flex-direction: column; align-items: stretch; }
+      .table-wrap { overflow-x: auto; }
     }
   </style>
 </head>
@@ -320,17 +326,31 @@
     </div>
   </div>
 
-  <script type="module">
-    import {
-      signOutUser,
-      onAuthStateChange,
-      getResults,
-      formatShortDate
-    } from './firebase-config.js';
+  <script>
+    // ============================================================
+    // Firebase Configuration (مضمنة)
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+    };
 
-    const toastContainer = document.getElementById('toastContainer');
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ============================================================
+    // Helper Functions
+    // ============================================================
+    const KG_ID = "kg_talaea";
 
     function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
@@ -339,12 +359,40 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
+    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    
+    function subjectLabel(v) {
+      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
+    }
+    
+    function stageLabel(v) {
+      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : (v || "");
+    }
+    
+    function formatShortDate(timestamp) {
+      if (!timestamp) return "";
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      if (isNaN(date)) return "";
+      return date.toLocaleDateString("ar-EG");
+    }
+
+    function pct(score, total) { 
+      if (!total) return 0; 
+      return Math.round(score / total * 100); 
+    }
+
+    function scoreBadge(score, total) {
+      const p = pct(score, total);
+      const cls = p >= 80 ? "score-high" : p >= 50 ? "score-mid" : "score-low";
+      return `<span class="score-badge ${cls}">${score} / ${total}</span>`;
+    }
+
     // ── Auth Check ──
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
     const userName = sessionStorage.getItem("userName") || "";
 
-    onAuthStateChange(user => {
+    auth.onAuthStateChanged(user => {
       if (!user && loggedIn) {
         sessionStorage.clear();
         window.location.href = 'talaea-almobdeeen.html';
@@ -361,11 +409,32 @@
       document.getElementById("heroSub").textContent = "نتائج طلابك في مادتك خلال جلسات التمارين.";
     }
 
-    // ── Data ──
+    // ── Sign Out ──
+    async function signOutUser() {
+      try {
+        await auth.signOut();
+        return { success: true };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    // ── Data Functions ──
+    async function getResults() {
+      try {
+        const snapshot = await db.collection("results").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").limit(500).get();
+        const results = [];
+        snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
+        return { success: true, data: results };
+      } catch (error) {
+        return { success: false, error: error.message, data: [] };
+      }
+    }
+
     let allResults = [];
 
     async function loadResults() {
-      const result = await getResults("kg_talaea");
+      const result = await getResults();
       if (result.success) {
         allResults = result.data;
         renderResults(allResults);
@@ -373,22 +442,6 @@
       } else {
         showToast("فشل تحميل النتائج", "error");
       }
-    }
-
-    // ── Helpers ──
-    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-    function subjectLabel(v) {
-      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
-    }
-    function stageLabel(v) {
-      return v === "tamheedi" ? "التمهيدي" : v === "tahdiri" ? "التحضيري" : (v || "");
-    }
-    function pct(score, total) { if (!total) return 0; return Math.round(score / total * 100); }
-
-    function scoreBadge(score, total) {
-      const p = pct(score, total);
-      const cls = p >= 80 ? "score-high" : p >= 50 ? "score-mid" : "score-low";
-      return `<span class="score-badge ${cls}">${score} / ${total}</span>`;
     }
 
     // ── Stats ──
@@ -411,7 +464,7 @@
       document.getElementById("resultsMeta").textContent = `عدد النتائج: ${list.length}`;
       const tbody = document.getElementById("resultsTable");
       if (!list.length) {
-        tbody.innerHTML = `<td><td colspan="9"><div class="empty-state"><div class="icon">📭</div><p>لا توجد نتائج مطابقة</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><p>لا توجد نتائج مطابقة</p></div></td></tr>`;
         return;
       }
       const sorted = [...list].sort((a, b) => {
@@ -471,7 +524,8 @@
 
     // ── Header Scroll ──
     window.addEventListener('scroll', () => {
-      document.querySelector('header').classList.toggle('scrolled', window.scrollY > 50);
+      const header = document.querySelector('header');
+      header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
     // ── AOS Initialization ──
@@ -484,7 +538,6 @@
     // ── Init ──
     loadResults();
   </script>
-  <!-- إضافة مكتبة AOS للحركات -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
