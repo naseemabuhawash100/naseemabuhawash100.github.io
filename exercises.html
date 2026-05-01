@@ -9,7 +9,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- GSAP + Plugins -->
+  <!-- GSAP core + plugins for Framer Motion style -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
@@ -52,9 +52,12 @@
       --radius: 16px;
       --radius-lg: 24px;
       --radius-xl: 32px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Framer Motion style easings */
       --spring-bounce: cubic-bezier(0.34, 1.2, 0.64, 1);
       --spring-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94);
       --spring-wobbly: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      --spring-stiff: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,13 +73,13 @@
       min-height: 100vh;
     }
 
-    /* Header */
+    /* ─── HEADER ─── */
     header {
       position: sticky; top: 0; z-index: 1000;
       background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-      transition: all 0.4s var(--spring-bounce);
+      transition: all 0.4s var(--spring-stiff);
     }
 
     header.scrolled {
@@ -112,13 +115,13 @@
 
     .logo-text h1 {
       font-size: 18px; font-weight: 900; color: var(--navy);
-      line-height: 1.3;
+      line-height: 1.3; margin-bottom: 2px;
     }
 
     .logo-text p { font-size: 12px; color: var(--gray-500); }
 
     nav ul {
-      display: flex; gap: 6px; list-style: none;
+      display: flex; gap: 6px; list-style: none; flex-wrap: wrap;
       padding: 8px 12px;
       background: var(--gray-100);
       border-radius: 99px;
@@ -128,24 +131,25 @@
       display: block; padding: 10px 18px; border-radius: 99px;
       font-size: 14px; font-weight: 700; color: var(--gray-600);
       text-decoration: none;
-      transition: all 0.2s var(--spring-bounce);
+      transition: all 0.2s var(--spring-stiff);
     }
 
     nav a:hover, nav a.active {
       color: var(--navy);
       background: white;
       box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
     }
 
     .btn-back {
       background: linear-gradient(135deg, var(--gold), #f97316);
       color: white; border: none; border-radius: 99px;
       padding: 12px 26px; font-size: 14px; font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      box-shadow: 0 4px 15px rgba(245,166,35,0.35);
       transition: all 0.3s var(--spring-bounce);
+      display: flex; align-items: center; gap: 8px;
       text-decoration: none;
-      display: inline-block;
     }
 
     .btn-back:hover {
@@ -153,21 +157,33 @@
       box-shadow: 0 12px 30px rgba(245,166,35,0.45);
     }
 
-    /* Hero */
+    .btn-back:active {
+      transform: scale(0.98);
+    }
+
+    /* ─── HERO ─── */
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
       color: white;
-      padding: 80px 24px 100px;
+      padding: 100px 24px 120px;
       position: relative;
       overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      z-index: -1;
     }
 
     .hero::after {
       content: ''; position: absolute;
       top: -30%; right: -10%;
-      width: 500px; height: 500px;
+      width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%);
       border-radius: 50%;
+      z-index: -1;
       animation: pulse 8s ease-in-out infinite;
     }
 
@@ -177,216 +193,189 @@
     }
 
     .hero-inner {
-      max-width: 1200px; margin: auto;
+      max-width: 1320px; margin: auto;
       text-align: center;
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
     }
 
     .hero-badge {
-      display: inline-block;
+      display: inline-flex; align-items: center; gap: 8px;
       background: rgba(245,166,35,0.15);
       border: 1px solid rgba(245,166,35,0.35);
       color: var(--gold-light);
       padding: 8px 20px; border-radius: 99px;
       font-size: 13px; font-weight: 800;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
     }
 
     .hero h2 {
-      font-size: clamp(32px, 5vw, 48px);
-      font-weight: 900; margin-bottom: 16px;
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 900; line-height: 1.2;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
     }
 
     .hero p {
-      font-size: 17px; opacity: 0.95;
+      font-size: 17px; opacity: 0.95; line-height: 1.9;
       max-width: 600px; margin: auto;
     }
 
     .wave {
-      height: 70px;
+      height: 80px;
       background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%);
       clip-path: ellipse(55% 100% at 50% 100%);
       margin-top: -1px;
     }
 
-    /* Main Content */
+    /* ─── MAIN CONTENT ─── */
     .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 60px 24px;
+      max-width: 1320px; margin: 0 auto;
+      padding: 80px 24px;
     }
 
-    /* Form Card - واضح وجميل */
+    /* ─── FORM CARD ─── */
     .form-card {
       background: white;
-      border-radius: 32px;
+      border-radius: var(--radius-xl);
       border: 1px solid var(--border);
-      box-shadow: var(--shadow-xl);
-      padding: 48px;
+      box-shadow: var(--shadow-md);
+      padding: 56px;
       margin-bottom: 60px;
-      transition: all 0.4s var(--spring-bounce);
+      transition: all 0.4s var(--spring-gentle);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+      transform: scaleX(0);
+      transition: transform 0.5s var(--spring-bounce);
+    }
+
+    .form-card:hover::before {
+      transform: scaleX(1);
     }
 
     .form-card:hover {
-      transform: translateY(-6px);
       box-shadow: var(--shadow-2xl);
+      transform: translateY(-6px);
     }
 
     .form-card h3 {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--navy);
-      text-align: center;
-      margin-bottom: 40px;
+      font-size: 28px; font-weight: 900; color: var(--navy);
+      margin-bottom: 40px; text-align: center;
     }
 
-    /* حقول الإدخال - واضحة جداً */
-    .fields-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-
-    .field-group {
+    /* Framer Motion style steps */
+    .form-step {
+      display: flex; align-items: flex-start; gap: 24px;
+      margin-bottom: 36px;
+      padding: 28px;
       background: var(--gray-50);
-      border-radius: 20px;
-      padding: 20px;
-      transition: all 0.3s var(--spring-bounce);
-    }
-
-    .field-group:hover {
-      background: white;
-      box-shadow: var(--shadow-md);
-      transform: translateY(-4px);
-    }
-
-    .field-group label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 12px;
-    }
-
-    .field-group label span {
-      font-size: 24px;
-    }
-
-    .field-group select,
-    .field-group input {
-      width: 100%;
-      border: 2px solid var(--gray-200);
-      border-radius: 16px;
-      padding: 14px 18px;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      outline: none;
-      transition: all 0.2s var(--spring-bounce);
-      background: white;
-      color: var(--gray-800);
+      border-radius: var(--radius-lg);
+      transition: all 0.3s var(--spring-gentle);
       cursor: pointer;
     }
 
-    .field-group select:focus,
-    .field-group input:focus {
+    .form-step:hover {
+      background: white;
+      box-shadow: var(--shadow-md);
+      transform: translateX(-8px);
+    }
+
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white; font-size: 22px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(15,45,92,0.3);
+      transition: all 0.3s var(--spring-bounce);
+    }
+
+    .form-step:hover .step-num {
+      transform: scale(1.15) rotate(10deg);
+    }
+
+    .step-content { flex: 1; }
+
+    .step-content label {
+      display: block; font-size: 16px; font-weight: 800;
+      color: var(--gray-700); margin-bottom: 12px;
+    }
+
+    .step-content select, .step-content input {
+      width: 100%;
+      border: 2px solid var(--gray-200);
+      border-radius: 20px;
+      padding: 16px 20px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s var(--spring-stiff);
+      background: white;
+      color: var(--gray-800);
+    }
+
+    .step-content select:focus, .step-content input:focus {
       border-color: var(--teal);
       box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
       transform: scale(1.02);
     }
 
-    /* زر البدء */
+    /* Framer Motion like button */
     .start-btn {
-      width: 100%;
+      display: block; width: 100%;
       background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 18px;
-      font-size: 18px;
-      font-weight: 900;
+      color: white; border: none; border-radius: 99px;
+      padding: 20px;
+      font-size: 20px; font-weight: 900;
       cursor: pointer;
       transition: all 0.3s var(--spring-bounce);
       box-shadow: 0 8px 25px rgba(245,166,35,0.4);
       margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .start-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .start-btn:hover::before {
+      width: 300px;
+      height: 300px;
     }
 
     .start-btn:hover {
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 16px 40px rgba(245,166,35,0.5);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(245,166,35,0.55);
     }
 
     .start-btn:active {
       transform: scale(0.98);
     }
 
-    /* معاينة التمرين */
-    .preview-section {
-      background: linear-gradient(135deg, var(--light), #dbeafe);
-      border-radius: 28px;
-      padding: 32px;
-      margin-top: 40px;
-      border: 1px solid #bfdbfe;
-    }
-
-    .preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .preview-header h4 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .preview-badge {
-      background: var(--navy);
-      color: white;
-      padding: 6px 16px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .preview-content {
-      background: white;
-      border-radius: 20px;
-      padding: 24px;
-      text-align: center;
-      color: var(--gray-500);
-      border: 1px dashed var(--gray-300);
-      transition: all 0.3s;
-    }
-
-    .preview-content.active {
-      border-color: var(--mint);
-      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-    }
-
-    .preview-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-
     .error-msg {
-      text-align: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--coral);
-      margin-top: 16px;
-      min-height: 40px;
+      text-align: center; font-size: 14px; font-weight: 700;
+      color: var(--coral); min-height: 28px; margin-top: 20px;
     }
 
-    /* How it works cards */
+    /* How it works cards - Framer Motion stagger */
     .how-section {
       margin-top: 40px;
     }
@@ -397,10 +386,12 @@
     }
 
     .how-title h3 {
-      font-size: 32px;
-      font-weight: 900;
-      color: var(--navy);
+      font-size: 32px; font-weight: 900; color: var(--navy);
       margin-bottom: 12px;
+    }
+
+    .how-title p {
+      font-size: 17px; color: var(--gray-500);
     }
 
     .how-cards {
@@ -411,54 +402,62 @@
 
     .how-card {
       background: white;
-      border-radius: 28px;
-      padding: 32px 24px;
+      border-radius: var(--radius-xl);
+      padding: 40px 24px;
+      border: 1px solid var(--border);
       text-align: center;
       box-shadow: var(--shadow-md);
       transition: all 0.4s var(--spring-bounce);
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+      transform: scaleX(0);
+      transition: transform 0.4s var(--spring-bounce);
+    }
+
+    .how-card:hover::before {
+      transform: scaleX(1);
     }
 
     .how-card:hover {
-      transform: translateY(-10px) scale(1.02);
+      transform: translateY(-12px) scale(1.03);
       box-shadow: var(--shadow-2xl);
     }
 
     .how-icon {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--light), #dbeafe);
-      border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 38px;
-      margin: 0 auto 20px;
+      width: 80px; height: 80px; border-radius: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; margin: 0 auto 20px;
       transition: all 0.3s var(--spring-bounce);
     }
 
     .how-card:hover .how-icon {
-      transform: scale(1.15) rotate(8deg);
+      transform: scale(1.2) rotate(10deg);
     }
 
     .how-card h4 {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--navy);
+      font-size: 20px; font-weight: 800; color: var(--navy);
       margin-bottom: 12px;
     }
 
     .how-card p {
-      font-size: 14px;
-      color: var(--gray-500);
+      font-size: 14px; color: var(--gray-500); line-height: 1.8;
     }
 
-    /* Toast */
+    /* ─── TOAST ─── */
     .toast-container {
       position: fixed;
       top: 100px;
       left: 24px;
-      z-index: 10000;
+      z-index: 10001;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -466,53 +465,93 @@
 
     .toast {
       background: white;
-      border-radius: 16px;
-      padding: 16px 22px;
+      border-radius: 20px;
+      padding: 18px 24px;
       box-shadow: var(--shadow-xl);
       border-right: 4px solid var(--navy);
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 14px;
+      min-width: 320px;
       animation: slideIn 0.4s var(--spring-bounce);
     }
 
     .toast.success { border-right-color: var(--mint); }
     .toast.error { border-right-color: var(--coral); }
 
+    .toast-icon { font-size: 24px; }
+    .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-40px) scale(0.9); }
+      from { opacity: 0; transform: translateX(-50px) scale(0.9); }
       to { opacity: 1; transform: translateX(0) scale(1); }
     }
 
+    /* ─── LOADING ─── */
+    .loading-overlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.98);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .loading-overlay.active { display: flex; }
+
+    .loading-spinner {
+      width: 60px; height: 60px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ─── FOOTER ─── */
     footer {
       background: linear-gradient(135deg, var(--navy), var(--navy-light));
       color: rgba(255,255,255,0.8);
       padding: 50px 24px;
       text-align: center;
+      font-size: 14px;
     }
 
     footer span { color: var(--gold-light); font-weight: 800; }
 
-    @media (max-width: 900px) {
-      .fields-grid { grid-template-columns: 1fr; gap: 16px; }
-      .how-cards { grid-template-columns: 1fr; }
-      .form-card { padding: 28px 20px; }
-      .field-group { padding: 16px; }
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .how-cards { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 768px) {
-      .header-inner { padding: 12px 16px; flex-wrap: wrap; }
+      .header-inner { padding: 12px 16px; }
+      .logo-circle { width: 46px; height: 46px; font-size: 22px; }
+      .logo-text h1 { font-size: 16px; }
       nav { order: 3; width: 100%; }
       nav ul { justify-content: center; }
-      .hero { padding: 60px 16px 80px; }
-      .hero h2 { font-size: 28px; }
+      nav a { padding: 8px 14px; font-size: 13px; }
+      .btn-back { padding: 10px 20px; font-size: 13px; }
+      .hero { padding: 80px 16px 100px; }
+      .hero h2 { font-size: 32px; }
       .main-content { padding: 40px 16px; }
+      .form-card { padding: 28px 20px; }
+      .form-step { flex-direction: column; padding: 20px; }
+      .how-cards { grid-template-columns: 1fr; }
+      .toast { min-width: auto; max-width: calc(100vw - 48px); }
     }
   </style>
 </head>
 <body>
 
   <div class="toast-container" id="toastContainer"></div>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">جاري التحميل...</div>
+  </div>
 
   <header id="header">
     <div class="header-inner">
@@ -530,90 +569,84 @@
           <li><a href="gallery.html">🖼️ المعرض</a></li>
         </ul>
       </nav>
-      <a href="talaea-almobdeeen.html" class="btn-back">🏠 العودة</a>
+      <a href="talaea-almobdeeen.html" class="btn-back">🏠 العودة للروضة</a>
     </div>
   </header>
 
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-badge">📖 التمارين التفاعلية</div>
+      <span class="hero-badge">📖 التمارين التفاعلية</span>
       <h2>اختر التمرين المناسب لطفلك</h2>
-      <p>اختر المرحلة، المادة، ورقم الصفحة ثم ابدأ التمرين التفاعلي</p>
+      <p>اختر المرحلة والمادة ورقم الصفحة للانتقال إلى التمرين التفاعلي المرتبط بالكتاب المطبوع.</p>
     </div>
   </section>
 
   <div class="wave"></div>
 
   <div class="main-content">
-    <div class="form-card">
+    <div class="form-card" id="formCard">
       <h3>📋 بيانات التمرين</h3>
 
-      <!-- حقول الإدخال - واضحة جداً -->
-      <div class="fields-grid">
-        <div class="field-group">
-          <label><span>🎓</span> المرحلة الدراسية</label>
+      <div class="form-step" id="step1">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <label>🎓 اختر المرحلة الدراسية</label>
           <select id="stageSelect">
-            <option value="">-- اختر المرحلة --</option>
+            <option value="">— اختر المرحلة —</option>
             <option value="tamheedi">التمهيدي</option>
             <option value="tahdiri">التحضيري</option>
           </select>
         </div>
+      </div>
 
-        <div class="field-group">
-          <label><span>📖</span> المادة الدراسية</label>
+      <div class="form-step" id="step2">
+        <div class="step-num" style="background:linear-gradient(135deg, var(--teal), #159db9);">2</div>
+        <div class="step-content">
+          <label>📖 اختر المادة الدراسية</label>
           <select id="subjectSelect">
-            <option value="">-- اختر المادة --</option>
+            <option value="">— اختر المادة —</option>
             <option value="math">🧮 الرياضيات</option>
             <option value="arabic">📖 اللغة العربية</option>
             <option value="english">🔤 اللغة الإنجليزية</option>
           </select>
         </div>
+      </div>
 
-        <div class="field-group">
-          <label><span>🔢</span> رقم الصفحة</label>
-          <input id="pageNumber" type="number" min="1" max="50" placeholder="أدخل رقم الصفحة (1-50)">
+      <div class="form-step" id="step3">
+        <div class="step-num" style="background:linear-gradient(135deg, var(--gold), #f97316);color:var(--navy);">3</div>
+        <div class="step-content">
+          <label>🔢 رقم الصفحة (من 1 إلى 50)</label>
+          <input id="pageNumber" type="number" min="1" max="50" placeholder="أدخل رقم الصفحة">
         </div>
       </div>
 
       <button class="start-btn" id="startBtn">
-        🚀 ابدأ التمرين الآن
+        <span>🚀</span> ابدأ التمرين الآن
       </button>
       <p class="error-msg" id="errorMsg"></p>
-
-      <!-- معاينة التمرين -->
-      <div class="preview-section">
-        <div class="preview-header">
-          <h4>📺 معاينة التمرين</h4>
-          <span class="preview-badge" id="previewBadge">اختر البيانات</span>
-        </div>
-        <div class="preview-content" id="previewContent">
-          <div class="preview-icon">📖</div>
-          <p>سيظهر هنا وصف التمرين بعد اختيار البيانات</p>
-        </div>
-      </div>
     </div>
 
-    <!-- How it works -->
     <div class="how-section">
       <div class="how-title">
         <h3>كيف تبدأ؟</h3>
         <p>ثلاث خطوات بسيطة للبدء بالتمرين</p>
       </div>
-      <div class="how-cards">
-        <div class="how-card">
-          <div class="how-icon">1️⃣</div>
+
+      <div class="how-cards" id="howCardsContainer">
+        <div class="how-card" data-delay="0">
+          <div class="how-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">1️⃣</div>
           <h4>اختر المرحلة</h4>
-          <p>التمهيدي أو التحضيري حسب مرحلة طفلك</p>
+          <p>التمهيدي أو التحضيري حسب مرحلة طفلك.</p>
         </div>
-        <div class="how-card">
-          <div class="how-icon">2️⃣</div>
+        <div class="how-card" data-delay="1">
+          <div class="how-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">2️⃣</div>
           <h4>اختر المادة</h4>
-          <p>رياضيات، عربي، أو إنجليزي</p>
+          <p>رياضيات أو عربي أو إنجليزي.</p>
         </div>
-        <div class="how-card">
-          <div class="how-icon">3️⃣</div>
+        <div class="how-card" data-delay="2">
+          <div class="how-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">3️⃣</div>
           <h4>أدخل رقم الصفحة</h4>
-          <p>الرقم الموجود في الكتاب المطبوع أمامك</p>
+          <p>الرقم الموجود في الكتاب المطبوع أمامك.</p>
         </div>
       </div>
     </div>
@@ -624,7 +657,7 @@
   </footer>
 
   <script>
-    // Firebase Config
+    // ========== Firebase Config ==========
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -636,19 +669,11 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
     const KG_ID = "kg_talaea";
     const KG_NAME = "روضة طلائع المبدعين";
 
-    // Elements
-    const stageSelect = document.getElementById("stageSelect");
-    const subjectSelect = document.getElementById("subjectSelect");
-    const pageNumber = document.getElementById("pageNumber");
-    const startBtn = document.getElementById("startBtn");
-    const errorMsg = document.getElementById("errorMsg");
-    const previewBadge = document.getElementById("previewBadge");
-    const previewContent = document.getElementById("previewContent");
-
-    // Helper Functions
+    // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
@@ -656,192 +681,252 @@
       toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
       document.getElementById('toastContainer').appendChild(toast);
       setTimeout(() => {
-        gsap.to(toast, { opacity: 0, x: -40, duration: 0.3, onComplete: () => toast.remove() });
+        gsap.to(toast, {
+          opacity: 0,
+          x: -50,
+          scale: 0.9,
+          duration: 0.3,
+          ease: "back.in(1.2)",
+          onComplete: () => toast.remove()
+        });
       }, 4000);
     }
 
-    function updatePreview() {
-      const stage = stageSelect.value;
-      const subject = subjectSelect.value;
-      const page = pageNumber.value;
-
-      const stageText = stage === 'tamheedi' ? 'التمهيدي' : stage === 'tahdiri' ? 'التحضيري' : '';
-      const subjectText = subject === 'math' ? 'الرياضيات' : subject === 'arabic' ? 'العربي' : subject === 'english' ? 'الإنجليزي' : '';
-
-      if (stage && subject && page) {
-        previewBadge.textContent = `جاهز للبدء`;
-        previewBadge.style.background = "linear-gradient(135deg, var(--mint), #10b981)";
-        previewContent.innerHTML = `
-          <div class="preview-icon">✅</div>
-          <p style="color: var(--navy); font-weight: 700;">تمرين ${subjectText} - ${stageText}</p>
-          <p style="font-size: 13px;">الصفحة رقم ${page}</p>
-          <p style="font-size: 12px; margin-top: 8px;">اضغط "ابدأ التمرين" للبدء</p>
-        `;
-        previewContent.classList.add('active');
-      } else {
-        previewBadge.textContent = "غير مكتمل";
-        previewBadge.style.background = "var(--navy)";
-        previewContent.innerHTML = `
-          <div class="preview-icon">📖</div>
-          <p>اختر المرحلة، المادة، ورقم الصفحة لمعاينة التمرين</p>
-        `;
-        previewContent.classList.remove('active');
-      }
+    function showLoading(show = true) {
+      document.getElementById('loadingOverlay').classList.toggle('active', show);
     }
 
-    // Load Kindergarten Name
+    // ========== Load Kindergarten Name ==========
     async function loadKindergartenName() {
       try {
         const kgDoc = await db.collection("kindergartens").doc(KG_ID).get();
         if (kgDoc.exists()) {
-          document.getElementById("kgNameDisplay").textContent = kgDoc.data().name || KG_NAME;
+          const kgData = kgDoc.data();
+          document.getElementById("kgNameDisplay").textContent = kgData.name || KG_NAME;
+        } else {
+          document.getElementById("kgNameDisplay").textContent = KG_NAME;
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("خطأ في جلب اسم الروضة:", error);
+        document.getElementById("kgNameDisplay").textContent = KG_NAME;
       }
     }
 
-    // Last selection from localStorage
-    function loadLastSelection() {
-      const lastStage = localStorage.getItem("lastStage");
-      const lastSubject = localStorage.getItem("lastSubject");
-      const lastPage = localStorage.getItem("lastPage");
-      if (lastStage) stageSelect.value = lastStage;
-      if (lastSubject) subjectSelect.value = lastSubject;
-      if (lastPage) pageNumber.value = lastPage;
-      updatePreview();
-    }
+    // ========== Start Exercise ==========
+    document.getElementById("startBtn").addEventListener("click", function() {
+      const stage = document.getElementById("stageSelect").value;
+      const subject = document.getElementById("subjectSelect").value;
+      const pageVal = document.getElementById("pageNumber").value.trim();
+      const errEl = document.getElementById("errorMsg");
 
-    // Start Exercise
-    function startExercise() {
-      const stage = stageSelect.value;
-      const subject = subjectSelect.value;
-      const page = pageNumber.value;
-
-      errorMsg.textContent = "";
+      errEl.textContent = "";
 
       if (!stage) {
-        errorMsg.textContent = "⚠️ يرجى اختيار المرحلة";
+        errEl.textContent = "⚠️ يرجى اختيار المرحلة أولاً";
         showToast("يرجى اختيار المرحلة", "error");
-        gsap.to(errorMsg, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
       if (!subject) {
-        errorMsg.textContent = "⚠️ يرجى اختيار المادة";
+        errEl.textContent = "⚠️ يرجى اختيار المادة أولاً";
         showToast("يرجى اختيار المادة", "error");
-        gsap.to(errorMsg, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
-      if (!page || page < 1 || page > 50) {
-        errorMsg.textContent = "⚠️ رقم الصفحة يجب أن يكون بين 1 و 50";
-        showToast("رقم الصفحة يجب أن يكون بين 1 و 50", "error");
-        gsap.to(errorMsg, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+      if (!pageVal) {
+        errEl.textContent = "⚠️ يرجى إدخال رقم الصفحة";
+        showToast("يرجى إدخال رقم الصفحة", "error");
+        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
 
-      // Save to localStorage
-      localStorage.setItem("lastStage", stage);
-      localStorage.setItem("lastSubject", subject);
-      localStorage.setItem("lastPage", page);
+      const page = Number(pageVal);
+      if (isNaN(page) || page < 1 || page > 50) {
+        errEl.textContent = "⚠️ رقم الصفحة يجب أن يكون بين 1 و 50";
+        showToast("رقم الصفحة يجب أن يكون بين 1 و 50", "error");
+        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        return;
+      }
 
       // Save to sessionStorage
       sessionStorage.setItem("familyKindergarten", KG_ID);
+      sessionStorage.setItem("familyKindergartenName", KG_NAME);
       sessionStorage.setItem("selectedStage", stage);
       sessionStorage.setItem("selectedSubject", subject);
       sessionStorage.setItem("selectedPage", String(page));
 
       showToast("جاري تحميل التمرين...", "success");
 
-      gsap.to(startBtn, {
+      // Framer Motion style button animation
+      gsap.to("#startBtn", {
         scale: 0.96,
         duration: 0.1,
         yoyo: true,
         repeat: 1,
+        ease: "back.in(1)",
         onComplete: () => {
           window.location.href = `exercise-player.html?kg=${KG_ID}&stage=${stage}&subject=${subject}&page=${page}`;
         }
       });
-    }
+    });
 
-    // Event Listeners
-    stageSelect.addEventListener("change", updatePreview);
-    subjectSelect.addEventListener("change", updatePreview);
-    pageNumber.addEventListener("input", updatePreview);
-    startBtn.addEventListener("click", startExercise);
-    pageNumber.addEventListener("keydown", (e) => { if (e.key === "Enter") startExercise(); });
+    // Enter key on page number
+    document.getElementById("pageNumber").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("startBtn").click();
+    });
 
-    // Animations with GSAP (Spring Physics)
+    // ========== Framer Motion Style Animations ==========
     gsap.registerPlugin(ScrollTrigger);
 
-    // Hero animations
-    gsap.from(".hero-badge", { opacity: 0, y: -30, duration: 0.8, ease: "back.out(1.2)" });
-    gsap.from(".hero h2", { opacity: 0, y: 40, duration: 1, ease: "elastic.out(1, 0.5)", delay: 0.2 });
-    gsap.from(".hero p", { opacity: 0, y: 30, duration: 0.8, ease: "back.out(1.2)", delay: 0.4 });
-
-    // Form card animation
-    gsap.from(".form-card", {
+    // Hero Spring Animation (like framer-motion animate)
+    gsap.from(".hero", {
       opacity: 0,
-      y: 60,
       scale: 0.95,
-      duration: 1,
-      ease: "back.out(1.5)",
-      scrollTrigger: { trigger: ".form-card", start: "top 85%" }
+      duration: 1.2,
+      ease: "back.out(1.2)"
     });
 
-    // Fields stagger
-    gsap.from(".field-group", {
+    gsap.from(".hero-badge", {
       opacity: 0,
-      x: 40,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: "back.out(1.2)",
-      scrollTrigger: { trigger: ".form-card", start: "top 85%" }
-    });
-
-    // Start button
-    gsap.from(".start-btn", {
-      opacity: 0,
-      y: 30,
-      scale: 0.9,
+      y: -40,
+      scale: 0.8,
       duration: 0.8,
-      ease: "elastic.out(1, 0.4)",
-      scrollTrigger: { trigger: ".form-card", start: "top 85%" }
+      ease: "elastic.out(1, 0.5)",
+      delay: 0.2
     });
 
-    // Preview section
-    gsap.from(".preview-section", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: "back.out(1.2)",
-      scrollTrigger: { trigger: ".preview-section", start: "top 90%" }
-    });
-
-    // How cards stagger
-    gsap.from(".how-card", {
+    gsap.from(".hero h2", {
       opacity: 0,
       y: 50,
       scale: 0.9,
+      duration: 1,
+      ease: "back.out(1.5)",
+      delay: 0.4
+    });
+
+    gsap.from(".hero p", {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      ease: "back.out(1.2)",
+      delay: 0.6
+    });
+
+    // Form Card Animation - spring pop
+    gsap.from("#formCard", {
+      opacity: 0,
+      y: 80,
+      scale: 0.95,
+      duration: 1.2,
+      ease: "elastic.out(1, 0.4)",
+      delay: 0.8,
+      scrollTrigger: {
+        trigger: "#formCard",
+        start: "top 85%",
+      }
+    });
+
+    // Steps stagger animation (like framer-motion staggerChildren)
+    gsap.from(".form-step", {
+      opacity: 0,
+      x: 60,
       duration: 0.7,
+      stagger: 0.15,
+      ease: "back.out(1.2)",
+      delay: 1,
+      scrollTrigger: {
+        trigger: "#formCard",
+        start: "top 85%",
+      }
+    });
+
+    // Start button spring
+    gsap.from("#startBtn", {
+      opacity: 0,
+      y: 40,
+      scale: 0.9,
+      duration: 0.8,
+      ease: "elastic.out(1, 0.4)",
+      delay: 1.4,
+      scrollTrigger: {
+        trigger: "#formCard",
+        start: "top 85%",
+      }
+    });
+
+    // How cards - Framer Motion like stagger with spring
+    gsap.from(".how-card", {
+      opacity: 0,
+      y: 70,
+      scale: 0.9,
+      duration: 0.9,
       stagger: 0.12,
       ease: "back.out(1.7)",
-      scrollTrigger: { trigger: ".how-cards", start: "top 85%" }
+      scrollTrigger: {
+        trigger: ".how-cards",
+        start: "top 80%",
+      }
     });
 
-    // Hover effects
-    document.querySelectorAll(".field-group").forEach(el => {
-      el.addEventListener("mouseenter", () => gsap.to(el, { y: -4, scale: 1.01, duration: 0.3, ease: "back.out(1)" }));
-      el.addEventListener("mouseleave", () => gsap.to(el, { y: 0, scale: 1, duration: 0.4, ease: "elastic.out(1, 0.3)" }));
+    // Hover effects with GSAP (like whileHover in Framer Motion)
+    document.querySelectorAll(".form-step").forEach(step => {
+      step.addEventListener("mouseenter", () => {
+        gsap.to(step, {
+          x: 8,
+          scale: 1.02,
+          duration: 0.3,
+          ease: "back.out(1.2)",
+          boxShadow: "0 20px 35px rgba(0,0,0,0.1)"
+        });
+      });
+      step.addEventListener("mouseleave", () => {
+        gsap.to(step, {
+          x: 0,
+          scale: 1,
+          duration: 0.4,
+          ease: "elastic.out(1, 0.3)",
+          boxShadow: "none"
+        });
+      });
     });
 
-    // Header scroll
+    // WhileTap effect for button
+    const startBtn = document.getElementById("startBtn");
+    startBtn.addEventListener("mousedown", () => {
+      gsap.to(startBtn, { scale: 0.97, duration: 0.05 });
+    });
+    startBtn.addEventListener("mouseup", () => {
+      gsap.to(startBtn, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.5)" });
+    });
+    startBtn.addEventListener("mouseleave", () => {
+      gsap.to(startBtn, { scale: 1, duration: 0.3, ease: "back.out(1)" });
+    });
+
+    // Input focus spring animations
+    document.querySelectorAll("input, select").forEach(input => {
+      input.addEventListener("focus", () => {
+        gsap.to(input, {
+          scale: 1.02,
+          duration: 0.2,
+          ease: "back.out(1.2)"
+        });
+      });
+      input.addEventListener("blur", () => {
+        gsap.to(input, {
+          scale: 1,
+          duration: 0.3,
+          ease: "elastic.out(1, 0.4)"
+        });
+      });
+    });
+
+    // Header scroll effect
     window.addEventListener('scroll', () => {
       document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
     });
 
     // Initialize
     loadKindergartenName();
-    loadLastSelection();
   </script>
 </body>
 </html>
