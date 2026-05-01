@@ -3,1014 +3,660 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#0f2d5c"/>
   <title>روضة طلائع المبدعين</title>
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-
-  <!-- AOS Library -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-  <!-- Firebase SDK (CDN - no modules) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     :root {
       --navy: #0f2d5c;
       --navy-light: #1a4a8a;
       --gold: #f5a623;
       --gold-light: #fbbf24;
       --teal: #0e7490;
+      --teal-light: #159db9;
       --coral: #ff6b6b;
       --mint: #4ecdc4;
+      --lavender: #a78bfa;
       --light: #f0f6ff;
       --white: #ffffff;
       --gray-100: #f1f5f9;
-      --gray-500: #64748b;
+      --gray-400: #94a3b8;
       --gray-600: #475569;
       --gray-800: #1e293b;
       --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
       --shadow: 0 4px 6px rgba(0,0,0,0.07);
       --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
       --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+      --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
       --radius: 16px;
       --radius-lg: 24px;
-      --transition: all 0.3s ease;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Tajawal', sans-serif;
       direction: rtl;
       background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
       color: var(--gray-800);
-      line-height: 1.6;
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    /* Header */
+    /* ─── Animations ─── */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ✅ إصلاح الاختفاء */
+    .animate-fade-in { opacity: 0; animation: fadeIn 0.6s ease-out forwards; }
+    .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
+    .animate-fade-in-down { opacity: 0; animation: fadeInDown 0.7s ease-out forwards; }
+    .animate-scale-in { opacity: 0; animation: scaleIn 0.5s ease-out forwards; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+
+    .btn-primary, .btn-outline, .btn-admin, .btn-login, .btn-cancel,
+    .card-icon, .logo-circle, .play-btn, nav a, .hero-btns, .hero-badge {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    /* ─── HEADER ─── */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: sticky; top: 0; z-index: 100;
       background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px) saturate(180%);
       border-bottom: 2px solid var(--gold);
+      box-shadow: var(--shadow);
       transition: var(--transition);
     }
-
+    header.scrolled { background: rgba(255,255,255,0.98); box-shadow: var(--shadow-md); }
     .header-inner {
-      max-width: 1280px;
-      margin: auto;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+      max-width: 1280px; margin: auto; padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     }
-
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      text-decoration: none;
-    }
-
+    .logo-area { display: flex; align-items: center; gap: 16px; }
     .logo-circle {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
+      width: 56px; height: 56px; border-radius: 50%;
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      color: white;
-      box-shadow: 0 4px 15px rgba(15,45,92,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: white; font-weight: 900;
+      box-shadow: 0 4px 15px rgba(15,45,92,0.3); transition: var(--transition);
     }
-
-    .logo-text h1 {
-      font-size: 20px;
-      font-weight: 900;
-      color: var(--navy);
-    }
-
-    .logo-text p {
-      font-size: 12px;
-      color: var(--gray-500);
-    }
-
-    nav ul {
-      display: flex;
-      gap: 8px;
-      list-style: none;
-    }
-
+    .logo-circle:hover { transform: rotate(10deg) scale(1.05); }
+    .logo-text h1 { font-size: 20px; font-weight: 900; color: var(--navy); line-height: 1.3; margin-bottom: 2px; }
+    .logo-text p { font-size: 13px; color: var(--gray-600); }
+    nav ul { display: flex; gap: 4px; list-style: none; flex-wrap: wrap; }
     nav a {
-      display: block;
-      padding: 8px 18px;
-      border-radius: 99px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gray-600);
-      text-decoration: none;
-      transition: var(--transition);
+      display: block; padding: 8px 16px; border-radius: 99px;
+      font-size: 14px; font-weight: 700; color: var(--gray-600);
+      text-decoration: none; transition: var(--transition); position: relative;
     }
-
-    nav a:hover {
-      color: var(--navy);
-      background: var(--light);
+    nav a::after {
+      content: ''; position: absolute; bottom: 0; left: 50%;
+      width: 0; height: 2px; background: var(--gold);
+      transition: var(--transition); transform: translateX(-50%);
     }
-
+    nav a:hover { color: var(--navy); background: var(--light); }
+    nav a:hover::after { width: 80%; }
     .btn-admin {
       background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 12px 28px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      transition: var(--transition);
+      color: white; border: none; border-radius: 99px;
+      padding: 10px 24px; font-size: 14px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      box-shadow: 0 4px 15px rgba(245,166,35,0.35); transition: var(--transition);
+      display: flex; align-items: center; gap: 8px;
     }
+    .btn-admin:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,166,35,0.45); }
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 28px; cursor: pointer; color: var(--navy); padding: 8px; }
 
-    .btn-admin:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(245,166,35,0.4);
-    }
-
-    /* Hero */
+    /* ─── HERO ─── */
     .hero {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--teal) 100%);
-      color: white;
-      padding: 100px 24px;
-      position: relative;
-      overflow: hidden;
+      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 50%, var(--teal) 100%);
+      color: white; padding: 100px 24px 120px; position: relative; overflow: hidden;
     }
-
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
     .hero::after {
-      content: '';
-      position: absolute;
-      top: -30%;
-      right: -10%;
-      width: 500px;
-      height: 500px;
+      content: ''; position: absolute; top: -50%; right: -20%;
+      width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
       border-radius: 50%;
     }
-
-    .hero-inner {
-      max-width: 1280px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 60px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-content {
-      flex: 1;
-    }
-
+    .hero-inner { max-width: 1280px; margin: auto; position: relative; z-index: 1; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
     .hero-badge {
-      display: inline-block;
-      background: rgba(245,166,35,0.2);
-      border: 1px solid rgba(245,166,35,0.4);
-      color: var(--gold-light);
-      padding: 6px 20px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 24px;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(245,166,35,0.2); border: 1px solid rgba(245,166,35,0.4);
+      color: var(--gold-light); padding: 8px 20px; border-radius: 99px;
+      font-size: 13px; font-weight: 800; margin-bottom: 28px;
     }
-
-    .hero h2 {
-      font-size: 48px;
-      font-weight: 900;
-      line-height: 1.2;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      font-size: 17px;
-      opacity: 0.92;
-      margin-bottom: 32px;
-      max-width: 500px;
-    }
-
-    .hero-btns {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
+    .hero h2 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; line-height: 1.2; margin-bottom: 24px; }
+    .hero p { font-size: 17px; opacity: 0.92; line-height: 2; margin-bottom: 40px; }
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 16px; }
     .btn-primary {
       background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white;
-      border: none;
-      border-radius: 99px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: var(--transition);
+      color: white; border: none; border-radius: 99px;
+      padding: 14px 32px; font-size: 15px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+      box-shadow: 0 6px 20px rgba(245,166,35,0.4); transition: var(--transition);
     }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(245,166,35,0.4);
-    }
-
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(245,166,35,0.5); }
     .btn-outline {
-      background: transparent;
-      color: white;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-radius: 99px;
-      padding: 14px 32px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
+      background: transparent; color: white;
+      border: 2px solid rgba(255,255,255,0.4); border-radius: 99px;
+      padding: 14px 32px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
       transition: var(--transition);
     }
-
-    .btn-outline:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: white;
-      transform: translateY(-3px);
-    }
-
+    .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; transform: translateY(-3px); }
     .hero-visual {
-      flex: 1;
-      background: rgba(255,255,255,0.1);
-      border-radius: 28px;
-      padding: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-lg); padding: 40px;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .hero-logo-placeholder {
+      width: 220px; height: 220px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(245,166,35,0.35));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 90px; border: 4px solid rgba(255,255,255,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: float 4s ease-in-out infinite;
     }
 
-    .hero-logo {
-      width: 200px;
-      height: 200px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(245,166,35,0.3));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      border: 4px solid rgba(255,255,255,0.3);
-    }
-
-    .wave {
-      height: 70px;
-      background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
-      clip-path: ellipse(55% 100% at 50% 100%);
-    }
-
-    /* Sections */
-    .sections-grid {
-      max-width: 1280px;
-      margin: auto;
-      padding: 80px 24px;
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 50px;
-    }
-
-    .section-title h2 {
-      font-size: 36px;
-      font-weight: 900;
-      color: var(--navy);
-    }
-
-    .section-title p {
-      color: var(--gray-500);
-      font-size: 17px;
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-    }
-
+    /* ─── SECTIONS GRID ─── */
+    .sections-grid { max-width: 1280px; margin: auto; padding: 80px 24px; }
+    .section-title { text-align: center; margin-bottom: 60px; }
+    .section-title h2 { font-size: 36px; font-weight: 900; color: var(--navy); margin-bottom: 12px; }
+    .section-title p { color: var(--gray-600); font-size: 17px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
     .section-card {
-      background: white;
-      border-radius: 24px;
-      padding: 32px 24px;
-      text-align: center;
-      text-decoration: none;
-      transition: var(--transition);
-      box-shadow: var(--shadow);
-      display: block;
+      background: white; border-radius: var(--radius-lg); padding: 32px 24px;
+      border: 1px solid var(--border); text-align: center; text-decoration: none;
+      transition: var(--transition); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
     }
-
-    .section-card:hover {
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
+    .section-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--navy), var(--teal));
+      transform: scaleX(0); transition: var(--transition);
     }
-
+    .section-card:hover::before { transform: scaleX(1); }
+    .section-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: transparent; }
     .card-icon {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, var(--light), #dbeafe);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 72px; height: 72px; border-radius: 20px;
+      margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
       font-size: 32px;
-      margin: 0 auto 20px;
+      transition: var(--transition);
     }
+    .section-card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
+    .section-card h3 { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+    .section-card p { font-size: 14px; color: var(--gray-600); line-height: 1.8; }
 
-    .section-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 10px;
-    }
-
-    .section-card p {
-      font-size: 14px;
-      color: var(--gray-600);
-    }
-
-    /* About */
-    .about-section {
-      background: white;
-      padding: 80px 24px;
-    }
-
+    /* ─── ABOUT ─── */
+    .about-section { background: white; padding: 100px 24px; }
     .about-inner {
-      max-width: 1280px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
+      max-width: 1280px; margin: auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
     }
-
     .about-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, var(--light), #dbeafe);
-      color: var(--navy);
-      border-radius: 99px;
-      padding: 6px 18px;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 20px;
+      display: inline-block; background: linear-gradient(135deg, var(--light), #dbeafe);
+      color: var(--navy); border: 1px solid #bfdbfe; border-radius: 99px;
+      font-size: 13px; font-weight: 800; padding: 6px 18px; margin-bottom: 20px;
     }
-
-    .about-text h2 {
-      font-size: 34px;
-      font-weight: 900;
-      color: var(--navy);
-      margin-bottom: 20px;
-    }
-
-    .about-text p {
-      color: var(--gray-600);
-      margin-bottom: 16px;
-      line-height: 1.8;
-    }
-
-    .about-features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 24px;
-    }
-
+    .about-text h2 { font-size: 34px; font-weight: 900; color: var(--navy); margin-bottom: 20px; }
+    .about-text p { font-size: 16px; color: var(--gray-600); line-height: 2; margin-bottom: 16px; }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
     .feature-card {
       background: linear-gradient(135deg, var(--light), #f0f9ff);
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid #bfdbfe;
+      border-radius: 16px; padding: 20px; border: 1px solid #bfdbfe; transition: var(--transition);
     }
-
-    .feature-card h4 {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 8px;
-    }
-
-    .feature-card p {
-      font-size: 13px;
-      color: var(--gray-600);
-    }
-
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .feature-card h4 { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .feature-card p { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
     .about-visual {
-      background: linear-gradient(135deg, var(--light), #e0f2fe);
-      border-radius: 24px;
-      padding: 50px;
-      text-align: center;
-      border: 1px solid #bfdbfe;
+      background: linear-gradient(135deg, #f0f6ff, #e0f2fe);
+      border-radius: var(--radius-lg); padding: 50px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 400px; text-align: center; border: 1px solid #bfdbfe; box-shadow: var(--shadow-md);
     }
+    .about-visual .big-icon { font-size: 110px; margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+    .about-visual h3 { font-size: 24px; font-weight: 900; color: var(--navy); margin-bottom: 14px; }
+    .about-visual p { font-size: 15px; color: var(--gray-600); line-height: 1.8; max-width: 300px; }
 
-    .about-visual .big-icon {
-      font-size: 100px;
-      margin-bottom: 20px;
-    }
-
-    .about-visual h3 {
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--navy);
-      margin-bottom: 12px;
-    }
-
-    .about-visual p {
-      color: var(--gray-600);
-    }
-
-    /* Gallery */
-    .gallery-section {
-      padding: 80px 24px;
-      background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%);
-    }
-
-    .gallery-inner {
-      max-width: 1280px;
-      margin: auto;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 40px;
-    }
-
+    /* ─── GALLERY ─── */
+    .gallery-section { padding: 100px 24px; background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%); }
+    .gallery-inner { max-width: 1280px; margin: auto; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; }
     .gallery-card {
-      background: white;
-      border-radius: 24px;
-      overflow: hidden;
+      background: white; border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow); transition: var(--transition); border: 1px solid var(--border);
+    }
+    .gallery-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-xl); }
+    .gallery-img {
+      width: 100%; height: 220px; display: flex; align-items: center; justify-content: center;
+      font-size: 70px; transition: var(--transition);
+    }
+    .gallery-card:hover .gallery-img { transform: scale(1.05); }
+    .gallery-info { padding: 20px; }
+    .gallery-info h3 { font-size: 17px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+    .gallery-info p { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
+
+    /* ─── VIDEOS ─── */
+    .videos-section { padding: 100px 24px; background: white; }
+    .videos-inner { max-width: 1280px; margin: auto; }
+    .videos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; }
+    .video-card {
+      background: var(--gray-100); border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--border); transition: var(--transition);
+    }
+    .video-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+    .video-thumb {
+      width: 100%; height: 200px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 60px; cursor: pointer; overflow: hidden;
+    }
+    .video-thumb::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
       transition: var(--transition);
     }
-
-    .gallery-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
+    .video-card:hover .video-thumb::before { background: rgba(0,0,0,0.3); }
+    .play-btn {
+      position: absolute; width: 70px; height: 70px; border-radius: 50%;
+      background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-lg); transition: var(--transition); z-index: 1;
     }
-
-    .gallery-img {
-      width: 100%;
-      height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 70px;
+    .video-card:hover .play-btn { transform: scale(1.15); }
+    .play-triangle {
+      width: 0; height: 0; border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent; border-left: 22px solid var(--navy); margin-right: -4px;
     }
+    .video-info { padding: 20px; }
+    .video-info h3 { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+    .video-info p { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
 
-    .gallery-info {
-      padding: 20px;
-    }
-
-    .gallery-info h3 {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .gallery-info p {
-      font-size: 14px;
-      color: var(--gray-600);
-    }
-
-    /* Worksheets */
-    .worksheets-section {
-      padding: 80px 24px;
-      background: linear-gradient(135deg, var(--light), #e0f2fe);
-    }
-
+    /* ─── WORKSHEETS ─── */
+    .worksheets-section { padding: 80px 24px; background: linear-gradient(135deg, var(--light), #e0f2fe); }
     .worksheets-inner {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      border-radius: 28px;
-      padding: 60px 48px;
-      text-align: center;
-      border: 1px solid #bfdbfe;
+      max-width: 900px; margin: auto; background: white; border-radius: var(--radius-lg);
+      padding: 60px 48px; text-align: center; border: 1px solid #bfdbfe; box-shadow: var(--shadow-md);
     }
+    .worksheets-inner .big-icon { font-size: 80px; margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+    .worksheets-inner h2 { font-size: 30px; font-weight: 900; color: var(--navy); margin-bottom: 16px; }
+    .worksheets-inner p { color: var(--gray-600); line-height: 1.9; font-size: 16px; }
 
-    .worksheets-inner .big-icon {
-      font-size: 70px;
-      margin-bottom: 20px;
-    }
-
-    .worksheets-inner h2 {
-      font-size: 30px;
-      font-weight: 900;
-      color: var(--navy);
-      margin-bottom: 16px;
-    }
-
-    .worksheets-inner p {
-      color: var(--gray-600);
-    }
-
-    /* Footer */
-    footer {
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      color: rgba(255,255,255,0.8);
-      padding: 50px 24px;
-      text-align: center;
-    }
-
-    footer span {
-      color: var(--gold-light);
-      font-weight: 800;
-    }
-
-    /* Modal */
+    /* ─── MODAL ─── */
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease;
     }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
+    .modal-overlay.open { display: flex; opacity: 1; }
     .modal-box {
-      background: white;
-      border-radius: 24px;
-      width: 90%;
-      max-width: 450px;
-      overflow: hidden;
+      background: white; border-radius: var(--radius-lg); width: 100%; max-width: 460px;
+      overflow: hidden; box-shadow: var(--shadow-xl);
+      transform: scale(0.9) translateY(20px); transition: transform 0.3s ease;
     }
-
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
     .modal-header {
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white;
-      padding: 28px;
-      text-align: center;
+      color: white; padding: 32px; position: relative;
     }
-
-    .modal-header h3 {
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .modal-body {
-      padding: 28px;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--gray-800);
-    }
-
+    .modal-header h3 { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+    .modal-header p { font-size: 14px; opacity: 0.85; }
+    .modal-body { padding: 32px; }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 10px; }
     .input-group input {
-      width: 100%;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 15px;
-      font-family: 'Tajawal', sans-serif;
-      outline: none;
+      width: 100%; border: 2px solid var(--border); border-radius: 14px;
+      padding: 14px 18px; font-family: 'Tajawal', sans-serif; font-size: 15px;
+      transition: var(--transition); outline: none; background: white;
     }
-
-    .input-group input:focus {
-      border-color: var(--teal);
-    }
-
-    .error-msg {
-      color: var(--coral);
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-
-    .modal-btns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
+    .input-group input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,116,144,0.15); }
+    .error-msg { color: var(--coral); font-size: 14px; font-weight: 700; min-height: 22px; margin-bottom: 16px; }
+    .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .btn-login {
-      background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: white; border: none; border-radius: 14px; padding: 14px;
+      font-size: 15px; font-weight: 800; cursor: pointer; font-family: 'Tajawal', sans-serif;
+      transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-
-    .btn-close-modal {
-      background: var(--gray-100);
-      color: var(--gray-600);
-      border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
+    .btn-login:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,45,92,0.3); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-cancel {
+      background: var(--gray-100); color: var(--gray-600); border: 2px solid var(--border);
+      border-radius: 14px; padding: 14px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'Tajawal', sans-serif; transition: var(--transition);
     }
+    .btn-cancel:hover { background: var(--border); }
+    .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
 
-    .modal-hint {
-      margin-top: 20px;
-      padding: 16px;
-      background: var(--gray-100);
-      border-radius: 12px;
-      font-size: 12px;
-      text-align: center;
+    /* ─── FOOTER ─── */
+    footer {
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: rgba(255,255,255,0.75); padding: 48px 24px; text-align: center; font-size: 14px;
     }
+    footer span { color: var(--gold-light); font-weight: 800; }
 
-    .spinner {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid white;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Toast */
-    .toast-container {
-      position: fixed;
-      top: 90px;
-      left: 20px;
-      z-index: 2000;
-    }
-
-    .toast {
-      background: white;
-      border-radius: 12px;
-      padding: 14px 20px;
-      box-shadow: var(--shadow-lg);
-      border-right: 4px solid var(--gold);
-      margin-bottom: 10px;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    /* Loading */
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .loading-overlay.hide {
-      display: none;
-    }
-
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid var(--gray-200);
-      border-top-color: var(--navy);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    .loading-text {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--navy);
-    }
-
-    @media (max-width: 900px) {
-      .hero-inner {
-        flex-direction: column;
-        text-align: center;
-      }
-      .hero p {
-        margin: 0 auto;
-      }
-      .hero-btns {
-        justify-content: center;
-      }
-      .hero-visual {
-        display: none;
-      }
-      .about-inner {
-        grid-template-columns: 1fr;
-      }
-      .gallery-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
-      .header-inner {
-        flex-direction: column;
-      }
-      nav ul {
-        justify-content: center;
-      }
-      .hero h2 {
-        font-size: 32px;
-      }
-      .section-title h2 {
-        font-size: 28px;
-      }
-      .cards-grid {
-        grid-template-columns: 1fr;
-      }
-      .about-features {
-        grid-template-columns: 1fr;
-      }
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+      .hero { padding: 60px 24px 80px; }
+      .hero-btns { justify-content: center; }
+      .about-inner { grid-template-columns: 1fr; gap: 40px; }
+      .about-features { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .videos-grid { grid-template-columns: 1fr; }
+      nav ul { display: none; }
+      .mobile-menu-btn { display: block; }
+      .header-inner { padding: 12px 16px; }
+      .section-title h2 { font-size: 28px; }
+      .worksheets-inner { padding: 40px 24px; }
+      .modal-btns { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .hero h2 { font-size: 28px; }
+      .hero-logo-placeholder { width: 150px; height: 150px; font-size: 60px; }
+      .cards-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">جاري تحميل روضة طلائع المبدعين...</div>
-  </div>
-
-  <!-- Toast -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- Header -->
+  <!-- ══════ HEADER ══════ -->
   <header id="header">
     <div class="header-inner">
       <div class="logo-area">
         <div class="logo-circle">🌟</div>
         <div class="logo-text">
           <h1>روضة طلائع المبدعين</h1>
-          <p>الواجهة الرسمية للروضة</p>
+          <p>نبني جيلاً مبدعاً ✨</p>
         </div>
       </div>
-      <nav>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      <nav id="mainNav">
         <ul>
-          <li><a href="#" data-section="home">الرئيسية</a></li>
-          <li><a href="#" data-section="sections">الأقسام</a></li>
-          <li><a href="#" data-section="about">التعريف</a></li>
-          <li><a href="#" data-section="gallery">الصور</a></li>
-          <li><a href="#" data-section="videos">الفيديوهات</a></li>
+          <li><a href="#home">🏠 الرئيسية</a></li>
+          <li><a href="#sections">📂 الأقسام</a></li>
+          <li><a href="#about">ℹ️ من نحن</a></li>
+          <li><a href="#gallery">🖼️ المعرض</a></li>
+          <li><a href="#videos">🎥 الفيديوهات</a></li>
+          <li><a href="#worksheets">📝 أوراق العمل</a></li>
         </ul>
       </nav>
-      <button class="btn-admin" id="adminLoginBtn">🔐 دخول الإدارة</button>
+      <button class="btn-admin" onclick="openLoginModal()">🔐 دخول المشرفة</button>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section id="home" class="hero">
+  <!-- ══════ HERO ══════ -->
+  <section class="hero" id="home">
     <div class="hero-inner">
-      <div class="hero-content" data-aos="fade-up">
-        <span class="hero-badge">✨ بيئة تعليمية ممتعة وآمنة</span>
-        <h2>أهلًا بكم في روضة<br>طلائع المبدعين</h2>
-        <p>نقدم تجربة تعليمية متكاملة تجمع بين التعلم والمتعة، مع تمارين تفاعلية رقمية مرتبطة بالكتاب المطبوع مباشرة.</p>
-        <div class="hero-btns">
-          <a href="exercises.html" class="btn-primary">📚 التمارين التفاعلية</a>
-          <a href="#gallery" class="btn-outline">🖼️ معرض الصور</a>
+      <div class="hero-grid">
+        <div class="hero-content" data-aos="fade-up">
+          <div class="hero-badge">🌟 مرحباً بكم في روضتنا</div>
+          <h2>نرعى براعم اليوم<br>لنصنع قادة الغد</h2>
+          <p>
+            روضة طلائع المبدعين تقدم بيئة تعليمية متميزة تجمع بين المرح والتعلم،
+            حيث يكتشف أطفالنا مواهبهم وينمون مهاراتهم في أجواء آمنة ومحفزة.
+          </p>
+          <div class="hero-btns">
+            <a href="#sections" class="btn-primary">📂 استكشف الأقسام</a>
+            <a href="#about" class="btn-outline">ℹ️ تعرف علينا</a>
+          </div>
+        </div>
+        <div class="hero-visual" data-aos="fade-up" data-aos-delay="200">
+          <div class="hero-logo-placeholder">🎓</div>
         </div>
       </div>
-      <div class="hero-visual" data-aos="zoom-in">
-        <div class="hero-logo">🌈</div>
+    </div>
+  </section>
+
+  <!-- ══════ SECTIONS ══════ -->
+  <section class="sections-grid" id="sections">
+    <div class="section-title" data-aos="fade-down">
+      <h2>📂 أقسام الروضة</h2>
+      <p>اكتشف كل ما نقدمه لأطفالنا الصغار</p>
+    </div>
+    <div class="cards-grid">
+      <div class="section-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="card-icon" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">📖</div>
+        <h3>المنهج التعليمي</h3>
+        <p>مناهج حديثة تناسب المرحلة العمرية وتنمي مهارات التفكير</p>
+      </div>
+      <div class="section-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">🎨</div>
+        <h3>الأنشطة الفنية</h3>
+        <p>رسم وتلوين وأشغال يدوية تطلق الإبداع عند الأطفال</p>
+      </div>
+      <div class="section-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">🎮</div>
+        <h3>الألعاب التعليمية</h3>
+        <p>ألعاب تفاعلية ممتعة تعلم الحروف والأرقام والألوان</p>
+      </div>
+      <div class="section-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="card-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">🎵</div>
+        <h3>الأناشيد</h3>
+        <p>أناشيد تعليمية وترفيهية تحببهم في التعلم</p>
+      </div>
+      <div class="section-card" data-aos="fade-up" data-aos-delay="400">
+        <div class="card-icon" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">🏃</div>
+        <h3>الأنشطة الحركية</h3>
+        <p>تمارين رياضية وألعاب حركية لتنمية المهارات الجسدية</p>
       </div>
     </div>
   </section>
 
-  <div class="wave"></div>
-
-  <!-- Sections -->
-  <section id="sections">
-    <div class="sections-grid">
-      <div class="section-title" data-aos="fade-down">
-        <h2>أقسام الصفحة</h2>
-        <p>يمكن الوصول إلى كل محتوى الروضة من هنا</p>
-      </div>
-      <div class="cards-grid">
-        <a href="exercises.html" class="section-card" data-aos="fade-up" data-aos-delay="0">
-          <div class="card-icon">📚</div>
-          <h3>التمارين التفاعلية</h3>
-          <p>تمارين رقمية تفاعلية مرتبطة بالكتاب المطبوع</p>
-        </a>
-        <a href="#worksheets" class="section-card" data-aos="fade-up" data-aos-delay="100">
-          <div class="card-icon">📄</div>
-          <h3>أوراق العمل</h3>
-          <p>أوراق عمل إضافية وأنشطة ترفيهية للأطفال</p>
-        </a>
-        <a href="#about" class="section-card" data-aos="fade-up" data-aos-delay="200">
-          <div class="card-icon">🏫</div>
-          <h3>عن الروضة</h3>
-          <p>رؤية الروضة ورسالتها والتعريف بها</p>
-        </a>
-        <a href="#gallery" class="section-card" data-aos="fade-up" data-aos-delay="300">
-          <div class="card-icon">🖼️</div>
-          <h3>معرض الصور</h3>
-          <p>صور من البيئة التعليمية وأنشطة الأطفال</p>
-        </a>
-        <a href="#videos" class="section-card" data-aos="fade-up" data-aos-delay="400">
-          <div class="card-icon">🎬</div>
-          <h3>الفيديوهات</h3>
-          <p>فيديوهات تعليمية وترفيهية مختارة</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section id="about" class="about-section">
+  <!-- ══════ ABOUT ══════ -->
+  <section class="about-section" id="about">
     <div class="about-inner">
-      <div class="about-text" data-aos="fade-right">
-        <span class="about-badge">🏫 التعريف بالروضة</span>
+      <div class="about-text" data-aos="fade-up">
+        <div class="about-badge">ℹ️ من نحن</div>
         <h2>روضة طلائع المبدعين</h2>
-        <p>بيئة تعليمية متكاملة تهدف إلى تنمية مهارات الأطفال من خلال أنشطة تعليمية مبتكرة تجمع بين التعلم واللعب.</p>
-        <p>نحرص على متابعة دقيقة لتقدم كل طفل مع توفير محتوى رقمي تفاعلي مرتبط بالمناهج الدراسية.</p>
+        <p>
+          نحن مؤسسة تعليمية رائدة متخصصة في رعاية وتعليم الأطفال من عمر 3 إلى 6 سنوات.
+          نؤمن بأن كل طفل يحمل بذور الإبداع، ومهمتنا هي توفير البيئة المثالية لنمو هذه البذور.
+        </p>
+        <p>
+          نعتمد أحدث الأساليب التربوية والمناهج التعليمية المتطورة التي تجمع بين التعلم والمرح
+          في بيئة آمنة ومحفزة.
+        </p>
         <div class="about-features">
           <div class="feature-card">
-            <h4>🌟 رؤيتنا</h4>
-            <p>إعداد جيل مبدع قادر على التعلم والابتكار في بيئة آمنة</p>
+            <h4>👩‍🏫 معلمات متميزات</h4>
+            <p>كادر تعليمي مؤهل وذو خبرة عالية</p>
           </div>
           <div class="feature-card">
-            <h4>🎯 رسالتنا</h4>
-            <p>تقديم تعليم متميز يجمع بين الجانب الرقمي والمطبوع</p>
+            <h4>🏫 بيئة آمنة</h4>
+            <p>مرافق حديثة ومجهزة بأعلى معايير السلامة</p>
+          </div>
+          <div class="feature-card">
+            <h4>📚 مناهج متطورة</h4>
+            <p>مناهج حديثة تواكب أفضل الممارسات العالمية</p>
+          </div>
+          <div class="feature-card">
+            <h4>💡 تعلم إبداعي</h4>
+            <p>أنشطة متنوعة تنمي الإبداع والابتكار</p>
           </div>
         </div>
       </div>
-      <div class="about-visual" data-aos="fade-left">
-        <div class="big-icon">🌈</div>
-        <h3>لماذا طلائع المبدعين؟</h3>
-        <p>نوفر تجربة تعليمية فريدة تدمج التكنولوجيا مع المنهج الدراسي بأسلوب ممتع ومحفز للأطفال</p>
+      <div class="about-visual" data-aos="fade-up" data-aos-delay="200">
+        <div class="big-icon">🏫</div>
+        <h3>+5 سنوات من التميز</h3>
+        <p>نفخر بتخريج أجيال من المبدعين الصغار الذين يتألقون في مدارسهم</p>
       </div>
     </div>
   </section>
 
-  <!-- Gallery -->
-  <section id="gallery" class="gallery-section">
+  <!-- ══════ GALLERY ══════ -->
+  <section class="gallery-section" id="gallery">
     <div class="gallery-inner">
       <div class="section-title" data-aos="fade-down">
         <h2>🖼️ معرض الصور</h2>
-        <p>لحظات من داخل الروضة وأنشطة الأطفال</p>
+        <p>لحظات جميلة من أنشطة وفعاليات الروضة</p>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-card" data-aos="zoom-in">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#dbeafe,#fef3c7);">🎨</div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">🎨</div>
           <div class="gallery-info">
-            <h3>أنشطة صفية</h3>
-            <p>نشاطات تعليمية تفاعلية داخل الصفوف الدراسية</p>
+            <h3>حصة الرسم والتلوين</h3>
+            <p>أطفالنا يبدعون في التعبير عن أفكارهم بالألوان</p>
           </div>
         </div>
-        <div class="gallery-card" data-aos="zoom-in" data-aos-delay="100">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#fce7f3,#fef3c7);">🖍️</div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">🎪</div>
           <div class="gallery-info">
-            <h3>أعمال فنية</h3>
-            <p>إبداعات الأطفال الفنية المميزة داخل الروضة</p>
+            <h3>الحفل السنوي</h3>
+            <p>احتفالات ممتعة يشارك فيها الأطفال وأولياء الأمور</p>
           </div>
         </div>
-        <div class="gallery-card" data-aos="zoom-in" data-aos-delay="200">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);">🧩</div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">📖</div>
           <div class="gallery-info">
-            <h3>أركان تعليمية</h3>
-            <p>زوايا تعليمية تفاعلية ومجهزة بالكامل</p>
+            <h3>ركن القراءة</h3>
+            <p>تشجيع حب القراءة والاستكشاف منذ الصغر</p>
+          </div>
+        </div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">🎭</div>
+          <div class="gallery-info">
+            <h3>المسرح التعليمي</h3>
+            <p>عروض مسرحية تعليمية يقدمها الأطفال بأنفسهم</p>
+          </div>
+        </div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">🌱</div>
+          <div class="gallery-info">
+            <h3>حديقة الروضة</h3>
+            <p>أنشطة زراعية تعلم الأطفال حب الطبيعة</p>
+          </div>
+        </div>
+        <div class="gallery-card" data-aos="fade-up" data-aos-delay="500">
+          <div class="gallery-img" style="background: linear-gradient(135deg, #fed7aa, #fdba74);">🏆</div>
+          <div class="gallery-info">
+            <h3>حفل التخرج</h3>
+            <p>لحظات فخر واعتزاز بتخريج دفعة جديدة من المبدعين</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Videos -->
-  <section id="videos" class="videos-section" style="padding: 80px 24px; background: white;">
-    <div class="gallery-inner">
+  <!-- ══════ VIDEOS ══════ -->
+  <section class="videos-section" id="videos">
+    <div class="videos-inner">
       <div class="section-title" data-aos="fade-down">
-        <h2>🎬 معرض الفيديوهات</h2>
-        <p>فيديوهات تعليمية وترفيهية من داخل الروضة</p>
+        <h2>🎥 فيديوهات تعليمية</h2>
+        <p>مقاطع ممتعة ومفيدة لأطفالنا الصغار</p>
       </div>
-      <div class="gallery-grid">
-        <div class="gallery-card" data-aos="zoom-in">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#e0f2fe,#bfdbfe);">☀️</div>
-          <div class="gallery-info">
-            <h3>النشاط الصباحي</h3>
-            <p>فيديو يوضح روتين الطابور والنشاط الصباحي</p>
+      <div class="videos-grid">
+        <div class="video-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="video-thumb" style="background: linear-gradient(135deg, #dbeafe, #93c5fd);">
+            🔤
+            <div class="play-btn"><div class="play-triangle"></div></div>
+          </div>
+          <div class="video-info">
+            <h3>تعلم الحروف العربية</h3>
+            <p>فيديو تفاعلي لتعليم الحروف بطريقة ممتعة</p>
           </div>
         </div>
-        <div class="gallery-card" data-aos="zoom-in" data-aos-delay="100">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#fdf4ff,#fce7f3);">🎨</div>
-          <div class="gallery-info">
-            <h3>عرض الأعمال</h3>
-            <p>فيديو يعرض رسومات الأطفال وإنجازاتهم</p>
+        <div class="video-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="video-thumb" style="background: linear-gradient(135deg, #d1fae5, #6ee7b7);">
+            🔢
+            <div class="play-btn"><div class="play-triangle"></div></div>
+          </div>
+          <div class="video-info">
+            <h3>تعلم الأرقام</h3>
+            <p>العد والأرقام من 1 إلى 20 بأسلوب مرح</p>
           </div>
         </div>
-        <div class="gallery-card" data-aos="zoom-in" data-aos-delay="200">
-          <div class="gallery-img" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🌟</div>
-          <div class="gallery-info">
-            <h3>التعريف بالروضة</h3>
-            <p>فيديو تعريفي عن الروضة ومرافقها ومنهجها</p>
+        <div class="video-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="video-thumb" style="background: linear-gradient(135deg, #fef3c7, #fcd34d);">
+            🎵
+            <div class="play-btn"><div class="play-triangle"></div></div>
+          </div>
+          <div class="video-info">
+            <h3>أناشيد الأطفال</h3>
+            <p>مجموعة أناشيد تعليمية محببة للأطفال</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Worksheets -->
-  <section id="worksheets" class="worksheets-section">
-    <div class="worksheets-inner" data-aos="zoom-in">
-      <div class="big-icon">📄</div>
-      <h2>أوراق العمل</h2>
-      <p>هذا القسم جاهز لاستقبال أوراق العمل والأنشطة الخاصة بالروضة. سيتم إضافة المحتوى قريبًا من لوحة الإدارة.</p>
+  <!-- ══════ WORKSHEETS ══════ -->
+  <section class="worksheets-section" id="worksheets">
+    <div class="worksheets-inner" data-aos="fade-up">
+      <div class="big-icon">📝</div>
+      <h2>أوراق العمل التعليمية</h2>
+      <p>
+        نوفر مجموعة متنوعة من أوراق العمل التعليمية المصممة خصيصاً لتنمية مهارات الأطفال
+        في الكتابة والقراءة والحساب والتلوين. يمكن للمعلمات تحميلها واستخدامها في الحصص الدراسية.
+      </p>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ══════ FOOTER ══════ -->
   <footer>
-    <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
+    <p>© 2025 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة ❤️</p>
+    <p style="margin-top: 8px; opacity: 0.7;">صُمم بحب لأطفالنا المبدعين 🌟</p>
   </footer>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal-overlay">
+  <!-- ══════ LOGIN MODAL ══════ -->
+  <div class="modal-overlay" id="loginModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>🔐 دخول الإدارة</h3>
-        <p>للمديرة والمعلمات فقط</p>
+        <h3>🔐 دخول المشرفة</h3>
+        <p>أدخلي بيانات الدخول للوصول للوحة التحكم</p>
       </div>
       <div class="modal-body">
         <div class="input-group">
           <label>📧 البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" placeholder="director@talaea.com">
+          <input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email"/>
         </div>
         <div class="input-group">
-          <label>🔒 كلمة المرور</label>
-          <input type="password" id="loginPassword" placeholder="••••••••">
+          <label>🔑 كلمة المرور</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
         </div>
         <div class="error-msg" id="loginError"></div>
         <div class="modal-btns">
-          <button class="btn-login" id="loginSubmitBtn">دخول</button>
-          <button class="btn-close-modal" id="loginCloseBtn">إغلاق</button>
-        </div>
-        <div class="modal-hint">
-          <strong>مديرة:</strong> director@talaea.com / 123456<br>
-          <strong>معلمة:</strong> teacher@talaea.com / 123456
+          <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+            🔐 تسجيل الدخول
+          </button>
+          <button class="btn-cancel" onclick="closeLoginModal()">
+            ✖ إلغاء
+          </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ══════ AOS Library ══════ -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- ══════ JAVASCRIPT ══════ -->
   <script>
-    // Firebase Config
+    // ═══════════════════════════════════
+    // Firebase Configuration
+    // ═══════════════════════════════════
     const firebaseConfig = {
-      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
-      authDomain: "interactive-book-37270.firebaseapp.com",
-      projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.firebasestorage.app",
-      messagingSenderId: "350364566140",
-      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     // Initialize Firebase
@@ -1018,152 +664,258 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ========== Helper Functions ==========
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = message;
-      if (type === 'error') toast.style.borderRightColor = '#ff6b6b';
-      if (type === 'success') toast.style.borderRightColor = '#4ecdc4';
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
+    // ═══════════════════════════════════
+    // AOS Initialize - ✅ مهم: once: true
+    // ═══════════════════════════════════
+    AOS.init({
+      duration: 800,
+      once: true,        // ⭐ الأنيميشن يشتغل مرة وحدة بس - يمنع الاختفاء
+      offset: 100,
+      easing: 'ease-out-cubic',
+      disable: false
+    });
 
-    function showLoading(show) {
-      const loader = document.getElementById('loadingOverlay');
-      if (show) {
-        loader.classList.remove('hide');
+    // ═══════════════════════════════════
+    // Header Scroll Effect
+    // ═══════════════════════════════════
+    const header = document.getElementById('header');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll > 50) {
+        header.classList.add('scrolled');
       } else {
-        loader.classList.add('hide');
+        header.classList.remove('scrolled');
+      }
+      lastScroll = currentScroll;
+    });
+
+    // ═══════════════════════════════════
+    // Mobile Menu Toggle
+    // ═══════════════════════════════════
+    function toggleMobileMenu() {
+      const nav = document.getElementById('mainNav');
+      const ul = nav.querySelector('ul');
+      if (ul.style.display === 'flex') {
+        ul.style.display = 'none';
+      } else {
+        ul.style.display = 'flex';
+        ul.style.flexDirection = 'column';
+        ul.style.position = 'absolute';
+        ul.style.top = '100%';
+        ul.style.right = '0';
+        ul.style.left = '0';
+        ul.style.background = 'white';
+        ul.style.padding = '16px';
+        ul.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
+        ul.style.borderRadius = '0 0 16px 16px';
+        ul.style.zIndex = '99';
       }
     }
 
-    // ========== Smooth Scroll ==========
-    document.querySelectorAll('nav a, .btn-outline').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href && href.startsWith('#')) {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          const ul = document.querySelector('#mainNav ul');
+          ul.style.display = 'none';
         }
       });
     });
 
-    // ========== Login Modal ==========
-    const modal = document.getElementById('loginModal');
-    const loginEmail = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginError = document.getElementById('loginError');
-    const loginBtn = document.getElementById('loginSubmitBtn');
-
-    function openModal() {
-      modal.classList.add('open');
-      loginError.textContent = '';
-      loginEmail.value = '';
-      loginPassword.value = '';
+    // ═══════════════════════════════════
+    // Login Modal Functions
+    // ═══════════════════════════════════
+    function openLoginModal() {
+      const modal = document.getElementById('loginModal');
+      modal.style.display = 'flex';
+      // Small delay for animation
+      setTimeout(() => {
+        modal.classList.add('open');
+      }, 10);
+      // Clear previous data
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginError').textContent = '';
+      // Focus on email input
+      setTimeout(() => {
+        document.getElementById('loginEmail').focus();
+      }, 300);
     }
 
-    function closeModal() {
+    function closeLoginModal() {
+      const modal = document.getElementById('loginModal');
       modal.classList.remove('open');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
     }
 
-    document.getElementById('adminLoginBtn').addEventListener('click', openModal);
-    document.getElementById('loginCloseBtn').addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
+    // Close modal when clicking outside
+    document.getElementById('loginModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeLoginModal();
+      }
     });
 
-    async function handleLogin() {
-      const email = loginEmail.value.trim();
-      const password = loginPassword.value;
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLoginModal();
+      }
+    });
 
-      if (!email || !password) {
-        loginError.textContent = '⚠️ يرجى إدخال البريد الإلكتروني وكلمة المرور';
+    // Login with Enter key
+    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        handleLogin();
+      }
+    });
+    document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('loginPassword').focus();
+      }
+    });
+
+    // ═══════════════════════════════════
+    // Handle Login with Firebase
+    // ═══════════════════════════════════
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errorEl = document.getElementById('loginError');
+      const loginBtn = document.getElementById('loginBtn');
+
+      // Validation
+      if (!email) {
+        errorEl.textContent = '⚠️ الرجاء إدخال البريد الإلكتروني';
+        document.getElementById('loginEmail').focus();
+        return;
+      }
+      if (!password) {
+        errorEl.textContent = '⚠️ الرجاء إدخال كلمة المرور';
+        document.getElementById('loginPassword').focus();
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = '⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل';
         return;
       }
 
+      // Show loading
+      errorEl.textContent = '';
       loginBtn.disabled = true;
-      loginBtn.innerHTML = '<span class="spinner"></span> جاري الدخول...';
-      showLoading(true);
+      loginBtn.innerHTML = '<div class="spinner"></div> جاري الدخول...';
 
       try {
+        // Firebase Authentication
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-        
-        // Get user data from Firestore
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        
-        if (userDoc.exists) {
-          const userData = userDoc.data();
-          sessionStorage.setItem('loggedIn', 'true');
-          sessionStorage.setItem('userRole', userData.role);
-          sessionStorage.setItem('userName', userData.name);
-          sessionStorage.setItem('userEmail', email);
-          
-          showToast('✅ تم تسجيل الدخول بنجاح', 'success');
-          closeModal();
-          
-          setTimeout(() => {
-            if (userData.role === 'manager') {
-              window.location.href = 'talaea-admin.html';
-            } else {
-              window.location.href = 'teacher-dashboard.html';
-            }
-          }, 500);
-        } else {
-          loginError.textContent = '⚠️ لا توجد بيانات للمستخدم';
-        }
-      } catch (error) {
-        let errorMessage = 'حدث خطأ في تسجيل الدخول';
-        if (error.code === 'auth/user-not-found') errorMessage = 'البريد الإلكتروني غير مسجل';
-        if (error.code === 'auth/wrong-password') errorMessage = 'كلمة المرور غير صحيحة';
-        loginError.textContent = '⚠️ ' + errorMessage;
-        showToast(errorMessage, 'error');
-      }
 
-      loginBtn.disabled = false;
-      loginBtn.innerHTML = 'دخول';
-      showLoading(false);
+        // Success
+        loginBtn.innerHTML = '✅ تم الدخول بنجاح!';
+        loginBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+
+        // Redirect after delay
+        setTimeout(() => {
+          closeLoginModal();
+          // يمكنك تغيير الرابط لصفحة لوحة التحكم
+          // window.location.href = 'dashboard.html';
+          alert('مرحباً بك يا مشرفة! 🌟\nتم تسجيل الدخول بنجاح.');
+
+          // Reset button
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = '🔐 تسجيل الدخول';
+          loginBtn.style.background = '';
+        }, 1500);
+
+      } catch (error) {
+        // Handle errors
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '🔐 تسجيل الدخول';
+
+        switch (error.code) {
+          case 'auth/user-not-found':
+            errorEl.textContent = '❌ البريد الإلكتروني غير مسجل';
+            break;
+          case 'auth/wrong-password':
+            errorEl.textContent = '❌ كلمة المرور غير صحيحة';
+            break;
+          case 'auth/invalid-email':
+            errorEl.textContent = '❌ صيغة البريد الإلكتروني غير صحيحة';
+            break;
+          case 'auth/too-many-requests':
+            errorEl.textContent = '⚠️ محاولات كثيرة، حاولي لاحقاً';
+            break;
+          case 'auth/network-request-failed':
+            errorEl.textContent = '⚠️ تحقق من اتصال الإنترنت';
+            break;
+          default:
+            errorEl.textContent = '❌ حدث خطأ: ' + error.message;
+        }
+      }
     }
 
-    loginBtn.addEventListener('click', handleLogin);
-    loginPassword.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleLogin();
-    });
-
-    // ========== Header Scroll Effect ==========
-    window.addEventListener('scroll', () => {
-      const header = document.getElementById('header');
-      if (window.scrollY > 50) {
-        header.style.background = 'rgba(255,255,255,0.98)';
-        header.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
+    // ═══════════════════════════════════
+    // Auth State Observer
+    // ═══════════════════════════════════
+    auth.onAuthStateChanged((user) => {
+      const adminBtn = document.querySelector('.btn-admin');
+      if (user) {
+        adminBtn.innerHTML = '👩‍💼 لوحة التحكم';
+        adminBtn.onclick = () => {
+          // window.location.href = 'dashboard.html';
+          alert('مرحباً بك في لوحة التحكم! 🌟');
+        };
       } else {
-        header.style.background = 'rgba(255,255,255,0.95)';
-        header.style.boxShadow = 'none';
+        adminBtn.innerHTML = '🔐 دخول المشرفة';
+        adminBtn.onclick = openLoginModal;
       }
     });
 
-    // ========== AOS Init ==========
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100
+    // ═══════════════════════════════════
+    // Smooth Scroll for Navigation
+    // ═══════════════════════════════════
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const headerHeight = document.getElementById('header').offsetHeight;
+          const targetPosition = target.offsetTop - headerHeight - 20;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
     });
 
-    // ========== Hide Loading ==========
+    // ═══════════════════════════════════
+    // ✅ Fix: Ensure all elements are visible after page load
+    // ═══════════════════════════════════
     window.addEventListener('load', () => {
+      // Make sure all buttons and icons are visible
+      const elements = document.querySelectorAll(
+        '.btn-primary, .btn-outline, .btn-admin, .card-icon, .logo-circle, .play-btn, .hero-badge, nav a'
+      );
+      elements.forEach(el => {
+        el.style.opacity = '1';
+        el.style.visibility = 'visible';
+      });
+
+      // Refresh AOS after everything is loaded
       setTimeout(() => {
-        showLoading(false);
-      }, 800);
+        AOS.refresh();
+      }, 500);
     });
 
-    // Keep loading visible until everything is ready
-    showLoading(true);
+    // ═══════════════════════════════════
+    // Console Welcome Message
+    // ═══════════════════════════════════
+    console.log('%c🌟 روضة طلائع المبدعين', 'font-size: 24px; font-weight: bold; color: #0f2d5c;');
+    console.log('%c نبني جيلاً مبدعاً ✨', 'font-size: 14px; color: #0e7490;');
   </script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
