@@ -56,18 +56,11 @@
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* ✅ إصلاح الاختفاء */
     .animate-fade-in { opacity: 0; animation: fadeIn 0.6s ease-out forwards; }
     .animate-fade-in-up { opacity: 0; animation: fadeInUp 0.7s ease-out forwards; }
     .animate-fade-in-down { opacity: 0; animation: fadeInDown 0.7s ease-out forwards; }
     .animate-scale-in { opacity: 0; animation: scaleIn 0.5s ease-out forwards; }
     .animate-float { animation: float 3s ease-in-out infinite; }
-
-    .btn-primary, .btn-outline, .btn-admin, .btn-login, .btn-cancel,
-    .card-icon, .logo-circle, .play-btn, nav a, .hero-btns, .hero-badge {
-      opacity: 1 !important;
-      visibility: visible !important;
-    }
 
     /* ─── HEADER ─── */
     header {
@@ -83,7 +76,7 @@
       max-width: 1280px; margin: auto; padding: 16px 24px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
     }
-    .logo-area { display: flex; align-items: center; gap: 16px; }
+    .logo-area { display: flex; align-items: center; gap: 16px; text-decoration: none; }
     .logo-circle {
       width: 56px; height: 56px; border-radius: 50%;
       background: linear-gradient(135deg, var(--navy), var(--teal));
@@ -186,6 +179,7 @@
       background: white; border-radius: var(--radius-lg); padding: 32px 24px;
       border: 1px solid var(--border); text-align: center; text-decoration: none;
       transition: var(--transition); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+      display: block;
     }
     .section-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
@@ -301,18 +295,16 @@
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999;
       display: none; align-items: center; justify-content: center; padding: 20px;
-      backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
     }
-    .modal-overlay.open { display: flex; opacity: 1; }
+    .modal-overlay.open { display: flex; }
     .modal-box {
       background: white; border-radius: var(--radius-lg); width: 100%; max-width: 460px;
       overflow: hidden; box-shadow: var(--shadow-xl);
-      transform: scale(0.9) translateY(20px); transition: transform 0.3s ease;
     }
-    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
     .modal-header {
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white; padding: 32px; position: relative;
+      color: white; padding: 32px;
     }
     .modal-header h3 { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
     .modal-header p { font-size: 14px; opacity: 0.85; }
@@ -326,7 +318,7 @@
     }
     .input-group input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,116,144,0.15); }
     .error-msg { color: var(--coral); font-size: 14px; font-weight: 700; min-height: 22px; margin-bottom: 16px; }
-    .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
     .btn-login {
       background: linear-gradient(135deg, var(--navy), var(--navy-light));
       color: white; border: none; border-radius: 14px; padding: 14px;
@@ -342,6 +334,16 @@
     }
     .btn-cancel:hover { background: var(--border); }
     .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    .modal-hint {
+      margin-top: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 13px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .modal-hint strong { color: var(--navy); }
 
     /* ─── FOOTER ─── */
     footer {
@@ -382,7 +384,7 @@
         <div class="logo-circle">🌟</div>
         <div class="logo-text">
           <h1>روضة طلائع المبدعين</h1>
-          <p>نبني جيلاً مبدعاً ✨</p>
+          <p>نربي أجيالاً مبدعة</p>
         </div>
       </div>
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
@@ -396,7 +398,7 @@
           <li><a href="#worksheets">📝 أوراق العمل</a></li>
         </ul>
       </nav>
-      <button class="btn-admin" onclick="openLoginModal()">🔐 دخول المشرفة</button>
+      <button class="btn-admin" id="adminLoginBtn">🔐 دخول الإدارة</button>
     </div>
   </header>
 
@@ -433,17 +435,17 @@
       <div class="section-card" data-aos="fade-up" data-aos-delay="0">
         <div class="card-icon" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">📖</div>
         <h3>المنهج التعليمي</h3>
-        <p>مناهج حديثة تناسب المرحلة العمرية وتنمي مهارات التفكير</p>
+        <p>مناهج حديثة تنمي مهارات التفكير والإبداع</p>
       </div>
       <div class="section-card" data-aos="fade-up" data-aos-delay="100">
         <div class="card-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">🎨</div>
         <h3>الأنشطة الفنية</h3>
-        <p>رسم وتلوين وأشغال يدوية تطلق الإبداع عند الأطفال</p>
+        <p>رسم وتلوين وأشغال يدوية تطلق الإبداع</p>
       </div>
       <div class="section-card" data-aos="fade-up" data-aos-delay="200">
         <div class="card-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">🎮</div>
         <h3>الألعاب التعليمية</h3>
-        <p>ألعاب تفاعلية ممتعة تعلم الحروف والأرقام والألوان</p>
+        <p>ألعاب تفاعلية ممتعة تعلم الحروف والأرقام</p>
       </div>
       <div class="section-card" data-aos="fade-up" data-aos-delay="300">
         <div class="card-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">🎵</div>
@@ -453,7 +455,7 @@
       <div class="section-card" data-aos="fade-up" data-aos-delay="400">
         <div class="card-icon" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">🏃</div>
         <h3>الأنشطة الحركية</h3>
-        <p>تمارين رياضية وألعاب حركية لتنمية المهارات الجسدية</p>
+        <p>تمارين رياضية وألعاب حركية لتنمية المهارات</p>
       </div>
     </div>
   </section>
@@ -479,11 +481,11 @@
           </div>
           <div class="feature-card">
             <h4>🏫 بيئة آمنة</h4>
-            <p>مرافق حديثة ومجهزة بأعلى معايير السلامة</p>
+            <p>مرافق حديثة بأعلى معايير السلامة</p>
           </div>
           <div class="feature-card">
             <h4>📚 مناهج متطورة</h4>
-            <p>مناهج حديثة تواكب أفضل الممارسات العالمية</p>
+            <p>مناهج حديثة تواكب أفضل الممارسات</p>
           </div>
           <div class="feature-card">
             <h4>💡 تعلم إبداعي</h4>
@@ -494,7 +496,7 @@
       <div class="about-visual" data-aos="fade-up" data-aos-delay="200">
         <div class="big-icon">🏫</div>
         <h3>+5 سنوات من التميز</h3>
-        <p>نفخر بتخريج أجيال من المبدعين الصغار الذين يتألقون في مدارسهم</p>
+        <p>نفخر بتخريج أجيال من المبدعين الصغار</p>
       </div>
     </div>
   </section>
@@ -504,50 +506,32 @@
     <div class="gallery-inner">
       <div class="section-title" data-aos="fade-down">
         <h2>🖼️ معرض الصور</h2>
-        <p>لحظات جميلة من أنشطة وفعاليات الروضة</p>
+        <p>لحظات جميلة من أنشطة الروضة</p>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="gallery-card" data-aos="fade-up">
           <div class="gallery-img" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">🎨</div>
-          <div class="gallery-info">
-            <h3>حصة الرسم والتلوين</h3>
-            <p>أطفالنا يبدعون في التعبير عن أفكارهم بالألوان</p>
-          </div>
+          <div class="gallery-info"><h3>حصة الرسم</h3><p>أطفالنا يبدعون بالألوان</p></div>
         </div>
         <div class="gallery-card" data-aos="fade-up" data-aos-delay="100">
           <div class="gallery-img" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">🎪</div>
-          <div class="gallery-info">
-            <h3>الحفل السنوي</h3>
-            <p>احتفالات ممتعة يشارك فيها الأطفال وأولياء الأمور</p>
-          </div>
+          <div class="gallery-info"><h3>الحفل السنوي</h3><p>احتفالات ممتعة مع الأهل</p></div>
         </div>
         <div class="gallery-card" data-aos="fade-up" data-aos-delay="200">
           <div class="gallery-img" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">📖</div>
-          <div class="gallery-info">
-            <h3>ركن القراءة</h3>
-            <p>تشجيع حب القراءة والاستكشاف منذ الصغر</p>
-          </div>
+          <div class="gallery-info"><h3>ركن القراءة</h3><p>تشجيع حب القراءة منذ الصغر</p></div>
         </div>
         <div class="gallery-card" data-aos="fade-up" data-aos-delay="300">
           <div class="gallery-img" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">🎭</div>
-          <div class="gallery-info">
-            <h3>المسرح التعليمي</h3>
-            <p>عروض مسرحية تعليمية يقدمها الأطفال بأنفسهم</p>
-          </div>
+          <div class="gallery-info"><h3>المسرح التعليمي</h3><p>عروض مسرحية تعليمية</p></div>
         </div>
         <div class="gallery-card" data-aos="fade-up" data-aos-delay="400">
           <div class="gallery-img" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8);">🌱</div>
-          <div class="gallery-info">
-            <h3>حديقة الروضة</h3>
-            <p>أنشطة زراعية تعلم الأطفال حب الطبيعة</p>
-          </div>
+          <div class="gallery-info"><h3>حديقة الروضة</h3><p>أنشطة زراعية تعلم حب الطبيعة</p></div>
         </div>
         <div class="gallery-card" data-aos="fade-up" data-aos-delay="500">
           <div class="gallery-img" style="background: linear-gradient(135deg, #fed7aa, #fdba74);">🏆</div>
-          <div class="gallery-info">
-            <h3>حفل التخرج</h3>
-            <p>لحظات فخر واعتزاز بتخريج دفعة جديدة من المبدعين</p>
-          </div>
+          <div class="gallery-info"><h3>حفل التخرج</h3><p>لحظات فخر واعتزاز</p></div>
         </div>
       </div>
     </div>
@@ -558,38 +542,29 @@
     <div class="videos-inner">
       <div class="section-title" data-aos="fade-down">
         <h2>🎥 فيديوهات تعليمية</h2>
-        <p>مقاطع ممتعة ومفيدة لأطفالنا الصغار</p>
+        <p>مقاطع ممتعة ومفيدة لأطفالنا</p>
       </div>
       <div class="videos-grid">
-        <div class="video-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="video-card" data-aos="fade-up">
           <div class="video-thumb" style="background: linear-gradient(135deg, #dbeafe, #93c5fd);">
             🔤
             <div class="play-btn"><div class="play-triangle"></div></div>
           </div>
-          <div class="video-info">
-            <h3>تعلم الحروف العربية</h3>
-            <p>فيديو تفاعلي لتعليم الحروف بطريقة ممتعة</p>
-          </div>
+          <div class="video-info"><h3>تعلم الحروف العربية</h3><p>فيديو تفاعلي لتعليم الحروف</p></div>
         </div>
         <div class="video-card" data-aos="fade-up" data-aos-delay="100">
           <div class="video-thumb" style="background: linear-gradient(135deg, #d1fae5, #6ee7b7);">
             🔢
             <div class="play-btn"><div class="play-triangle"></div></div>
           </div>
-          <div class="video-info">
-            <h3>تعلم الأرقام</h3>
-            <p>العد والأرقام من 1 إلى 20 بأسلوب مرح</p>
-          </div>
+          <div class="video-info"><h3>تعلم الأرقام</h3><p>العد من 1 إلى 20 بأسلوب مرح</p></div>
         </div>
         <div class="video-card" data-aos="fade-up" data-aos-delay="200">
           <div class="video-thumb" style="background: linear-gradient(135deg, #fef3c7, #fcd34d);">
             🎵
             <div class="play-btn"><div class="play-triangle"></div></div>
           </div>
-          <div class="video-info">
-            <h3>أناشيد الأطفال</h3>
-            <p>مجموعة أناشيد تعليمية محببة للأطفال</p>
-          </div>
+          <div class="video-info"><h3>أناشيد الأطفال</h3><p>أناشيد تعليمية محببة للأطفال</p></div>
         </div>
       </div>
     </div>
@@ -600,10 +575,7 @@
     <div class="worksheets-inner" data-aos="fade-up">
       <div class="big-icon">📝</div>
       <h2>أوراق العمل التعليمية</h2>
-      <p>
-        نوفر مجموعة متنوعة من أوراق العمل التعليمية المصممة خصيصاً لتنمية مهارات الأطفال
-        في الكتابة والقراءة والحساب والتلوين. يمكن للمعلمات تحميلها واستخدامها في الحصص الدراسية.
-      </p>
+      <p>نوفر مجموعة متنوعة من أوراق العمل المصممة خصيصاً لتنمية مهارات الأطفال في الكتابة والقراءة والحساب والتلوين.</p>
     </div>
   </section>
 
@@ -617,88 +589,83 @@
   <div class="modal-overlay" id="loginModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>🔐 دخول المشرفة</h3>
-        <p>أدخلي بيانات الدخول للوصول للوحة التحكم</p>
+        <h3>🔐 دخول الإدارة</h3>
+        <p>للمديرة والمعلمات فقط</p>
       </div>
       <div class="modal-body">
         <div class="input-group">
           <label>📧 البريد الإلكتروني</label>
-          <input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email"/>
+          <input type="email" id="loginEmail" placeholder="example@email.com">
         </div>
         <div class="input-group">
-          <label>🔑 كلمة المرور</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+          <label>🔒 كلمة المرور</label>
+          <input type="password" id="loginPassword" placeholder="••••••••">
         </div>
         <div class="error-msg" id="loginError"></div>
         <div class="modal-btns">
-          <button class="btn-login" id="loginBtn" onclick="handleLogin()">
-            🔐 تسجيل الدخول
-          </button>
-          <button class="btn-cancel" onclick="closeLoginModal()">
-            ✖ إلغاء
-          </button>
+          <button class="btn-login" id="loginBtn">🔐 تسجيل الدخول</button>
+          <button class="btn-cancel" id="closeModalBtn">✖ إلغاء</button>
+        </div>
+        <div class="modal-hint">
+          <strong>📋 بيانات الدخول التجريبية:</strong><br>
+          📧 director@talaea.com / 123456 (مديرة)<br>
+          📧 teacher@talaea.com / 123456 (معلمة)
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══════ AOS Library ══════ -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
-  <!-- ══════ JAVASCRIPT ══════ -->
   <script>
-    // ═══════════════════════════════════
-    // Firebase Configuration
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 1. FIREBASE CONFIGURATION (البيانات الصحيحة)
+    // ═══════════════════════════════════════════════════════════
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+      authDomain: "interactive-book-37270.firebaseapp.com",
+      projectId: "interactive-book-37270",
+      storageBucket: "interactive-book-37270.firebasestorage.app",
+      messagingSenderId: "350364566140",
+      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
     };
 
-    // Initialize Firebase
+    // ═══════════════════════════════════════════════════════════
+    // 2. INITIALIZE FIREBASE
+    // ═══════════════════════════════════════════════════════════
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ═══════════════════════════════════
-    // AOS Initialize - ✅ مهم: once: true
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 3. AOS INITIALIZATION
+    // ═══════════════════════════════════════════════════════════
     AOS.init({
       duration: 800,
-      once: true,        // ⭐ الأنيميشن يشتغل مرة وحدة بس - يمنع الاختفاء
+      once: true,
       offset: 100,
-      easing: 'ease-out-cubic',
-      disable: false
+      easing: 'ease-out-cubic'
     });
 
-    // ═══════════════════════════════════
-    // Header Scroll Effect
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 4. HEADER SCROLL EFFECT
+    // ═══════════════════════════════════════════════════════════
     const header = document.getElementById('header');
-    let lastScroll = 0;
-
     window.addEventListener('scroll', () => {
-      const currentScroll = window.pageYOffset;
-      if (currentScroll > 50) {
+      if (window.scrollY > 50) {
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
       }
-      lastScroll = currentScroll;
     });
 
-    // ═══════════════════════════════════
-    // Mobile Menu Toggle
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 5. MOBILE MENU TOGGLE
+    // ═══════════════════════════════════════════════════════════
     function toggleMobileMenu() {
       const nav = document.getElementById('mainNav');
       const ul = nav.querySelector('ul');
       if (ul.style.display === 'flex') {
-        ul.style.display = 'none';
+        ul.style.display = '';
       } else {
         ul.style.display = 'flex';
         ul.style.flexDirection = 'column';
@@ -709,174 +676,160 @@
         ul.style.background = 'white';
         ul.style.padding = '16px';
         ul.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
-        ul.style.borderRadius = '0 0 16px 16px';
         ul.style.zIndex = '99';
       }
     }
 
-    // Close mobile menu when clicking a link
+    // Close mobile menu on link click
     document.querySelectorAll('nav a').forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
           const ul = document.querySelector('#mainNav ul');
-          ul.style.display = 'none';
+          ul.style.display = '';
         }
       });
     });
 
-    // ═══════════════════════════════════
-    // Login Modal Functions
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 6. LOGIN MODAL FUNCTIONS
+    // ═══════════════════════════════════════════════════════════
+    const modal = document.getElementById('loginModal');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginError = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+
     function openLoginModal() {
-      const modal = document.getElementById('loginModal');
-      modal.style.display = 'flex';
-      // Small delay for animation
-      setTimeout(() => {
-        modal.classList.add('open');
-      }, 10);
-      // Clear previous data
-      document.getElementById('loginEmail').value = '';
-      document.getElementById('loginPassword').value = '';
-      document.getElementById('loginError').textContent = '';
-      // Focus on email input
-      setTimeout(() => {
-        document.getElementById('loginEmail').focus();
-      }, 300);
+      modal.classList.add('open');
+      loginError.textContent = '';
+      loginEmail.value = '';
+      loginPassword.value = '';
+      setTimeout(() => loginEmail.focus(), 100);
     }
 
     function closeLoginModal() {
-      const modal = document.getElementById('loginModal');
       modal.classList.remove('open');
-      setTimeout(() => {
-        modal.style.display = 'none';
-      }, 300);
     }
 
-    // Close modal when clicking outside
-    document.getElementById('loginModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) {
-        closeLoginModal();
-      }
-    });
+    document.getElementById('adminLoginBtn').addEventListener('click', openLoginModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeLoginModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeLoginModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLoginModal(); });
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeLoginModal();
-      }
-    });
+    // Enter key support
+    loginPassword.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+    loginEmail.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginPassword.focus(); });
 
-    // Login with Enter key
-    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        handleLogin();
+    // ═══════════════════════════════════════════════════════════
+    // 7. GET USER DATA FROM FIRESTORE
+    // ═══════════════════════════════════════════════════════════
+    async function getUserData(uid) {
+      try {
+        const doc = await db.collection('users').doc(uid).get();
+        if (doc.exists) return { success: true, data: doc.data() };
+        return { success: false, error: 'No user data' };
+      } catch (error) {
+        return { success: false, error: error.message };
       }
-    });
-    document.getElementById('loginEmail').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        document.getElementById('loginPassword').focus();
-      }
-    });
+    }
 
-    // ═══════════════════════════════════
-    // Handle Login with Firebase
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 8. HANDLE LOGIN WITH FIREBASE
+    // ═══════════════════════════════════════════════════════════
     async function handleLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const errorEl = document.getElementById('loginError');
-      const loginBtn = document.getElementById('loginBtn');
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value;
 
-      // Validation
+      loginError.textContent = '';
+
       if (!email) {
-        errorEl.textContent = '⚠️ الرجاء إدخال البريد الإلكتروني';
-        document.getElementById('loginEmail').focus();
+        loginError.textContent = '⚠️ يرجى إدخال البريد الإلكتروني';
+        loginEmail.focus();
         return;
       }
       if (!password) {
-        errorEl.textContent = '⚠️ الرجاء إدخال كلمة المرور';
-        document.getElementById('loginPassword').focus();
-        return;
-      }
-      if (password.length < 6) {
-        errorEl.textContent = '⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+        loginError.textContent = '⚠️ يرجى إدخال كلمة المرور';
+        loginPassword.focus();
         return;
       }
 
-      // Show loading
-      errorEl.textContent = '';
       loginBtn.disabled = true;
       loginBtn.innerHTML = '<div class="spinner"></div> جاري الدخول...';
 
       try {
-        // Firebase Authentication
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Success
-        loginBtn.innerHTML = '✅ تم الدخول بنجاح!';
-        loginBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+        // Get user data from Firestore
+        const userDataResult = await getUserData(user.uid);
 
-        // Redirect after delay
-        setTimeout(() => {
-          closeLoginModal();
-          // يمكنك تغيير الرابط لصفحة لوحة التحكم
-          // window.location.href = 'dashboard.html';
-          alert('مرحباً بك يا مشرفة! 🌟\nتم تسجيل الدخول بنجاح.');
+        if (userDataResult.success) {
+          const userData = userDataResult.data;
+          
+          // Save to sessionStorage
+          sessionStorage.setItem('loggedIn', 'true');
+          sessionStorage.setItem('userRole', userData.role);
+          sessionStorage.setItem('userName', userData.name);
+          sessionStorage.setItem('userEmail', email);
+          sessionStorage.setItem('kindergartenId', userData.kindergartenId || 'kg_talaea');
 
-          // Reset button
+          loginBtn.innerHTML = '✅ تم الدخول بنجاح!';
+          
+          setTimeout(() => {
+            closeLoginModal();
+            // Redirect based on role
+            if (userData.role === 'manager') {
+              window.location.href = 'talaea-admin.html';
+            } else if (userData.role === 'teacher') {
+              window.location.href = 'teacher-dashboard.html';
+            } else {
+              window.location.href = 'talaea-almobdeeen.html';
+            }
+          }, 1000);
+        } else {
+          loginError.textContent = '⚠️ لا توجد بيانات للمستخدم في النظام';
           loginBtn.disabled = false;
           loginBtn.innerHTML = '🔐 تسجيل الدخول';
-          loginBtn.style.background = '';
-        }, 1500);
-
+        }
       } catch (error) {
-        // Handle errors
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '🔐 تسجيل الدخول';
-
+        let errorMessage = 'حدث خطأ في تسجيل الدخول';
         switch (error.code) {
           case 'auth/user-not-found':
-            errorEl.textContent = '❌ البريد الإلكتروني غير مسجل';
+            errorMessage = 'البريد الإلكتروني غير مسجل';
             break;
           case 'auth/wrong-password':
-            errorEl.textContent = '❌ كلمة المرور غير صحيحة';
+            errorMessage = 'كلمة المرور غير صحيحة';
             break;
           case 'auth/invalid-email':
-            errorEl.textContent = '❌ صيغة البريد الإلكتروني غير صحيحة';
+            errorMessage = 'صيغة البريد الإلكتروني غير صحيحة';
             break;
           case 'auth/too-many-requests':
-            errorEl.textContent = '⚠️ محاولات كثيرة، حاولي لاحقاً';
+            errorMessage = 'محاولات كثيرة، حاولي لاحقاً';
             break;
-          case 'auth/network-request-failed':
-            errorEl.textContent = '⚠️ تحقق من اتصال الإنترنت';
-            break;
-          default:
-            errorEl.textContent = '❌ حدث خطأ: ' + error.message;
         }
+        loginError.textContent = `⚠️ ${errorMessage}`;
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '🔐 تسجيل الدخول';
       }
     }
 
-    // ═══════════════════════════════════
-    // Auth State Observer
-    // ═══════════════════════════════════
+    loginBtn.addEventListener('click', handleLogin);
+
+    // ═══════════════════════════════════════════════════════════
+    // 9. AUTH STATE OBSERVER
+    // ═══════════════════════════════════════════════════════════
     auth.onAuthStateChanged((user) => {
-      const adminBtn = document.querySelector('.btn-admin');
+      const adminBtn = document.getElementById('adminLoginBtn');
       if (user) {
         adminBtn.innerHTML = '👩‍💼 لوحة التحكم';
-        adminBtn.onclick = () => {
-          // window.location.href = 'dashboard.html';
-          alert('مرحباً بك في لوحة التحكم! 🌟');
-        };
       } else {
-        adminBtn.innerHTML = '🔐 دخول المشرفة';
-        adminBtn.onclick = openLoginModal;
+        adminBtn.innerHTML = '🔐 دخول الإدارة';
       }
     });
 
-    // ═══════════════════════════════════
-    // Smooth Scroll for Navigation
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 10. SMOOTH SCROLL FOR NAVIGATION
+    // ═══════════════════════════════════════════════════════════
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -884,38 +837,20 @@
         if (target) {
           const headerHeight = document.getElementById('header').offsetHeight;
           const targetPosition = target.offsetTop - headerHeight - 20;
-          window.scrollTo({
-            top: targetPosition,
-            behavior: 'smooth'
-          });
+          window.scrollTo({ top: targetPosition, behavior: 'smooth' });
         }
       });
     });
 
-    // ═══════════════════════════════════
-    // ✅ Fix: Ensure all elements are visible after page load
-    // ═══════════════════════════════════
+    // ═══════════════════════════════════════════════════════════
+    // 11. REFRESH AOS AFTER LOAD
+    // ═══════════════════════════════════════════════════════════
     window.addEventListener('load', () => {
-      // Make sure all buttons and icons are visible
-      const elements = document.querySelectorAll(
-        '.btn-primary, .btn-outline, .btn-admin, .card-icon, .logo-circle, .play-btn, .hero-badge, nav a'
-      );
-      elements.forEach(el => {
-        el.style.opacity = '1';
-        el.style.visibility = 'visible';
-      });
-
-      // Refresh AOS after everything is loaded
-      setTimeout(() => {
-        AOS.refresh();
-      }, 500);
+      setTimeout(() => AOS.refresh(), 100);
     });
 
-    // ═══════════════════════════════════
-    // Console Welcome Message
-    // ═══════════════════════════════════
     console.log('%c🌟 روضة طلائع المبدعين', 'font-size: 24px; font-weight: bold; color: #0f2d5c;');
-    console.log('%c نبني جيلاً مبدعاً ✨', 'font-size: 14px; color: #0e7490;');
+    console.log('%cتم تحميل الصفحة بنجاح ✅', 'font-size: 14px; color: #0e7490;');
   </script>
 </body>
 </html>
