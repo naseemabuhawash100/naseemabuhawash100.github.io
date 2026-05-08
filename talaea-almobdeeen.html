@@ -199,7 +199,6 @@
     .section-card p { font-size: 14px; color: var(--gray-600); line-height: 1.8; }
 
     /* ─── ABOUT ─── */
-    .about-section { background:
     .about-section { background: white; padding: 100px 24px; }
     .about-inner {
       max-width: 1280px; margin: auto;
@@ -233,7 +232,7 @@
     /* ─── GALLERY ─── */
     .gallery-section { padding: 100px 24px; background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%); }
     .gallery-inner { max-width: 1280px; margin: auto; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 50px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; }
     .gallery-card {
       background: white; border-radius: var(--radius-lg); overflow: hidden;
       box-shadow: var(--shadow); transition: var(--transition); border: 1px solid var(--border);
@@ -248,10 +247,10 @@
     .gallery-info h3 { font-size: 17px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
     .gallery-info p { font-size: 14px; color: var(--gray-600); line-height: 1.7; }
 
-    /* ─── VIDEOS PREVIEW ─── */
+    /* ─── VIDEOS ─── */
     .videos-section { padding: 100px 24px; background: white; }
     .videos-inner { max-width: 1280px; margin: auto; }
-    .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 50px; }
+    .videos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; }
     .video-card {
       background: var(--gray-100); border-radius: var(--radius-lg); overflow: hidden;
       border: 1px solid var(--border); transition: var(--transition);
@@ -395,7 +394,7 @@
           <li><a href="#sections">📂 الأقسام</a></li>
           <li><a href="#about">ℹ️ من نحن</a></li>
           <li><a href="#gallery">🖼️ المعرض</a></li>
-          <li><a href="videos.html">🎥 الفيديوهات</a></li>
+          <li><a href="#videos">🎥 الفيديوهات</a></li>
           <li><a href="#worksheets">📝 أوراق العمل</a></li>
         </ul>
       </nav>
@@ -410,9 +409,6 @@
         <div class="hero-content" data-aos="fade-up">
           <div class="hero-badge">🌟 مرحباً بكم في روضتنا</div>
           <h2>نرعى براعم اليوم<br>لنصنع قادة الغد</h2>
-          # ✅ تابع الكود النهائي - الجزء 2
-
-```html
           <p>
             روضة طلائع المبدعين تقدم بيئة تعليمية متميزة تجمع بين المرح والتعلم،
             حيث يكتشف أطفالنا مواهبهم وينمون مهاراتهم في أجواء آمنة ومحفزة.
@@ -541,7 +537,7 @@
     </div>
   </section>
 
-  <!-- ══════ VIDEOS PREVIEW ══════ -->
+  <!-- ══════ VIDEOS ══════ -->
   <section class="videos-section" id="videos">
     <div class="videos-inner">
       <div class="section-title" data-aos="fade-down">
@@ -570,9 +566,6 @@
           </div>
           <div class="video-info"><h3>أناشيد الأطفال</h3><p>أناشيد تعليمية محببة للأطفال</p></div>
         </div>
-      </div>
-      <div style="text-align: center; margin-top: 50px;">
-        <a href="videos.html" class="btn-primary">🎬 شاهد جميع الفيديوهات</a>
       </div>
     </div>
   </section>
@@ -625,10 +618,7 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
     // ═══════════════════════════════════════════════════════════
-    // 1. FIREBASE CONFIGURATION
-    // ═══════════════════════════════════════
-    // ═══════════════════════════════════════════════════════════
-    // 1. FIREBASE CONFIGURATION
+    // 1. FIREBASE CONFIGURATION (البيانات الصحيحة)
     // ═══════════════════════════════════════════════════════════
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
@@ -687,7 +677,6 @@
         ul.style.padding = '16px';
         ul.style.boxShadow = '0 10px 25px rgba(0,0,0,0.1)';
         ul.style.zIndex = '99';
-        ul.style.borderRadius = '0 0 16px 16px';
       }
     }
 
