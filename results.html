@@ -9,7 +9,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- GSAP + Plugins -->
+  <!-- GSAP for Animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
@@ -47,13 +47,10 @@
       --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
       --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
       --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
-      --shadow-2xl: 0 50px 100px -20px rgba(0,0,0,0.3);
       --radius: 16px;
       --radius-lg: 24px;
       --radius-xl: 32px;
-      --spring-bounce: cubic-bezier(0.34, 1.2, 0.64, 1);
-      --spring-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --spring-wobbly: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -69,13 +66,13 @@
       min-height: 100vh;
     }
 
-    /* Header */
+    /* ─── HEADER ─── */
     header {
       position: sticky; top: 0; z-index: 1000;
       background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-      transition: all 0.4s var(--spring-bounce);
+      transition: var(--transition);
     }
 
     header.scrolled {
@@ -88,42 +85,39 @@
       max-width: 1320px; margin: auto;
       padding: 14px 24px;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 20px; flex-wrap: wrap;
+      gap: 16px; flex-wrap: wrap;
     }
 
     .logo-area {
       display: flex; align-items: center; gap: 14px;
-      text-decoration: none;
     }
 
     .logo-circle {
-      width: 54px; height: 54px; border-radius: 50%;
+      width: 50px; height: 50px; border-radius: 50%;
       background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
+      font-size: 24px;
       box-shadow: 0 4px 15px rgba(15,45,92,0.3);
-      transition: all 0.3s var(--spring-bounce);
+      transition: var(--transition);
     }
 
-    .logo-circle:hover {
-      transform: rotate(10deg) scale(1.08);
-    }
+    .logo-circle:hover { transform: rotate(10deg) scale(1.08); }
 
     .logo-text h1 {
-      font-size: 18px; font-weight: 900; color: var(--navy);
-      line-height: 1.3;
+      font-size: 17px; font-weight: 800; color: var(--navy);
+      line-height: 1.3; margin-bottom: 2px;
     }
 
     .logo-text p { font-size: 12px; color: var(--gray-500); }
 
-    .header-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn {
-      border: none; border-radius: 99px; padding: 10px 24px;
+      border: none; border-radius: 99px; padding: 10px 22px;
       font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: 'Tajawal', sans-serif; text-decoration: none;
       display: inline-flex; align-items: center; gap: 8px;
-      transition: all 0.3s var(--spring-bounce);
+      transition: var(--transition);
     }
 
     .btn-gray {
@@ -150,27 +144,37 @@
     .btn-red {
       background: linear-gradient(135deg, var(--coral), #ff5252);
       color: white;
+      box-shadow: 0 4px 15px rgba(255,107,107,0.3);
     }
 
     .btn-red:hover {
       transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255,107,107,0.4);
     }
 
-    /* Hero */
+    /* ─── HERO ─── */
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
       color: white;
-      padding: 80px 24px 100px;
+      padding: 70px 24px 90px;
       position: relative;
       overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      z-index: -1;
     }
 
     .hero::after {
       content: ''; position: absolute;
       top: -30%; right: -10%;
-      width: 500px; height: 500px;
+      width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%);
       border-radius: 50%;
+      z-index: -1;
       animation: pulse 8s ease-in-out infinite;
     }
 
@@ -180,26 +184,27 @@
     }
 
     .hero-inner {
-      max-width: 1200px; margin: auto;
-      position: relative;
-      z-index: 1;
+      max-width: 1320px; margin: auto;
+      position: relative; z-index: 1;
     }
 
     .hero h2 {
-      font-size: clamp(32px, 5vw, 48px);
-      font-weight: 900; margin-bottom: 12px;
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 900; line-height: 1.3;
+      margin-bottom: 12px;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
     }
 
     .hero p {
-      font-size: 17px; opacity: 0.95;
+      font-size: 16px; opacity: 0.95; line-height: 1.8;
     }
 
-    /* Stats Cards */
+    /* ─── STATS ─── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      max-width: 1200px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 1320px;
       margin: -50px auto 0;
       padding: 0 24px;
       position: relative;
@@ -208,22 +213,35 @@
 
     .stat-card {
       background: white;
-      border-radius: 28px;
-      padding: 28px;
-      text-align: center;
-      box-shadow: var(--shadow-xl);
-      transition: all 0.4s var(--spring-bounce);
+      border-radius: var(--radius-xl);
+      padding: 26px;
       border: 1px solid var(--border);
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
     }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--navy), var(--teal));
+      transform: scaleX(0);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover::before { transform: scaleX(1); }
 
     .stat-card:hover {
       transform: translateY(-8px);
-      box-shadow: var(--shadow-2xl);
+      box-shadow: var(--shadow-xl);
     }
 
     .stat-num {
-      font-size: 42px;
-      font-weight: 900;
+      font-size: 42px; font-weight: 900;
       background: linear-gradient(135deg, var(--navy), var(--teal));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -231,136 +249,168 @@
     }
 
     .stat-lbl {
-      font-size: 14px;
-      color: var(--gray-500);
-      margin-top: 8px;
-      font-weight: 600;
+      font-size: 14px; color: var(--gray-500);
+      margin-top: 8px; font-weight: 600;
     }
 
-    /* Content */
+    /* ─── CONTENT ─── */
     .content {
-      max-width: 1200px;
-      margin: 60px auto;
-      padding: 0 24px;
+      max-width: 1320px;
+      margin: 40px auto;
+      padding: 0 24px 60px;
     }
 
-    /* Cards */
+    /* ─── CARDS ─── */
     .card {
       background: white;
-      border-radius: 32px;
+      border-radius: var(--radius-xl);
       border: 1px solid var(--border);
       box-shadow: var(--shadow-md);
-      padding: 36px;
-      margin-bottom: 32px;
-      transition: all 0.4s var(--spring-bounce);
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: var(--transition);
     }
 
     .card:hover {
-      box-shadow: var(--shadow-xl);
-      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
     }
 
     .card-title {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--navy);
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      font-size: 20px; font-weight: 900; color: var(--navy);
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px;
     }
 
-    /* Filters Grid */
+    /* ─── FILTERS ─── */
     .filter-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
     .form-field label {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gray-700);
-      margin-bottom: 10px;
+      display: block; font-size: 14px; font-weight: 700;
+      color: var(--gray-700); margin-bottom: 10px;
     }
 
     .form-field input, .form-field select {
-      width: 100%;
-      border: 2px solid var(--gray-200);
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 15px;
-      outline: none;
-      transition: all 0.2s var(--spring-bounce);
-      background: white;
+      width: 100%; border: 2px solid var(--gray-200);
+      border-radius: 14px; padding: 13px 16px;
+      font-family: 'Tajawal', sans-serif; font-size: 15px;
+      outline: none; transition: var(--transition); background: white;
       color: var(--gray-800);
     }
 
     .form-field input:focus, .form-field select:focus {
       border-color: var(--teal);
       box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
-      transform: scale(1.02);
     }
 
     .filter-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex; gap: 12px; flex-wrap: wrap;
     }
 
     .btn-green {
       background: linear-gradient(135deg, var(--mint), #10b981);
       color: white;
+      box-shadow: 0 4px 15px rgba(78,205,196,0.3);
     }
 
     .btn-green:hover {
       transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(78,205,196,0.4);
     }
 
-    /* Table */
+    /* ─── TABLE ─── */
     .table-wrap {
       overflow-x: auto;
-      border-radius: 24px;
+      border-radius: var(--radius-lg);
       border: 1px solid var(--gray-200);
       background: white;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrap::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-wrap::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 4px;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: var(--gray-400);
+      border-radius: 4px;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb:hover {
+      background: var(--gray-500);
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 800px;
+      width: 100%; border-collapse: collapse;
+      min-width: 900px;
     }
 
     thead th {
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white;
-      padding: 16px 14px;
-      font-size: 14px;
-      font-weight: 800;
-      text-align: center;
+      color: white; padding: 16px 14px; font-size: 14px;
+      font-weight: 800; text-align: center;
+      white-space: nowrap;
     }
 
     tbody td {
-      padding: 16px 14px;
-      border-bottom: 1px solid var(--gray-200);
-      font-size: 14px;
-      text-align: center;
-      color: var(--gray-600);
+      padding: 16px 14px; border-bottom: 1px solid var(--gray-200);
+      font-size: 14px; text-align: center; color: var(--gray-600);
+      white-space: nowrap;
     }
 
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: var(--gray-50); }
 
-    /* Score Badge */
+    /* Responsive Table */
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+      tbody tr {
+        margin-bottom: 16px;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 16px;
+        background: white;
+      }
+      tbody tr:hover { background: white; }
+      td {
+        border: none;
+        padding: 10px 0;
+        position: relative;
+        padding-right: 50%;
+        text-align: left;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        right: 0;
+        width: 45%;
+        font-weight: 700;
+        color: var(--gray-700);
+        white-space: nowrap;
+      }
+    }
+
+    /* ─── SCORE BADGE ─── */
     .score-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
+      display: inline-block; padding: 6px 14px;
+      border-radius: 99px; font-size: 14px; font-weight: 700;
+      transition: var(--transition);
     }
 
     .score-high {
@@ -378,39 +428,39 @@
       color: #991b1b;
     }
 
-    /* Empty State */
+    .score-badge:hover {
+      transform: scale(1.1);
+    }
+
+    /* ─── EMPTY STATE ─── */
     .empty-state {
-      text-align: center;
-      padding: 60px;
-      color: var(--gray-500);
+      text-align: center; padding: 60px 24px; color: var(--gray-500);
     }
 
     .empty-state .icon {
-      font-size: 64px;
-      margin-bottom: 16px;
+      font-size: 64px; margin-bottom: 20px;
       opacity: 0.5;
     }
 
-    /* Export Bar */
+    .empty-state p {
+      font-size: 16px;
+    }
+
+    /* ─── EXPORT BAR ─── */
     .export-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
     }
 
     .results-meta {
-      font-size: 14px;
-      color: var(--gray-500);
+      font-size: 14px; color: var(--gray-500);
       font-weight: 600;
       background: var(--gray-100);
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 99px;
     }
 
-    /* Toast */
+    /* ─── Toast Notifications ─── */
     .toast-container {
       position: fixed;
       top: 100px;
@@ -424,28 +474,32 @@
     .toast {
       background: white;
       border-radius: 16px;
-      padding: 16px 22px;
+      padding: 18px 22px;
       box-shadow: var(--shadow-xl);
       border-right: 4px solid var(--navy);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: slideIn 0.4s var(--spring-bounce);
+      display: flex; align-items: center; gap: 14px;
+      min-width: 320px;
+      max-width: 420px;
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .toast.success { border-right-color: var(--mint); }
     .toast.error { border-right-color: var(--coral); }
+    .toast.warning { border-right-color: var(--gold); }
+
+    .toast-icon { font-size: 22px; }
+    .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-40px) scale(0.9); }
-      to { opacity: 1; transform: translateX(0) scale(1); }
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    /* Loading */
+    /* ─── Loading State ─── */
     .loading-overlay {
       position: fixed; inset: 0;
       background: rgba(255,255,255,0.98);
-      z-index: 9999;
+      z-index: 9998;
       display: none;
       align-items: center;
       justify-content: center;
@@ -456,46 +510,32 @@
     .loading-overlay.active { display: flex; }
 
     .loading-spinner {
-      width: 50px; height: 50px;
-      border: 4px solid var(--gray-200);
+      width: 60px; height: 60px;
+      border: 4px solid var(--gray-100);
       border-top-color: var(--navy);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 1s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    footer {
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      color: rgba(255,255,255,0.8);
-      padding: 50px 24px;
-      text-align: center;
+    .loading-text {
+      font-size: 17px; font-weight: 700; color: var(--navy);
     }
 
-    footer span { color: var(--gold-light); font-weight: 800; }
-
-    @media (max-width: 900px) {
-      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: -30px; }
-      .card { padding: 24px; }
-    }
-
-    @media (max-width: 768px) {
-      .header-inner { padding: 12px 16px; flex-wrap: wrap; }
-      .logo-circle { width: 46px; height: 46px; font-size: 22px; }
-      .stats-row { margin-top: -20px; }
-      .hero { padding: 60px 16px 80px; }
-      .content { padding: 0 16px; margin: 40px auto; }
-      .filter-grid { grid-template-columns: 1fr; }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-  <div class="toast-container" id="toastContainer"></div>
+  <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">جاري تحميل النتائج...</div>
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <header id="header">
     <div class="header-inner">
@@ -517,7 +557,7 @@
   <section class="hero">
     <div class="hero-inner">
       <h2 id="heroTitle">📊 نتائج طلاب روضة طلائع المبدعين</h2>
-      <p id="heroSub">يتم عرض النتائج المحفوظة من جلسات التمارين التفاعلية</p>
+      <p id="heroSub">يتم عرض النتائج المحفوظة من جلسات التمارين التفاعلية.</p>
     </div>
   </section>
 
@@ -536,7 +576,7 @@
     </div>
     <div class="stat-card" id="statHigh">
       <div class="stat-num">0</div>
-      <div class="stat-lbl">درجات ممتازة</div>
+      <div class="stat-lbl">درجات ممتازة ≥80%</div>
     </div>
   </div>
 
@@ -545,19 +585,19 @@
       <div class="card-title">🔍 فلاتر البحث</div>
       <div class="filter-grid">
         <div class="form-field">
-          <label>📅 التاريخ</label>
+          <label>التاريخ</label>
           <input id="fDate" type="date">
         </div>
         <div class="form-field">
-          <label>🔢 رقم الصفحة</label>
+          <label>رقم الصفحة</label>
           <input id="fPage" type="number" min="1" placeholder="مثال: 3">
         </div>
         <div class="form-field">
-          <label>👧 اسم الطالب</label>
+          <label>اسم الطالب</label>
           <input id="fStudent" type="text" placeholder="ابحث...">
         </div>
         <div class="form-field">
-          <label>📖 المادة</label>
+          <label>المادة</label>
           <select id="fSubject">
             <option value="">كل المواد</option>
             <option value="math">الرياضيات</option>
@@ -566,7 +606,7 @@
           </select>
         </div>
         <div class="form-field">
-          <label>🎓 المرحلة</label>
+          <label>المرحلة</label>
           <select id="fStage">
             <option value="">كل المراحل</option>
             <option value="tamheedi">التمهيدي</option>
@@ -598,7 +638,7 @@
               <th>المرحلة</th>
               <th>الصفحة</th>
               <th>التاريخ</th>
-             </tr>
+            </tr>
           </thead>
           <tbody id="resultsTable"></tbody>
         </table>
@@ -606,12 +646,8 @@
     </div>
   </div>
 
-  <footer>
-    <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
-  </footer>
-
   <script>
-    // Firebase Config
+    // ========== Firebase Config ==========
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -627,7 +663,10 @@
 
     const KG_ID = "kg_talaea";
 
-    // Helper Functions
+    // ========== GSAP Registration ==========
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
@@ -635,7 +674,12 @@
       toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
       document.getElementById('toastContainer').appendChild(toast);
       setTimeout(() => {
-        gsap.to(toast, { opacity: 0, x: -40, duration: 0.3, onComplete: () => toast.remove() });
+        gsap.to(toast, {
+          opacity: 0,
+          x: -40,
+          duration: 0.3,
+          onComplete: () => toast.remove()
+        });
       }, 4000);
     }
 
@@ -671,7 +715,7 @@
       return `<span class="score-badge ${cls}">${score} / ${total}</span>`;
     }
 
-    // Auth Check
+    // ========== Auth Check ==========
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
     const userName = sessionStorage.getItem("userName") || "";
@@ -693,7 +737,7 @@
       document.getElementById("heroSub").textContent = "نتائج طلابك في مادتك خلال جلسات التمارين.";
     }
 
-    // Sign Out
+    // ========== Sign Out ==========
     async function signOutUser() {
       try {
         await auth.signOut();
@@ -703,15 +747,7 @@
       }
     }
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOutUser();
-      sessionStorage.clear();
-      window.location.href = "talaea-almobdeeen.html";
-    });
-
-    // Data
-    let allResults = [];
-
+    // ========== Data Functions ==========
     async function getResults() {
       try {
         const snapshot = await db.collection("results").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").limit(500).get();
@@ -722,6 +758,8 @@
         return { success: false, error: error.message, data: [] };
       }
     }
+
+    let allResults = [];
 
     async function loadResults() {
       showLoading(true);
@@ -736,25 +774,27 @@
       showLoading(false);
     }
 
+    // ========== Stats ==========
     function updateStats(list) {
       const totalEl = document.querySelector("#statTotal .stat-num");
       const studentsEl = document.querySelector("#statStudents .stat-num");
       const avgEl = document.querySelector("#statAvg .stat-num");
       const highEl = document.querySelector("#statHigh .stat-num");
 
-      gsap.to(totalEl, { innerText: list.length, duration: 1, snap: { innerText: 1 }, ease: "back.out(1.2)" });
-      gsap.to(studentsEl, { innerText: new Set(list.map(r => r.studentCode)).size, duration: 1, snap: { innerText: 1 }, ease: "back.out(1.2)" });
+      totalEl.textContent = list.length;
+      studentsEl.textContent = new Set(list.map(r => r.studentCode)).size;
 
       if (list.length) {
         const avg = list.reduce((s, r) => s + pct(r.score, r.total), 0) / list.length;
-        gsap.to(avgEl, { innerText: Math.round(avg) + "%", duration: 1, snap: { innerText: 1 }, ease: "elastic.out(1, 0.5)" });
-        gsap.to(highEl, { innerText: list.filter(r => pct(r.score, r.total) >= 80).length, duration: 1, snap: { innerText: 1 }, ease: "back.out(1.2)" });
+        avgEl.textContent = Math.round(avg) + "%";
+        highEl.textContent = list.filter(r => pct(r.score, r.total) >= 80).length;
       } else {
         avgEl.textContent = "—";
         highEl.textContent = "0";
       }
     }
 
+    // ========== Render Results ==========
     function renderResults(list) {
       updateStats(list);
       document.getElementById("resultsMeta").textContent = `عدد النتائج: ${list.length}`;
@@ -774,22 +814,27 @@
 
       tbody.innerHTML = sorted.map((r, i) => `
         <tr style="opacity:0;" class="result-row" data-index="${i}">
-          <td style="font-weight:700;">${esc(r.studentName || "")}</td>
-          <td><code style="background:#f1f5f9;padding:6px 12px;border-radius:8px;font-size:13px;">${esc(r.studentCode || "")}</code></td>
-          <td>${esc(r.className || "—")}</td>
-          <td>${scoreBadge(r.score ?? 0, r.total ?? 0)}</td>
-          <td><strong>${pct(r.score ?? 0, r.total ?? 0)}%</strong></td>
-          <td>${subjectLabel(r.subject)}</td>
-          <td>${stageLabel(r.stage)}</td>
-          <td>${esc(r.pageNumber ?? "")}</td>
-          <td style="direction:ltr;font-size:13px;">${formatShortDate(r.createdAt)}</td>
-        </tr>
-      `).join("");
+          <td data-label="اسم الطالب" style="font-weight:700;">${esc(r.studentName || "")}</td>
+          <td data-label="الكود"><code style="background:#f1f5f9;padding:6px 12px;border-radius:8px;font-size:13px;">${esc(r.studentCode || "")}</code></td>
+          <td data-label="الشعبة">${esc(r.className || "—")}</td>
+          <td data-label="النتيجة">${scoreBadge(r.score ?? 0, r.total ?? 0)}</td>
+          <td data-label="النسبة"><strong>${pct(r.score ?? 0, r.total ?? 0)}%</strong></td>
+          <td data-label="المادة">${subjectLabel(r.subject)}</td>
+          <td data-label="المرحلة">${stageLabel(r.stage)}</td>
+          <td data-label="الصفحة">${esc(r.pageNumber ?? "")}</td>
+          <td data-label="التاريخ" style="direction:ltr;font-size:13px;">${formatShortDate(r.createdAt)}</td>
+        </tr>`).join("");
 
-      gsap.to(".result-row", { opacity: 1, duration: 0.5, stagger: 0.05, ease: "back.out(1.2)" });
+      // Animate rows
+      gsap.to(".result-row", {
+        opacity: 1,
+        duration: 0.5,
+        stagger: 0.05,
+        delay: 0.2
+      });
     }
 
-    // Filters
+    // ========== Filters ==========
     function applyFilters() {
       const fd = document.getElementById("fDate").value;
       const fp = document.getElementById("fPage").value.trim();
@@ -814,53 +859,105 @@
     }
 
     document.getElementById("applyFilters").addEventListener("click", applyFilters);
+
     document.getElementById("resetFilters").addEventListener("click", () => {
-      ["fDate", "fPage", "fStudent", "fSubject", "fStage"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
+      ["fDate", "fPage", "fStudent"].forEach(id => document.getElementById(id).value = "");
+      ["fSubject", "fStage"].forEach(id => document.getElementById(id).value = "");
       renderResults(allResults);
       showToast("تم مسح الفلتر", "success");
     });
 
-    // Header Scroll Effect
+    // ========== Logout ==========
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOutUser();
+      sessionStorage.clear();
+      window.location.href = "talaea-almobdeeen.html";
+    });
+
+    // ========== Header Scroll Effect ==========
     window.addEventListener('scroll', () => {
       document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // GSAP Animations
-    gsap.registerPlugin(ScrollTrigger);
+    // ========== GSAP Animations ==========
+    // Hero Animation
+    gsap.from("#heroTitle", {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: "power3.out"
+    });
 
-    gsap.from(".hero h2", { opacity: 0, y: 40, duration: 1, ease: "elastic.out(1, 0.5)" });
-    gsap.from(".hero p", { opacity: 0, y: 30, duration: 0.8, ease: "back.out(1.2)", delay: 0.2 });
+    gsap.from("#heroSub", {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.2
+    });
 
-    gsap.from(".stat-card", {
+    // Stats Animation
+    gsap.from("#statTotal", {
       opacity: 0,
       y: 50,
       scale: 0.9,
       duration: 0.8,
-      stagger: 0.1,
-      delay: 0.4,
+      delay: 0.5,
       ease: "back.out(1.7)"
     });
 
+    gsap.from("#statStudents", {
+      opacity: 0,
+      y: 50,
+      scale: 0.9,
+      duration: 0.8,
+      delay: 0.6,
+      ease: "back.out(1.7)"
+    });
+
+    gsap.from("#statAvg", {
+      opacity: 0,
+      y: 50,
+      scale: 0.9,
+      duration: 0.8,
+      delay: 0.7,
+      ease: "back.out(1.7)"
+    });
+
+    gsap.from("#statHigh", {
+      opacity: 0,
+      y: 50,
+      scale: 0.9,
+      duration: 0.8,
+      delay: 0.8,
+      ease: "back.out(1.7)"
+    });
+
+    // Filter Card Animation
     gsap.from("#filterCard", {
       opacity: 0,
       y: 60,
       duration: 1,
-      scrollTrigger: { trigger: "#filterCard", start: "top 85%" },
-      ease: "back.out(1.2)"
+      delay: 1,
+      scrollTrigger: {
+        trigger: "#filterCard",
+        start: "top 85%",
+      }
     });
 
+    // Table Card Animation
     gsap.from("#tableCard", {
       opacity: 0,
       y: 60,
       duration: 1,
-      scrollTrigger: { trigger: "#tableCard", start: "top 85%" },
-      ease: "back.out(1.2)"
+      delay: 1.2,
+      scrollTrigger: {
+        trigger: "#tableCard",
+        start: "top 85%",
+      }
     });
 
-    // Initialize
+    // ========== Init ==========
     loadResults();
   </script>
 </body>

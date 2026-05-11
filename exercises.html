@@ -9,10 +9,9 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- GSAP core + plugins for Framer Motion style -->
+  <!-- GSAP for Animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -29,7 +28,6 @@
       --teal-light: #159db9;
       --coral: #ff6b6b;
       --mint: #4ecdc4;
-      --mint-light: #6ee7b7;
       --lavender: #a78bfa;
       --purple: #9333ea;
       --light: #f0f6ff;
@@ -48,16 +46,10 @@
       --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
       --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
       --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
-      --shadow-2xl: 0 50px 100px -20px rgba(0,0,0,0.3);
       --radius: 16px;
       --radius-lg: 24px;
       --radius-xl: 32px;
       --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      /* Framer Motion style easings */
-      --spring-bounce: cubic-bezier(0.34, 1.2, 0.64, 1);
-      --spring-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --spring-wobbly: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      --spring-stiff: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,7 +71,7 @@
       background: rgba(255,255,255,0.85);
       backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-      transition: all 0.4s var(--spring-stiff);
+      transition: var(--transition);
     }
 
     header.scrolled {
@@ -89,10 +81,24 @@
     }
 
     .header-inner {
-      max-width: 1320px; margin: auto;
+      max-width: 1200px; margin: auto;
       padding: 14px 24px;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 20px; flex-wrap: wrap;
+      gap: 16px; flex-wrap: wrap;
+    }
+
+    nav ul {
+      display: flex; gap: 4px; list-style: none; flex-wrap: wrap;
+    }
+
+    nav a {
+      display: block; padding: 8px 14px; border-radius: 99px;
+      font-size: 14px; font-weight: 700; color: var(--gray-600);
+      text-decoration: none; transition: var(--transition);
+    }
+
+    nav a:hover {
+      color: var(--navy); background: var(--gray-100);
     }
 
     .logo-area {
@@ -101,71 +107,46 @@
     }
 
     .logo-circle {
-      width: 54px; height: 54px; border-radius: 50%;
+      width: 50px; height: 50px; border-radius: 50%;
       background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
+      font-size: 24px;
       box-shadow: 0 4px 15px rgba(15,45,92,0.3);
-      transition: all 0.3s var(--spring-bounce);
+      transition: var(--transition);
     }
 
-    .logo-circle:hover {
-      transform: rotate(10deg) scale(1.08);
-    }
+    .logo-circle:hover { transform: rotate(10deg) scale(1.08); }
 
     .logo-text h1 {
-      font-size: 18px; font-weight: 900; color: var(--navy);
+      font-size: 17px; font-weight: 800; color: var(--navy);
       line-height: 1.3; margin-bottom: 2px;
     }
 
     .logo-text p { font-size: 12px; color: var(--gray-500); }
 
-    nav ul {
-      display: flex; gap: 6px; list-style: none; flex-wrap: wrap;
-      padding: 8px 12px;
-      background: var(--gray-100);
-      border-radius: 99px;
+    .btn {
+      border: none; border-radius: 99px; padding: 10px 22px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Tajawal', sans-serif; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: var(--transition);
     }
 
-    nav a {
-      display: block; padding: 10px 18px; border-radius: 99px;
-      font-size: 14px; font-weight: 700; color: var(--gray-600);
-      text-decoration: none;
-      transition: all 0.2s var(--spring-stiff);
+    .btn-gray {
+      background: var(--gray-100); color: var(--gray-600);
+      border: 1px solid var(--gray-200);
     }
 
-    nav a:hover, nav a.active {
-      color: var(--navy);
-      background: white;
-      box-shadow: var(--shadow-sm);
+    .btn-gray:hover {
+      background: var(--gray-200);
       transform: translateY(-2px);
-    }
-
-    .btn-back {
-      background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white; border: none; border-radius: 99px;
-      padding: 12px 26px; font-size: 14px; font-weight: 800;
-      cursor: pointer; font-family: 'Tajawal', sans-serif;
-      box-shadow: 0 4px 15px rgba(245,166,35,0.35);
-      transition: all 0.3s var(--spring-bounce);
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none;
-    }
-
-    .btn-back:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 12px 30px rgba(245,166,35,0.45);
-    }
-
-    .btn-back:active {
-      transform: scale(0.98);
     }
 
     /* ─── HERO ─── */
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
       color: white;
-      padding: 100px 24px 120px;
+      padding: 80px 24px 100px;
       position: relative;
       overflow: hidden;
       isolation: isolate;
@@ -173,14 +154,14 @@
 
     .hero::before {
       content: ''; position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23ffffff' fill-opacity='0.05'/%3E%3C/svg%3E");
       z-index: -1;
     }
 
     .hero::after {
       content: ''; position: absolute;
       top: -30%; right: -10%;
-      width: 600px; height: 600px;
+      width: 500px; height: 500px;
       background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%);
       border-radius: 50%;
       z-index: -1;
@@ -193,7 +174,7 @@
     }
 
     .hero-inner {
-      max-width: 1320px; margin: auto;
+      max-width: 800px; margin: auto;
       text-align: center;
       position: relative; z-index: 1;
     }
@@ -205,19 +186,25 @@
       color: var(--gold-light);
       padding: 8px 20px; border-radius: 99px;
       font-size: 13px; font-weight: 800;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       backdrop-filter: blur(10px);
+      transition: var(--transition);
+    }
+
+    .hero-badge:hover {
+      background: rgba(245,166,35,0.25);
+      transform: translateY(-2px);
     }
 
     .hero h2 {
-      font-size: clamp(36px, 5vw, 52px);
-      font-weight: 900; line-height: 1.2;
-      margin-bottom: 20px;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 900; line-height: 1.3;
+      margin-bottom: 18px;
       text-shadow: 0 4px 30px rgba(0,0,0,0.3);
     }
 
     .hero p {
-      font-size: 17px; opacity: 0.95; line-height: 1.9;
+      font-size: 17px; opacity: 0.95; line-height: 2;
       max-width: 600px; margin: auto;
     }
 
@@ -230,8 +217,8 @@
 
     /* ─── MAIN CONTENT ─── */
     .main-content {
-      max-width: 1320px; margin: 0 auto;
-      padding: 80px 24px;
+      max-width: 800px; margin: 0 auto;
+      padding: 60px 24px 80px;
     }
 
     /* ─── FORM CARD ─── */
@@ -239,10 +226,10 @@
       background: white;
       border-radius: var(--radius-xl);
       border: 1px solid var(--border);
-      box-shadow: var(--shadow-md);
-      padding: 56px;
-      margin-bottom: 60px;
-      transition: all 0.4s var(--spring-gentle);
+      box-shadow: var(--shadow-lg);
+      padding: 44px;
+      margin-bottom: 44px;
+      transition: var(--transition);
       position: relative;
       overflow: hidden;
     }
@@ -251,73 +238,64 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 6px;
+      height: 5px;
       background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
-      transform: scaleX(0);
-      transition: transform 0.5s var(--spring-bounce);
-    }
-
-    .form-card:hover::before {
-      transform: scaleX(1);
     }
 
     .form-card:hover {
-      box-shadow: var(--shadow-2xl);
-      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-4px);
     }
 
     .form-card h3 {
-      font-size: 28px; font-weight: 900; color: var(--navy);
-      margin-bottom: 40px; text-align: center;
+      font-size: 22px; font-weight: 900; color: var(--navy);
+      margin-bottom: 32px; text-align: center;
     }
 
-    /* Framer Motion style steps */
     .form-step {
-      display: flex; align-items: flex-start; gap: 24px;
-      margin-bottom: 36px;
-      padding: 28px;
+      display: flex; align-items: flex-start; gap: 20px;
+      margin-bottom: 32px;
+      padding: 24px;
       background: var(--gray-50);
       border-radius: var(--radius-lg);
-      transition: all 0.3s var(--spring-gentle);
-      cursor: pointer;
+      transition: var(--transition);
     }
 
     .form-step:hover {
       background: white;
       box-shadow: var(--shadow-md);
-      transform: translateX(-8px);
     }
 
     .step-num {
-      width: 56px; height: 56px; border-radius: 50%;
+      width: 44px; height: 44px; border-radius: 50%;
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white; font-size: 22px; font-weight: 900;
+      color: white; font-size: 18px; font-weight: 900;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       box-shadow: 0 4px 15px rgba(15,45,92,0.3);
-      transition: all 0.3s var(--spring-bounce);
+      transition: var(--transition);
     }
 
     .form-step:hover .step-num {
-      transform: scale(1.15) rotate(10deg);
+      transform: scale(1.1) rotate(10deg);
     }
 
     .step-content { flex: 1; }
 
     .step-content label {
-      display: block; font-size: 16px; font-weight: 800;
+      display: block; font-size: 15px; font-weight: 700;
       color: var(--gray-700); margin-bottom: 12px;
     }
 
     .step-content select, .step-content input {
       width: 100%;
       border: 2px solid var(--gray-200);
-      border-radius: 20px;
-      padding: 16px 20px;
+      border-radius: 16px;
+      padding: 15px 18px;
       font-family: 'Tajawal', sans-serif;
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
-      transition: all 0.2s var(--spring-stiff);
+      transition: var(--transition);
       background: white;
       color: var(--gray-800);
     }
@@ -325,90 +303,67 @@
     .step-content select:focus, .step-content input:focus {
       border-color: var(--teal);
       box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
-      transform: scale(1.02);
     }
 
-    /* Framer Motion like button */
+    .step-content select {
+      cursor: pointer;
+    }
+
     .start-btn {
       display: block; width: 100%;
-      background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white; border: none; border-radius: 99px;
-      padding: 20px;
-      font-size: 20px; font-weight: 900;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white; border: none; border-radius: 18px;
+      padding: 18px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 18px; font-weight: 800;
       cursor: pointer;
-      transition: all 0.3s var(--spring-bounce);
-      box-shadow: 0 8px 25px rgba(245,166,35,0.4);
-      margin-top: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .start-btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .start-btn:hover::before {
-      width: 300px;
-      height: 300px;
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(15,45,92,0.3);
+      margin-top: 8px;
     }
 
     .start-btn:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 16px 40px rgba(245,166,35,0.55);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 35px rgba(15,45,92,0.4);
     }
 
-    .start-btn:active {
-      transform: scale(0.98);
-    }
+    .start-btn:active { transform: translateY(-2px); }
+    .start-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .error-msg {
       text-align: center; font-size: 14px; font-weight: 700;
-      color: var(--coral); min-height: 28px; margin-top: 20px;
+      color: var(--coral); min-height: 24px; margin-top: 16px;
     }
 
-    /* How it works cards - Framer Motion stagger */
-    .how-section {
-      margin-top: 40px;
-    }
-
+    /* ─── HOW IT WORKS ─── */
     .how-title {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 40px;
     }
 
     .how-title h3 {
-      font-size: 32px; font-weight: 900; color: var(--navy);
-      margin-bottom: 12px;
+      font-size: 24px; font-weight: 900; color: var(--navy);
+      margin-bottom: 8px;
     }
 
     .how-title p {
-      font-size: 17px; color: var(--gray-500);
+      font-size: 15px; color: var(--gray-500);
     }
 
     .how-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
+      gap: 20px;
     }
 
     .how-card {
       background: white;
       border-radius: var(--radius-xl);
-      padding: 40px 24px;
+      padding: 28px 22px;
       border: 1px solid var(--border);
       text-align: center;
       box-shadow: var(--shadow-md);
-      transition: all 0.4s var(--spring-bounce);
-      cursor: pointer;
+      transition: var(--transition);
       position: relative;
       overflow: hidden;
     }
@@ -416,48 +371,46 @@
     .how-card::before {
       content: '';
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      top: 0; left: 0; right: 0;
       height: 4px;
-      background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+      background: linear-gradient(90deg, var(--navy), var(--teal));
       transform: scaleX(0);
-      transition: transform 0.4s var(--spring-bounce);
+      transition: var(--transition);
     }
 
-    .how-card:hover::before {
-      transform: scaleX(1);
-    }
+    .how-card:hover::before { transform: scaleX(1); }
 
     .how-card:hover {
-      transform: translateY(-12px) scale(1.03);
-      box-shadow: var(--shadow-2xl);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-xl);
     }
 
     .how-icon {
-      width: 80px; height: 80px; border-radius: 28px;
+      width: 64px; height: 64px; border-radius: 20px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 38px; margin: 0 auto 20px;
-      transition: all 0.3s var(--spring-bounce);
+      font-size: 28px; margin: 0 auto 18px;
+      transition: var(--transition);
     }
 
     .how-card:hover .how-icon {
-      transform: scale(1.2) rotate(10deg);
+      transform: scale(1.15) rotate(8deg);
     }
 
     .how-card h4 {
-      font-size: 20px; font-weight: 800; color: var(--navy);
-      margin-bottom: 12px;
+      font-size: 16px; font-weight: 800; color: var(--navy);
+      margin-bottom: 10px;
     }
 
     .how-card p {
       font-size: 14px; color: var(--gray-500); line-height: 1.8;
     }
 
-    /* ─── TOAST ─── */
+    /* ─── Toast Notifications ─── */
     .toast-container {
       position: fixed;
       top: 100px;
       left: 24px;
-      z-index: 10001;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -465,93 +418,55 @@
 
     .toast {
       background: white;
-      border-radius: 20px;
-      padding: 18px 24px;
+      border-radius: 16px;
+      padding: 18px 22px;
       box-shadow: var(--shadow-xl);
       border-right: 4px solid var(--navy);
       display: flex; align-items: center; gap: 14px;
       min-width: 320px;
-      animation: slideIn 0.4s var(--spring-bounce);
+      max-width: 420px;
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .toast.success { border-right-color: var(--mint); }
     .toast.error { border-right-color: var(--coral); }
+    .toast.warning { border-right-color: var(--gold); }
 
-    .toast-icon { font-size: 24px; }
+    .toast-icon { font-size: 22px; }
     .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-50px) scale(0.9); }
-      to { opacity: 1; transform: translateX(0) scale(1); }
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    /* ─── LOADING ─── */
-    .loading-overlay {
-      position: fixed; inset: 0;
-      background: rgba(255,255,255,0.98);
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .loading-overlay.active { display: flex; }
-
-    .loading-spinner {
-      width: 60px; height: 60px;
-      border: 4px solid var(--gray-200);
-      border-top-color: var(--navy);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ─── FOOTER ─── */
-    footer {
-      background: linear-gradient(135deg, var(--navy), var(--navy-light));
-      color: rgba(255,255,255,0.8);
-      padding: 50px 24px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    footer span { color: var(--gold-light); font-weight: 800; }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 1024px) {
-      .how-cards { grid-template-columns: repeat(2, 1fr); }
-    }
-
+    /* ─── Responsive ─── */
     @media (max-width: 768px) {
       .header-inner { padding: 12px 16px; }
-      .logo-circle { width: 46px; height: 46px; font-size: 22px; }
-      .logo-text h1 { font-size: 16px; }
-      nav { order: 3; width: 100%; }
-      nav ul { justify-content: center; }
-      nav a { padding: 8px 14px; font-size: 13px; }
-      .btn-back { padding: 10px 20px; font-size: 13px; }
-      .hero { padding: 80px 16px 100px; }
-      .hero h2 { font-size: 32px; }
-      .main-content { padding: 40px 16px; }
+      .logo-circle { width: 44px; height: 44px; font-size: 20px; }
+      .logo-text h1 { font-size: 15px; }
+      .hero { padding: 60px 16px 80px; }
+      .hero h2 { font-size: 28px; }
+      .hero p { font-size: 15px; }
+      .main-content { padding: 40px 16px 60px; }
       .form-card { padding: 28px 20px; }
-      .form-step { flex-direction: column; padding: 20px; }
+      .form-step { flex-direction: column; padding: 18px; }
       .how-cards { grid-template-columns: 1fr; }
       .toast { min-width: auto; max-width: calc(100vw - 48px); }
+    }
+
+    @media (max-width: 480px) {
+      .logo-area { gap: 10px; }
+      .logo-text h1 { font-size: 14px; }
+      .logo-text p { display: none; }
+      .btn-gray span { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">جاري التحميل...</div>
-  </div>
 
   <header id="header">
     <div class="header-inner">
@@ -564,12 +479,14 @@
       </a>
       <nav>
         <ul>
-          <li><a href="talaea-almobdeeen.html">الرئيسية</a></li>
-          <li><a href="exercises.html" class="active">📚 التمارين</a></li>
-          <li><a href="gallery.html">🖼️ المعرض</a></li>
+          <li><a href="talaea-almobdeeen.html">🏠 الرئيسية</a></li>
+          <li><a href="gallery.html">📸 الصور</a></li>
+          <li><a href="videos.html">🎬 الفيديوهات</a></li>
         </ul>
       </nav>
-      <a href="talaea-almobdeeen.html" class="btn-back">🏠 العودة للروضة</a>
+      <a href="talaea-almobdeeen.html" class="btn btn-gray">
+        <span>🏠</span> <span>العودة للروضة</span>
+      </a>
     </div>
   </header>
 
@@ -590,7 +507,7 @@
       <div class="form-step" id="step1">
         <div class="step-num">1</div>
         <div class="step-content">
-          <label>🎓 اختر المرحلة الدراسية</label>
+          <label>اختر المرحلة الدراسية</label>
           <select id="stageSelect">
             <option value="">— اختر المرحلة —</option>
             <option value="tamheedi">التمهيدي</option>
@@ -602,12 +519,12 @@
       <div class="form-step" id="step2">
         <div class="step-num" style="background:linear-gradient(135deg, var(--teal), #159db9);">2</div>
         <div class="step-content">
-          <label>📖 اختر المادة الدراسية</label>
+          <label>اختر المادة الدراسية</label>
           <select id="subjectSelect">
             <option value="">— اختر المادة —</option>
-            <option value="math">🧮 الرياضيات</option>
-            <option value="arabic">📖 اللغة العربية</option>
-            <option value="english">🔤 اللغة الإنجليزية</option>
+            <option value="math">الرياضيات</option>
+            <option value="arabic">اللغة العربية</option>
+            <option value="english">اللغة الإنجليزية</option>
           </select>
         </div>
       </div>
@@ -615,46 +532,38 @@
       <div class="form-step" id="step3">
         <div class="step-num" style="background:linear-gradient(135deg, var(--gold), #f97316);color:var(--navy);">3</div>
         <div class="step-content">
-          <label>🔢 رقم الصفحة (من 1 إلى 50)</label>
+          <label>رقم الصفحة (من 1 إلى 50)</label>
           <input id="pageNumber" type="number" min="1" max="50" placeholder="أدخل رقم الصفحة">
         </div>
       </div>
 
-      <button class="start-btn" id="startBtn">
-        <span>🚀</span> ابدأ التمرين الآن
-      </button>
+      <button class="start-btn" id="startBtn">🚀 ابدأ التمرين الآن</button>
       <p class="error-msg" id="errorMsg"></p>
     </div>
 
-    <div class="how-section">
-      <div class="how-title">
-        <h3>كيف تبدأ؟</h3>
-        <p>ثلاث خطوات بسيطة للبدء بالتمرين</p>
-      </div>
+    <div class="how-title">
+      <h3>كيف تبدأ؟</h3>
+      <p>ثلاث خطوات بسيطة للبدء بالتمرين</p>
+    </div>
 
-      <div class="how-cards" id="howCardsContainer">
-        <div class="how-card" data-delay="0">
-          <div class="how-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">1️⃣</div>
-          <h4>اختر المرحلة</h4>
-          <p>التمهيدي أو التحضيري حسب مرحلة طفلك.</p>
-        </div>
-        <div class="how-card" data-delay="1">
-          <div class="how-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">2️⃣</div>
-          <h4>اختر المادة</h4>
-          <p>رياضيات أو عربي أو إنجليزي.</p>
-        </div>
-        <div class="how-card" data-delay="2">
-          <div class="how-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">3️⃣</div>
-          <h4>أدخل رقم الصفحة</h4>
-          <p>الرقم الموجود في الكتاب المطبوع أمامك.</p>
-        </div>
+    <div class="how-cards">
+      <div class="how-card" id="how1">
+        <div class="how-icon" style="background:linear-gradient(135deg, #dbeafe, #bfdbfe);">1️⃣</div>
+        <h4>اختر المرحلة</h4>
+        <p>التمهيدي أو التحضيري حسب مرحلة طفلك.</p>
+      </div>
+      <div class="how-card" id="how2">
+        <div class="how-icon" style="background:linear-gradient(135deg, #dcfce7, #bbf7d0);">2️⃣</div>
+        <h4>اختر المادة</h4>
+        <p>رياضيات أو عربي أو إنجليزي.</p>
+      </div>
+      <div class="how-card" id="how3">
+        <div class="how-icon" style="background:linear-gradient(135deg, #fef9c3, #fef08a);">3️⃣</div>
+        <h4>أدخل رقم الصفحة</h4>
+        <p>الرقم الموجود في الكتاب المطبوع أمامك.</p>
       </div>
     </div>
   </div>
-
-  <footer>
-    <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
-  </footer>
 
   <script>
     // ========== Firebase Config ==========
@@ -673,6 +582,9 @@
     const KG_ID = "kg_talaea";
     const KG_NAME = "روضة طلائع المبدعين";
 
+    // ========== GSAP Registration ==========
+    gsap.registerPlugin(ScrollTrigger);
+
     // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
@@ -683,17 +595,11 @@
       setTimeout(() => {
         gsap.to(toast, {
           opacity: 0,
-          x: -50,
-          scale: 0.9,
+          x: -40,
           duration: 0.3,
-          ease: "back.in(1.2)",
           onComplete: () => toast.remove()
         });
       }, 4000);
-    }
-
-    function showLoading(show = true) {
-      document.getElementById('loadingOverlay').classList.toggle('active', show);
     }
 
     // ========== Load Kindergarten Name ==========
@@ -724,19 +630,19 @@
       if (!stage) {
         errEl.textContent = "⚠️ يرجى اختيار المرحلة أولاً";
         showToast("يرجى اختيار المرحلة", "error");
-        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
       if (!subject) {
         errEl.textContent = "⚠️ يرجى اختيار المادة أولاً";
         showToast("يرجى اختيار المادة", "error");
-        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
       if (!pageVal) {
         errEl.textContent = "⚠️ يرجى إدخال رقم الصفحة";
         showToast("يرجى إدخال رقم الصفحة", "error");
-        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
 
@@ -744,7 +650,7 @@
       if (isNaN(page) || page < 1 || page > 50) {
         errEl.textContent = "⚠️ رقم الصفحة يجب أن يكون بين 1 و 50";
         showToast("رقم الصفحة يجب أن يكون بين 1 و 50", "error");
-        gsap.to(errEl, { scale: 1.05, duration: 0.1, yoyo: true, repeat: 1 });
+        gsap.to(errEl, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1 });
         return;
       }
 
@@ -757,13 +663,12 @@
 
       showToast("جاري تحميل التمرين...", "success");
 
-      // Framer Motion style button animation
+      // Animate button
       gsap.to("#startBtn", {
-        scale: 0.96,
+        scale: 0.98,
         duration: 0.1,
         yoyo: true,
         repeat: 1,
-        ease: "back.in(1)",
         onComplete: () => {
           window.location.href = `exercise-player.html?kg=${KG_ID}&stage=${stage}&subject=${subject}&page=${page}`;
         }
@@ -775,154 +680,127 @@
       if (e.key === "Enter") document.getElementById("startBtn").click();
     });
 
-    // ========== Framer Motion Style Animations ==========
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Hero Spring Animation (like framer-motion animate)
-    gsap.from(".hero", {
-      opacity: 0,
-      scale: 0.95,
-      duration: 1.2,
-      ease: "back.out(1.2)"
+    // Focus animation on inputs
+    document.querySelectorAll('select, input').forEach(el => {
+      el.addEventListener('focus', function() {
+        gsap.to(this.parentElement.parentElement, {
+          scale: 1.02,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
+      el.addEventListener('blur', function() {
+        gsap.to(this.parentElement.parentElement, {
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      });
     });
 
+    // Header Scroll Effect
+    window.addEventListener('scroll', () => {
+      document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ========== GSAP Animations ==========
+    // Hero Animation
     gsap.from(".hero-badge", {
       opacity: 0,
-      y: -40,
-      scale: 0.8,
-      duration: 0.8,
-      ease: "elastic.out(1, 0.5)",
+      y: 30,
+      duration: 1,
+      ease: "power3.out",
       delay: 0.2
     });
 
     gsap.from(".hero h2", {
       opacity: 0,
-      y: 50,
-      scale: 0.9,
+      y: 40,
       duration: 1,
-      ease: "back.out(1.5)",
+      ease: "power3.out",
       delay: 0.4
     });
 
     gsap.from(".hero p", {
       opacity: 0,
       y: 30,
-      duration: 0.8,
-      ease: "back.out(1.2)",
+      duration: 1,
+      ease: "power3.out",
       delay: 0.6
     });
 
-    // Form Card Animation - spring pop
+    // Form Card Animation
     gsap.from("#formCard", {
       opacity: 0,
-      y: 80,
-      scale: 0.95,
-      duration: 1.2,
-      ease: "elastic.out(1, 0.4)",
-      delay: 0.8,
-      scrollTrigger: {
-        trigger: "#formCard",
-        start: "top 85%",
-      }
+      y: 60,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.8
     });
 
-    // Steps stagger animation (like framer-motion staggerChildren)
-    gsap.from(".form-step", {
+    // Form Steps Animation
+    gsap.from("#step1", {
       opacity: 0,
-      x: 60,
-      duration: 0.7,
-      stagger: 0.15,
-      ease: "back.out(1.2)",
-      delay: 1,
-      scrollTrigger: {
-        trigger: "#formCard",
-        start: "top 85%",
-      }
+      x: 50,
+      duration: 0.8,
+      delay: 1
     });
 
-    // Start button spring
+    gsap.from("#step2", {
+      opacity: 0,
+      x: 50,
+      duration: 0.8,
+      delay: 1.2
+    });
+
+    gsap.from("#step3", {
+      opacity: 0,
+      x: 50,
+      duration: 0.8,
+      delay: 1.4
+    });
+
     gsap.from("#startBtn", {
       opacity: 0,
-      y: 40,
-      scale: 0.9,
+      y: 30,
       duration: 0.8,
-      ease: "elastic.out(1, 0.4)",
-      delay: 1.4,
-      scrollTrigger: {
-        trigger: "#formCard",
-        start: "top 85%",
-      }
+      delay: 1.6
     });
 
-    // How cards - Framer Motion like stagger with spring
-    gsap.from(".how-card", {
-      opacity: 0,
-      y: 70,
-      scale: 0.9,
-      duration: 0.9,
-      stagger: 0.12,
-      ease: "back.out(1.7)",
+    // How Cards Animation
+    gsap.from("#how1", {
       scrollTrigger: {
         trigger: ".how-cards",
         start: "top 80%",
-      }
+      },
+      opacity: 0,
+      y: 60,
+      duration: 0.8,
+      ease: "back.out(1.7)"
     });
 
-    // Hover effects with GSAP (like whileHover in Framer Motion)
-    document.querySelectorAll(".form-step").forEach(step => {
-      step.addEventListener("mouseenter", () => {
-        gsap.to(step, {
-          x: 8,
-          scale: 1.02,
-          duration: 0.3,
-          ease: "back.out(1.2)",
-          boxShadow: "0 20px 35px rgba(0,0,0,0.1)"
-        });
-      });
-      step.addEventListener("mouseleave", () => {
-        gsap.to(step, {
-          x: 0,
-          scale: 1,
-          duration: 0.4,
-          ease: "elastic.out(1, 0.3)",
-          boxShadow: "none"
-        });
-      });
+    gsap.from("#how2", {
+      scrollTrigger: {
+        trigger: ".how-cards",
+        start: "top 80%",
+      },
+      opacity: 0,
+      y: 60,
+      duration: 0.8,
+      delay: 0.15,
+      ease: "back.out(1.7)"
     });
 
-    // WhileTap effect for button
-    const startBtn = document.getElementById("startBtn");
-    startBtn.addEventListener("mousedown", () => {
-      gsap.to(startBtn, { scale: 0.97, duration: 0.05 });
-    });
-    startBtn.addEventListener("mouseup", () => {
-      gsap.to(startBtn, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.5)" });
-    });
-    startBtn.addEventListener("mouseleave", () => {
-      gsap.to(startBtn, { scale: 1, duration: 0.3, ease: "back.out(1)" });
-    });
-
-    // Input focus spring animations
-    document.querySelectorAll("input, select").forEach(input => {
-      input.addEventListener("focus", () => {
-        gsap.to(input, {
-          scale: 1.02,
-          duration: 0.2,
-          ease: "back.out(1.2)"
-        });
-      });
-      input.addEventListener("blur", () => {
-        gsap.to(input, {
-          scale: 1,
-          duration: 0.3,
-          ease: "elastic.out(1, 0.4)"
-        });
-      });
-    });
-
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
-      document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+    gsap.from("#how3", {
+      scrollTrigger: {
+        trigger: ".how-cards",
+        start: "top 80%",
+      },
+      opacity: 0,
+      y: 60,
+      duration: 0.8,
+      delay: 0.3,
+      ease: "back.out(1.7)"
     });
 
     // Initialize

@@ -7,12 +7,12 @@
 
 // ── Firebase Config ──
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+  authDomain: "interactive-book-37270.firebaseapp.com",
+  projectId: "interactive-book-37270",
+  storageBucket: "interactive-book-37270.firebasestorage.app",
+  messagingSenderId: "350364566140",
+  appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
 };
 
 // ── Initialize Firebase ──
