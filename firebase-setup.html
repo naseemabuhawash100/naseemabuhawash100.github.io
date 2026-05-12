@@ -1,4 +1,62 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+      <meta name="theme-color" content="#0f2d5c"/>
+      <title>روضة طلائع المبدعين</title>
+      <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+      <style>
+        :root {
+          --navy: #0f2d5c;
+          --navy-light: #1a4a8a;
+          --gold: #f5a623;
+          --gold-light: #fbbf24;
+          --teal: #0e7490;
+          --teal-light: #159db9;
+          --coral: #ff6b6b;
+          --mint: #4ecdc4;
+          --lavender: #a78bfa;
+          --light: #f0f6ff;
+          --white: #ffffff;
+          --gray-100: #f1f5f9;
+          --gray-400: #94a3b8;
+          --gray-600: #475569;
+          --gray-800: #1e293b;
+          --border: #e2e8f0;
+          --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+          --shadow: 0 4px 6px rgba(0,0,0,0.07);
+          --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
+          --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+          --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
+          --radius: 16px;
+          --radius-lg: 24px;
+          --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: 'Tajawal', sans-serif;
+          direction: rtl;
+          background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
+          color: var(--gray-800);
+          line-height: 1.6;
+        }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+      </style>
+    </head>
+    <body>
+    <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -32,9 +90,9 @@
             • students (الطلاب)<br>
             • results (نتائج التمارين)<br>
             • interactive_pages (التمارين التفاعلية)<br>
-            • albums + album_photos (معرض الصور - ألبومات وصور) ✅<br>
-            • album_videos (فيديوهات داخل الألبومات) ✅<br>
-            • albums (type=videos) + album_videos (فيديوهات) ✅
+            • gallery_images (الصور المعتمدة - تظهر في الصفحة الرئيسية) ✅<br>
+            • pending_images (الصور المعلقة - تنتظر موافقة المديرة) ✅<br>
+            • videos (الفيديوهات) ✅
         </div>
         
         <button id="setupBtn" onclick="setupFirebase()">▶️ بدء الإعداد الشامل</button>
@@ -208,83 +266,59 @@ else{alert('❌ إجابة خاطئة');}}
                 });
                 addLog('✅ تم إضافة نتيجتين تجريبيتين', 'success');
 
-                // ========== 6. albums + album_photos (معرض الصور) ==========
-                addLog('📁 إنشاء Collection: albums (type=photos) و album_photos');
-                const photoAlbumRef = await db.collection("albums").add({
-                    type: "photos",
-                    name: "معرض الصور",
-                    description: "صور متنوعة من أنشطة الروضة",
-                    coverImage: "https://via.placeholder.com/400x200/0f2d5c/white?text=معرض+الصور",
-                    photoCount: 2,
-                    kindergartenId: "kg_talaea",
-                    createdAt: new Date()
-                });
-                await db.collection("album_photos").add({
-                    albumId: photoAlbumRef.id,
+                // ========== 6. gallery_images (الصور المعتمدة) ==========
+                addLog('📁 إنشاء Collection: gallery_images (الصور المعتمدة)');
+                await db.collection("gallery_images").add({
                     title: "نشاط صفي",
                     description: "أنشطة تعليمية تفاعلية داخل الصفوف الدراسية",
                     imageUrl: "https://via.placeholder.com/400x300/0f2d5c/white?text=نشاط+تعليمي",
                     uploadedBy: "director@talaea.com",
                     uploadedByName: "مديرة الروضة",
+                    status: "approved",
+                    approvedBy: "director@talaea.com",
+                    approvedAt: new Date(),
                     createdAt: new Date()
                 });
-                await db.collection("album_photos").add({
-                    albumId: photoAlbumRef.id,
+                await db.collection("gallery_images").add({
                     title: "أعمال فنية",
                     description: "إبداعات الأطفال الفنية المميزة داخل الروضة",
                     imageUrl: "https://via.placeholder.com/400x300/4ecdc4/white?text=أعمال+فنية",
                     uploadedBy: "director@talaea.com",
                     uploadedByName: "مديرة الروضة",
+                    status: "approved",
+                    approvedBy: "director@talaea.com",
+                    approvedAt: new Date(),
                     createdAt: new Date()
                 });
-                addLog('✅ تم إنشاء ألبوم صور مع صورتين', 'success');
+                addLog('✅ تم إضافة صورتين معتمدتين في معرض الصور', 'success');
 
-                // ========== 7. albums + album_photos (ألبوم صور معلقة) ==========
-                addLog('📁 إنشاء ألبوم للصور المعلقة');
-                const pendingAlbumRef = await db.collection("albums").add({
-                    type: "photos",
-                    name: "بانتظار الموافقة",
-                    description: "صور مرفوعة من المعلمات تنتظر موافقة المديرة",
-                    coverImage: "https://via.placeholder.com/400x200/f5a623/white?text=قيد+الموافقة",
-                    photoCount: 1,
-                    kindergartenId: "kg_talaea",
-                    createdAt: new Date()
-                });
-                await db.collection("album_photos").add({
-                    albumId: pendingAlbumRef.id,
-                    title: "نشاط بانتظار الموافقة",
+                // ========== 7. pending_images (الصور المعلقة) ==========
+                addLog('📁 إنشاء Collection: pending_images (الصور المعلقة)');
+                await db.collection("pending_images").add({
+                    title: "نشاط انتظار موافقة",
                     description: "هذه الصورة رفعتها المعلمة وتنتظر موافقة المديرة",
                     imageUrl: "https://via.placeholder.com/400x300/f5a623/white?text=قيد+الموافقة",
                     uploadedBy: "teacher@talaea.com",
                     uploadedByName: "نور محمد",
+                    uploadedByRole: "teacher",
+                    status: "pending",
                     createdAt: new Date()
                 });
-                addLog('✅ تم إنشاء ألبوم للصور المعلقة بصورة واحدة', 'success');
+                addLog('✅ تم إضافة صورة معلقة تنتظر موافقة المديرة', 'success');
 
-                // ========== 8. albums + album_videos (فيديوهات) ==========
-                addLog('📁 إنشاء Collection: albums (type=videos) و album_videos');
-                const videoAlbumRef = await db.collection("albums").add({
-                    type: "videos",
-                    name: "فيديوهات الروضة",
-                    description: "فيديوهات تعليمية وأنشطة متنوعة",
-                    coverImage: "https://via.placeholder.com/400x200/0e7490/white?text=فيديوهات",
-                    videoCount: 1,
-                    kindergartenId: "kg_talaea",
-                    createdAt: new Date()
-                });
-                await db.collection("album_videos").add({
-                    albumId: videoAlbumRef.id,
+                // ========== 8. videos (الفيديوهات) ==========
+                addLog('📁 إنشاء Collection: videos');
+                await db.collection("videos").add({
                     title: "النشاط الصباحي في الروضة",
                     description: "فيديو يوضح روتين الطابور والنشاط الصباحي",
                     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
                     thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg",
                     uploadedBy: "director@talaea.com",
                     uploadedByName: "مديرة الروضة",
+                    status: "approved",
                     createdAt: new Date()
                 });
-                addLog('✅ تم إنشاء ألبوم فيديو مع فيديو واحد', 'success');
-
-                // ========== 9. تعليمات إضافة المستخدمين ==========
+                addLog('✅ تم إضافة فيديو تجريبي واحد', 'success');
 
                 // ========== تعليمات إضافة المستخدمين ==========
                 addLog('🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐', 'info');
@@ -293,7 +327,7 @@ else{alert('❌ إجابة خاطئة');}}
                 addLog('📧 teacher@talaea.com | كلمة المرور: 123456', 'info');
                 addLog('🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐 🔐', 'info');
                 
-                updateStatus('✅ تم إعداد Firebase بالكامل! تم إنشاء collections: kindergartens, users, students, interactive_pages, results, albums, album_photos, album_videos. اتبع التعليمات لإضافة كلمات المرور.', 'success');
+                updateStatus('✅ تم إعداد Firebase بالكامل! تم إنشاء 8 Collections. اتبع التعليمات لإضافة كلمات المرور.', 'success');
                 addLog('🎉🎉🎉 اكتمل الإعداد بنجاح! 🎉🎉🎉', 'success');
                 
             } catch (error) {
@@ -308,3 +342,14 @@ else{alert('❌ إجابة خاطئة');}}
     </script>
 </body>
 </html>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({ duration: 800, once: true, offset: 100 });
+      window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        header.classList.toggle('scrolled', window.scrollY > 50);
+      });
+    </script>
+    </body>
+    </html>
+    

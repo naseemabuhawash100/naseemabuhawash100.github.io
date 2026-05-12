@@ -4,14 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#0f2d5c"/>
-  <title>لوحة إدارة روضة طلائع المبدعين</title>
+  <title>لوحة المديرة - روضة طلائع المبدعين</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- GSAP for Animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- AOS Animations CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -50,7 +49,8 @@
       --radius: 16px;
       --radius-lg: 24px;
       --radius-xl: 32px;
-      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --spring-bounce: cubic-bezier(0.34, 1.2, 0.64, 1);
+      --spring-gentle: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -66,495 +66,299 @@
       min-height: 100vh;
     }
 
-    /* ─── HEADER ─── */
+    /* ─── Header ─── */
     header {
       position: sticky; top: 0; z-index: 1000;
       background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-      transition: var(--transition);
+      transition: all 0.4s var(--spring-bounce);
     }
-
     header.scrolled {
       background: rgba(255,255,255,0.95);
       box-shadow: var(--shadow-lg);
       border-bottom-color: var(--gold);
     }
-
     .header-inner {
       max-width: 1320px; margin: auto;
       padding: 14px 24px;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; flex-wrap: wrap;
+      gap: 20px; flex-wrap: wrap;
     }
-
-    .logo-area {
-      display: flex; align-items: center; gap: 14px;
-    }
-
+    .logo-area { display: flex; align-items: center; gap: 14px; text-decoration: none; }
     .logo-circle {
-      width: 50px; height: 50px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      width: 54px; height: 54px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--teal));
       display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
+      font-size: 26px;
       box-shadow: 0 4px 15px rgba(15,45,92,0.3);
-      transition: var(--transition);
+      transition: all 0.3s var(--spring-bounce);
     }
-
     .logo-circle:hover { transform: rotate(10deg) scale(1.08); }
-
-    .logo-text h1 {
-      font-size: 17px; font-weight: 800; color: var(--navy);
-      line-height: 1.3; margin-bottom: 2px;
-    }
-
+    .logo-text h1 { font-size: 18px; font-weight: 900; color: var(--navy); line-height: 1.3; }
     .logo-text p { font-size: 12px; color: var(--gray-500); }
+    .header-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
-    .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-
+    /* ─── Buttons ─── */
     .btn {
-      border: none; border-radius: 99px; padding: 10px 22px;
+      border: none; border-radius: 99px; padding: 10px 24px;
       font-size: 14px; font-weight: 700; cursor: pointer;
       font-family: 'Tajawal', sans-serif; text-decoration: none;
       display: inline-flex; align-items: center; gap: 8px;
-      transition: var(--transition);
+      transition: all 0.3s var(--spring-bounce);
     }
+    .btn-gray { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); }
+    .btn-gray:hover { background: var(--gray-200); transform: translateY(-2px); }
+    .btn-blue { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; box-shadow: 0 4px 15px rgba(15,45,92,0.25); }
+    .btn-blue:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(15,45,92,0.35); }
+    .btn-red { background: linear-gradient(135deg, var(--coral), #ff5252); color: white; }
+    .btn-red:hover { transform: translateY(-3px); }
+    .btn-green { background: linear-gradient(135deg, var(--mint), #10b981); color: white; }
+    .btn-green:hover { transform: translateY(-3px); }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #f97316); color: white; box-shadow: 0 4px 15px rgba(245,166,35,0.3); }
+    .btn-gold:hover { transform: translateY(-3px); }
 
-    .btn-gray {
-      background: var(--gray-100); color: var(--gray-600);
-      border: 1px solid var(--gray-200);
-    }
-
-    .btn-gray:hover {
-      background: var(--gray-200);
-      transform: translateY(-2px);
-    }
-
-    .btn-blue {
-      background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white;
-      box-shadow: 0 4px 15px rgba(15,45,92,0.25);
-    }
-
-    .btn-blue:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(15,45,92,0.35);
-    }
-
-    .btn-red {
-      background: linear-gradient(135deg, var(--coral), #ff5252);
-      color: white;
-      box-shadow: 0 4px 15px rgba(255,107,107,0.3);
-    }
-
-    .btn-red:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255,107,107,0.4);
-    }
-
-    .btn-green {
-      background: linear-gradient(135deg, var(--mint), #10b981);
-      color: white;
-      box-shadow: 0 4px 15px rgba(78,205,196,0.3);
-    }
-
-    .btn-green:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(78,205,196,0.4);
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), #f97316);
-      color: white;
-      box-shadow: 0 4px 15px rgba(245,166,35,0.3);
-    }
-
-    .btn-gold:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(245,166,35,0.4);
-    }
-
-    /* ─── HERO ─── */
+    /* ─── Hero ─── */
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
-      color: white;
-      padding: 60px 24px 80px;
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
+      color: white; padding: 80px 24px 100px;
+      position: relative; overflow: hidden;
     }
-
     .hero::before {
       content: ''; position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      z-index: -1;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
-
     .hero::after {
       content: ''; position: absolute;
       top: -30%; right: -10%;
-      width: 600px; height: 600px;
+      width: 500px; height: 500px;
       background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%);
       border-radius: 50%;
-      z-index: -1;
       animation: pulse 8s ease-in-out infinite;
     }
-
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 0.5; }
       50% { transform: scale(1.1); opacity: 0.8; }
     }
-
     .hero-inner {
-      max-width: 1320px; margin: auto;
+      max-width: 1200px; margin: auto;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 24px; flex-wrap: wrap;
+      gap: 40px; flex-wrap: wrap;
       position: relative; z-index: 1;
     }
-
-    .hero h2 {
-      font-size: clamp(24px, 4vw, 36px);
-      font-weight: 900; margin-bottom: 8px;
-      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
-    }
-
-    .hero p {
-      font-size: 15px; opacity: 0.95; line-height: 1.8;
-    }
-
-    .hero-stats {
-      display: flex; gap: 16px; flex-wrap: wrap;
-    }
-
+    .hero h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; margin-bottom: 8px; }
+    .hero p { font-size: 16px; opacity: 0.95; }
+    .hero-stats { display: flex; gap: 20px; flex-wrap: wrap; }
     .stat-chip {
       background: rgba(255,255,255,0.15);
       border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 18px; padding: 16px 24px;
-      text-align: center; min-width: 110px;
+      border-radius: 28px; padding: 20px 32px;
+      text-align: center; min-width: 120px;
       backdrop-filter: blur(8px);
-      transition: var(--transition);
+      transition: all 0.3s var(--spring-bounce);
     }
+    .stat-chip:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); }
+    .stat-chip .num { font-size: 36px; font-weight: 900; color: var(--gold-light); }
+    .stat-chip .lbl { font-size: 13px; opacity: 0.85; margin-top: 6px; }
 
-    .stat-chip:hover {
-      transform: translateY(-3px);
-      background: rgba(255,255,255,0.2);
-    }
-
-    .stat-chip .num {
-      font-size: 32px; font-weight: 900;
-      color: var(--gold-light);
-    }
-
-    .stat-chip .lbl {
-      font-size: 12px; opacity: 0.85; margin-top: 4px;
-    }
-
-    /* ─── TABS ─── */
-    .tabs-wrap {
-      max-width: 1320px; margin: -40px auto 0;
-      padding: 0 24px;
-      position: relative;
-      z-index: 10;
-    }
-
+    /* ─── Tabs ─── */
+    .tabs-wrap { max-width: 1200px; margin: -40px auto 0; padding: 0 24px; position: relative; z-index: 10; }
     .tabs {
-      display: flex; gap: 10px; background: white;
-      border-radius: var(--radius-xl); padding: 10px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-      flex-wrap: wrap;
+      display: flex; gap: 12px; background: white;
+      border-radius: 99px; padding: 8px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-xl); flex-wrap: wrap;
     }
-
     .tab-btn {
-      flex: 1; min-width: 140px; padding: 14px 24px;
-      border-radius: var(--radius-lg); border: none; background: transparent;
-      font-family: 'Tajawal', sans-serif; font-size: 15px;
-      font-weight: 700; color: var(--gray-600); cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
+      flex: 1; min-width: 130px; padding: 14px 24px;
+      border-radius: 99px; border: none; background: transparent;
+      font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700;
+      color: var(--gray-600); cursor: pointer;
+      transition: all 0.3s var(--spring-bounce);
     }
-
-    .tab-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--navy), var(--teal));
-      opacity: 0;
-      transition: var(--transition);
-    }
-
     .tab-btn.active {
-      color: white;
-      box-shadow: 0 4px 15px rgba(15,45,92,0.25);
+      background: linear-gradient(135deg, var(--navy), var(--teal));
+      color: white; box-shadow: var(--shadow-md);
     }
+    .tab-btn:hover:not(.active) { background: var(--gray-100); color: var(--navy); transform: translateY(-2px); }
 
-    .tab-btn.active::before { opacity: 1; }
-
-    .tab-btn:hover:not(.active) {
-      background: var(--gray-100);
-      color: var(--navy);
-    }
-
-    /* ─── PANELS ─── */
-    .panels {
-      max-width: 1320px; margin: 0 auto;
-      padding: 40px 24px 60px;
-    }
-
-    .panel { display: none; animation: fadeIn 0.4s ease; }
+    /* ─── Panels ─── */
+    .panels { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+    .panel { display: none; animation: fadeIn 0.4s var(--spring-bounce); }
     .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─── CARDS ─── */
+    /* ─── Cards ─── */
     .card {
-      background: white;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-md);
-      padding: 36px;
-      margin-bottom: 24px;
-      transition: var(--transition);
+      background: white; border-radius: 32px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-md);
+      padding: 36px; margin-bottom: 32px;
+      transition: all 0.4s var(--spring-bounce);
     }
-
-    .card:hover {
-      box-shadow: var(--shadow-lg);
-    }
-
+    .card:hover { box-shadow: var(--shadow-xl); transform: translateY(-4px); }
     .card-title {
-      font-size: 20px; font-weight: 900; color: var(--navy);
-      margin-bottom: 24px;
-      display: flex; align-items: center; gap: 10px;
+      font-size: 22px; font-weight: 900; color: var(--navy);
+      margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
     }
 
-    /* ─── FORM GRID ─── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 18px; margin-bottom: 20px;
-    }
-
-    .form-field label {
-      display: block; font-size: 14px; font-weight: 700;
-      color: var(--gray-700); margin-bottom: 10px;
-    }
-
+    /* ─── Forms ─── */
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 24px; }
+    .form-field label { display: block; font-size: 14px; font-weight: 700; color: var(--gray-700); margin-bottom: 10px; }
     .form-field input, .form-field select {
-      width: 100%; border: 2px solid var(--gray-200);
-      border-radius: 14px; padding: 13px 16px;
-      font-family: 'Tajawal', sans-serif; font-size: 15px;
-      outline: none; transition: var(--transition); background: white;
-      color: var(--gray-800);
+      width: 100%; border: 2px solid var(--gray-200); border-radius: 16px;
+      padding: 14px 16px; font-family: 'Tajawal', sans-serif; font-size: 15px;
+      outline: none; transition: all 0.2s var(--spring-bounce); background: white;
     }
-
     .form-field input:focus, .form-field select:focus {
       border-color: var(--teal);
       box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
+      transform: scale(1.02);
     }
-
-    .form-msg {
-      font-size: 14px; font-weight: 700;
-      min-height: 24px; margin-top: 12px;
-    }
-
+    .form-msg { font-size: 14px; font-weight: 700; margin-top: 16px; min-height: 24px; }
     .msg-ok { color: var(--mint); }
     .msg-err { color: var(--coral); }
 
-    /* ─── TABLE ─── */
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--gray-200);
-      background: white;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .table-wrap::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .table-wrap::-webkit-scrollbar-track {
-      background: var(--gray-100);
-      border-radius: 4px;
-    }
-
-    .table-wrap::-webkit-scrollbar-thumb {
-      background: var(--gray-400);
-      border-radius: 4px;
-    }
-
-    table {
-      width: 100%; border-collapse: collapse;
-      min-width: 700px;
-    }
-
+    /* ─── Tables ─── */
+    .table-wrap { overflow-x: auto; border-radius: 24px; border: 1px solid var(--gray-200); background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
     thead th {
       background: linear-gradient(135deg, var(--navy), var(--teal));
-      color: white; padding: 16px 14px; font-size: 14px;
-      font-weight: 800; text-align: center;
-      white-space: nowrap;
+      color: white; padding: 16px 14px;
+      font-size: 14px; font-weight: 800; text-align: center;
     }
-
     tbody td {
       padding: 16px 14px; border-bottom: 1px solid var(--gray-200);
       font-size: 14px; text-align: center; color: var(--gray-600);
-      white-space: nowrap;
     }
-
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: var(--gray-50); }
 
-    /* Responsive Table */
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr { display: block; }
-      thead { position: absolute; top: -9999px; left: -9999px; }
-      tbody tr {
-        margin-bottom: 16px;
-        border: 1px solid var(--gray-200);
-        border-radius: var(--radius);
-        padding: 16px;
-        background: white;
-      }
-      td {
-        border: none;
-        padding: 10px 0;
-        position: relative;
-        padding-right: 50%;
-        text-align: left;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        right: 0;
-        width: 45%;
-        font-weight: 700;
-        color: var(--gray-700);
-        white-space: nowrap;
-      }
-    }
-
-    .badge {
-      display: inline-block; padding: 6px 14px;
-      border-radius: 99px; font-size: 13px; font-weight: 700;
-    }
-
-    .badge-green {
-      background: linear-gradient(135deg, #dcfce7, #86efac);
-      color: #166534;
-    }
-
-    .badge-red {
-      background: linear-gradient(135deg, #fee2e2, #fca5a5);
-      color: #991b1b;
-    }
-
     .action-btn {
-      border: none; border-radius: 10px; padding: 8px 16px;
-      font-family: 'Tajawal', sans-serif; font-size: 13px;
-      font-weight: 700; cursor: pointer; transition: var(--transition);
+      border: none; border-radius: 12px; padding: 8px 16px;
+      font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s var(--spring-bounce);
     }
+    .action-delete { background: linear-gradient(135deg, #fee2e2, #fecaca); color: var(--coral); }
+    .action-delete:hover { transform: scale(1.05); }
+    .action-toggle { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+    .action-toggle:hover { transform: scale(1.05); }
+    .action-edit { background: linear-gradient(135deg, #dbeafe, #93c5fd); color: var(--navy); }
+    .action-edit:hover { transform: scale(1.05); }
 
-    .action-delete {
-      background: linear-gradient(135deg, #fee2e2, #fecaca);
-      color: var(--coral);
-    }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+    .badge-green { background: linear-gradient(135deg, #dcfce7, #86efac); color: #166534; }
+    .badge-red { background: linear-gradient(135deg, #fee2e2, #fca5a5); color: #991b1b; }
+    .badge-blue { background: linear-gradient(135deg, #dbeafe, #93c5fd); color: #1e40af; }
 
-    .action-delete:hover {
-      background: linear-gradient(135deg, #fecaca, #fca5a5);
-      transform: scale(1.05);
-    }
-
-    /* ─── EMPTY STATE ─── */
-    .empty-state {
-      text-align: center; padding: 60px 24px; color: var(--gray-500);
-    }
-
-    .empty-state .icon {
-      font-size: 64px; margin-bottom: 20px;
-      opacity: 0.5;
-    }
-
-    .empty-state p { font-size: 16px; }
-
-    /* ─── FILTERS ─── */
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px; margin-bottom: 20px;
-    }
-
-    /* ─── SEARCH ─── */
-    .search-box {
-      position: relative; max-width: 300px;
-    }
-
+    /* ─── Search & Filter ─── */
+    .search-box { max-width: 280px; }
     .search-box input {
-      width: 100%; border: 2px solid var(--gray-200);
-      border-radius: 14px; padding: 12px 16px;
-      font-family: 'Tajawal', sans-serif; font-size: 14px;
-      outline: none; transition: var(--transition);
+      width: 100%; border: 2px solid var(--gray-200); border-radius: 99px;
+      padding: 12px 18px; font-family: 'Tajawal', sans-serif; font-size: 14px;
+      outline: none; transition: all 0.2s var(--spring-bounce);
     }
+    .search-box input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,116,144,0.15); }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
 
-    .search-box input:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 4px rgba(14,116,144,0.15);
-    }
+    /* ─── Empty State ─── */
+    .empty-state { text-align: center; padding: 60px; color: var(--gray-500); }
+    .empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--gray-600); }
+    .empty-state p { font-size: 14px; }
 
-    /* ─── LOADING ─── */
+    /* ─── Loading Spinner ─── */
+    .loading { text-align: center; padding: 40px; }
     .loading-spinner {
-      display: inline-block; width: 20px; height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: white; border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width: 40px; height: 40px; border: 4px solid var(--gray-200);
+      border-top-color: var(--teal); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 16px;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ─── Toast Notifications ─── */
+    /* ─── Toast ─── */
     .toast-container {
-      position: fixed;
-      top: 100px;
-      left: 24px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      position: fixed; top: 100px; left: 24px; z-index: 10000;
+      display: flex; flex-direction: column; gap: 12px;
     }
-
     .toast {
-      background: white;
-      border-radius: 16px;
-      padding: 18px 22px;
-      box-shadow: var(--shadow-xl);
-      border-right: 4px solid var(--navy);
-      display: flex; align-items: center; gap: 14px;
-      min-width: 320px;
-      max-width: 420px;
-      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white; border-radius: 16px; padding: 16px 22px;
+      box-shadow: var(--shadow-xl); border-right: 4px solid var(--navy);
+      display: flex; align-items: center; gap: 12px;
+      animation: slideIn 0.4s var(--spring-bounce);
+      max-width: 350px;
     }
-
     .toast.success { border-right-color: var(--mint); }
     .toast.error { border-right-color: var(--coral); }
     .toast.warning { border-right-color: var(--gold); }
-
-    .toast-icon { font-size: 22px; }
-    .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
-
+    .toast-text { font-size: 14px; font-weight: 700; color: var(--gray-700); }
     @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-40px); }
-      to { opacity: 1; transform: translateX(0); }
+      from { opacity: 0; transform: translateX(-40px) scale(0.9); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    /* ─── Confirm Dialog ─── */
+    .confirm-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 9999; display: none; align-items: center; justify-content: center;
+      padding: 20px; backdrop-filter: blur(4px);
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box {
+      background: white; border-radius: 24px; padding: 36px;
+      max-width: 400px; width: 100%; text-align: center;
+      box-shadow: var(--shadow-xl);
+    }
+    .confirm-box .icon { font-size: 48px; margin-bottom: 16px; }
+    .confirm-box h3 { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 12px; }
+    .confirm-box p { font-size: 15px; color: var(--gray-600); margin-bottom: 24px; line-height: 1.7; }
+    .confirm-btns { display: flex; gap: 12px; justify-content: center; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: rgba(255,255,255,0.8); padding: 50px 24px; text-align: center;
+    }
+    footer span { color: var(--gold-light); font-weight: 800; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .hero-inner { flex-direction: column; text-align: center; }
+      .hero-stats { justify-content: center; }
+      .tabs { border-radius: 24px; }
+      .tab-btn { min-width: 100px; padding: 12px 16px; font-size: 13px; }
+      .card { padding: 24px; border-radius: 24px; }
+    }
+    @media (max-width: 768px) {
+      .header-inner { padding: 12px 16px; }
+      .header-btns { width: 100%; justify-content: center; }
+      .logo-circle { width: 46px; height: 46px; font-size: 22px; }
+      .hero { padding: 60px 16px 80px; }
+      .tabs-wrap { padding: 0 16px; }
+      .panels { padding: 0 16px; margin: 30px auto; }
+      .filter-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .confirm-btns { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Toast Container -->
+  <!-- ══════ TOAST CONTAINER ══════ -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- ══════ CONFIRM DIALOG ══════ -->
+  <div class="confirm-overlay" id="confirmDialog">
+    <div class="confirm-box">
+      <div class="icon" id="confirmIcon">⚠️</div>
+      <h3 id="confirmTitle">تأكيد الحذف</h3>
+      <p id="confirmText">هل أنتِ متأكدة من هذا الإجراء؟</p>
+      <div class="confirm-btns">
+        <button class="btn btn-red" id="confirmYes">نعم، تأكيد</button>
+        <button class="btn btn-gray" id="confirmNo">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ HEADER ══════ -->
   <header id="header">
     <div class="header-inner">
       <div class="logo-area">
@@ -568,35 +372,37 @@
         <a href="talaea-almobdeeen.html" class="btn btn-gray">🏠 العودة للروضة</a>
         <a href="results.html" class="btn btn-blue">📊 النتائج</a>
         <a href="admin-data-manager.html" class="btn btn-green">⚙️ إدارة متقدمة</a>
-        <button id="logoutBtn" class="btn btn-red">تسجيل الخروج</button>
+        <button id="logoutBtn" class="btn btn-red">🚪 تسجيل الخروج</button>
       </div>
     </div>
   </header>
 
+  <!-- ══════ HERO ══════ -->
   <section class="hero">
     <div class="hero-inner">
-      <div>
-        <h2>لوحة الإدارة</h2>
+      <div data-aos="fade-up">
+        <h2>🎓 لوحة الإدارة</h2>
         <p>إدارة الطلاب والمعلمات ومتابعة النتائج من مكان واحد</p>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" data-aos="fade-up" data-aos-delay="150">
         <div class="stat-chip">
           <div class="num" id="statStudents">0</div>
-          <div class="lbl">طالب</div>
+          <div class="lbl">👧 طالب</div>
         </div>
         <div class="stat-chip">
           <div class="num" id="statTeachers">0</div>
-          <div class="lbl">معلمة</div>
+          <div class="lbl">👩‍🏫 معلمة</div>
         </div>
         <div class="stat-chip">
           <div class="num" id="statResults">0</div>
-          <div class="lbl">نتيجة</div>
+          <div class="lbl">📊 نتيجة</div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="tabs-wrap">
+  <!-- ══════ TABS ══════ -->
+  <div class="tabs-wrap" data-aos="fade-up" data-aos-delay="200">
     <div class="tabs">
       <button class="tab-btn active" data-tab="students">👧 إدارة الطلاب</button>
       <button class="tab-btn" data-tab="teachers">👩‍🏫 المعلمات</button>
@@ -604,11 +410,12 @@
     </div>
   </div>
 
+  <!-- ══════ PANELS ══════ -->
   <div class="panels">
 
-    <!-- ── تبويب الطلاب ── -->
+    <!-- ─── تبويب الطلاب ─── -->
     <div id="panel-students" class="panel active">
-      <div class="card" id="addStudentCard">
+      <div class="card">
         <div class="card-title">➕ إضافة طالب جديد</div>
         <div class="form-grid">
           <div class="form-field">
@@ -628,46 +435,63 @@
         <p class="form-msg" id="studentMsg"></p>
       </div>
 
-      <div class="card" id="listStudentsCard">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-          <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray-500);font-weight:500;"></span></div>
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+          <div class="card-title" style="margin-bottom:0;">📋 قائمة الطلاب <span id="studentCount" style="font-size:14px;color:var(--gray-500);"></span></div>
           <div class="search-box">
             <input id="searchStudent" type="text" placeholder="🔍 ابحث باسم أو كود...">
           </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>إجراء</th></tr></thead>
-            <tbody id="studentsTable"></tbody>
+            <thead>
+              <tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>إجراء</th></tr>
+            </thead>
+            <tbody id="studentsTable">
+              <tr><td colspan="5"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── تبويب المعلمات ── -->
+    <!-- ─── تبويب المعلمات ─── -->
     <div id="panel-teachers" class="panel">
-      <div class="card" id="teachersCard">
+      <div class="card">
         <div class="card-title">👩‍🏫 معلمات الروضة</div>
-        <p style="color:var(--gray-500);font-size:14px;margin-bottom:20px;">
-          لإضافة معلمة جديدة، يرجى التواصل مع إدارة النظام.
-        </p>
+        <div style="margin-bottom:20px;">
+          <button id="refreshTeachersBtn" class="btn btn-blue">🔄 تحديث القائمة</button>
+        </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th></tr></thead>
-            <tbody id="teachersTable"></tbody>
+            <thead>
+              <tr><th>#</th><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th><th>إجراء</th></tr>
+            </thead>
+            <tbody id="teachersTable">
+              <tr><td colspan="6"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── تبويب النتائج ── -->
+    <!-- ─── تبويب النتائج ─── -->
     <div id="panel-results" class="panel">
-      <div class="card" id="filterCard">
+      <div class="card">
         <div class="card-title">🔍 فلاتر البحث</div>
         <div class="filter-grid">
-          <div class="form-field"><label>التاريخ</label><input id="fDate" type="date"></div>
-          <div class="form-field"><label>رقم الصفحة</label><input id="fPage" type="number" min="1" placeholder="مثال: 5"></div>
-          <div class="form-field"><label>اسم الطالب</label><input id="fStudent" type="text" placeholder="ابحث..."></div>
+          <div class="form-field">
+            <label>التاريخ</label>
+            <input id="fDate" type="date">
+          </div>
+          <div class="form-field">
+            <label>رقم الصفحة</label>
+            <input id="fPage" type="number" min="1" placeholder="مثال: 5">
+          </div>
+          <div class="form-field">
+            <label>اسم الطالب</label>
+            <input id="fStudent" type="text" placeholder="ابحث...">
+          </div>
           <div class="form-field">
             <label>المادة</label>
             <select id="fSubject">
@@ -678,22 +502,24 @@
             </select>
           </div>
         </div>
-        <div style="display:flex;gap:12px;">
-          <button class="btn btn-blue" id="applyFilters">تطبيق</button>
-          <button class="btn btn-gray" id="resetFilters">مسح</button>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn btn-blue" id="applyFilters">🔍 تطبيق</button>
+          <button class="btn btn-gray" id="resetFilters">🗑️ مسح</button>
         </div>
       </div>
 
-      <div class="card" id="resultsCard">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-          <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-500);font-weight:500;"></span></div>
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+          <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-500);"></span></div>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th></tr>
+              <tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th></tr>
             </thead>
-            <tbody id="resultsTable"></tbody>
+            <tbody id="resultsTable">
+              <tr><td colspan="8"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -701,8 +527,17 @@
 
   </div>
 
+  <!-- ══════ FOOTER ══════ -->
+  <footer>
+    <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة ❤️</p>
+    <p style="margin-top: 8px; opacity: 0.7;">لوحة إدارة متكاملة لإدارة الروضة 🌟</p>
+  </footer>
+
+  <!-- AOS Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- ══════ JAVASCRIPT ══════ -->
   <script>
-    // ========== Firebase Config ==========
+    // ==================== Firebase Configuration (من ملفك الأصلي) ====================
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -718,402 +553,229 @@
 
     const KG_ID = "kg_talaea";
 
-    // ========== GSAP Registration ==========
-    gsap.registerPlugin(ScrollTrigger);
+    // ==================== Global Variables ====================
+    let allStudents = [];
+    let allTeachers = [];
+    let allResults = [];
+    let confirmCallback = null;
 
-    // ========== Helper Functions ==========
-    function showToast(message, type = 'info') {
+    // ==================== Toast System ====================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-      toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
-      document.getElementById('toastContainer').appendChild(toast);
+      const icons = { success: '✅', error: '❌', warning: '⚠️' };
+      toast.innerHTML = `<span style="font-size:20px;">${icons[type] || '💬'}</span><span class="toast-text">${message}</span>`;
+      container.appendChild(toast);
       setTimeout(() => {
-        gsap.to(toast, {
-          opacity: 0,
-          x: -40,
-          duration: 0.3,
-          onComplete: () => toast.remove()
-        });
-      }, 4000);
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-40px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
     }
 
-    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-    function subjectLabel(v) {
-      return v === "math" ? "الرياضيات" : v === "arabic" ? "العربي" : v === "english" ? "الإنجليزي" : (v || "");
+    // ==================== Confirm Dialog ====================
+    function showConfirm(title, text, icon, callback) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmText').textContent = text;
+      document.getElementById('confirmIcon').textContent = icon || '⚠️';
+      confirmCallback = callback;
+      document.getElementById('confirmDialog').classList.add('open');
     }
 
-    function formatShortDate(timestamp) {
-      if (!timestamp) return "";
-      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-      if (isNaN(date)) return "";
-      return date.toLocaleDateString("ar-EG");
-    }
-
-    // ========== Auth Check ==========
-    const loggedIn = sessionStorage.getItem("loggedIn");
-    const userRole = sessionStorage.getItem("userRole");
-    const userName = sessionStorage.getItem("userName") || "مديرة الروضة";
-
-    auth.onAuthStateChanged(user => {
-      if (!user && loggedIn) {
-        sessionStorage.clear();
-        window.location.href = 'talaea-almobdeeen.html';
-      }
+    document.getElementById('confirmYes').addEventListener('click', () => {
+      document.getElementById('confirmDialog').classList.remove('open');
+      if (confirmCallback) confirmCallback();
+      confirmCallback = null;
+    });
+    document.getElementById('confirmNo').addEventListener('click', () => {
+      document.getElementById('confirmDialog').classList.remove('open');
+      confirmCallback = null;
     });
 
-    if (!loggedIn || userRole !== "manager") {
-      window.location.replace("talaea-almobdeeen.html");
-    }
+    // ==================== Header Scroll ====================
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 50) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    });
 
-    document.getElementById("headerStatus").textContent = "مرحباً " + userName;
-
-    // ========== Sign Out ==========
-    async function signOutUser() {
-      try {
-        await auth.signOut();
-        return { success: true };
-      } catch (error) {
-        return { success: false, error: error.message };
-      }
-    }
-
-    // ========== Student Functions ==========
-    async function addStudent(studentData) {
-      try {
-        const docRef = await db.collection("students").add({
-          ...studentData,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        return { success: true, id: docRef.id };
-      } catch (error) {
-        return { success: false, error: error.message };
-      }
-    }
-
-    async function getStudents() {
-      try {
-        const snapshot = await db.collection("students").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").get();
-        const students = [];
-        snapshot.forEach(doc => students.push({ id: doc.id, ...doc.data() }));
-        return { success: true, data: students };
-      } catch (error) {
-        return { success: false, error: error.message, data: [] };
-      }
-    }
-
-    async function deleteStudent(studentId) {
-      try {
-        await db.collection("students").doc(studentId).delete();
-        return { success: true };
-      } catch (error) {
-        return { success: false, error: error.message };
-      }
-    }
-
-    // ========== Results Functions ==========
-    async function getResults() {
-      try {
-        const snapshot = await db.collection("results").where("kindergartenId", "==", KG_ID).orderBy("createdAt", "desc").limit(500).get();
-        const results = [];
-        snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
-        return { success: true, data: results };
-      } catch (error) {
-        return { success: false, error: error.message, data: [] };
-      }
-    }
-
-    // ========== Teachers Functions ==========
-    async function getTeachers() {
-      try {
-        const snapshot = await db.collection("users").where("kindergartenId", "==", KG_ID).where("role", "==", "teacher").get();
-        const teachers = [];
-        snapshot.forEach(doc => teachers.push({ id: doc.id, ...doc.data() }));
-        return { success: true, data: teachers };
-      } catch (error) {
-        return { success: false, error: error.message, data: [] };
-      }
-    }
-
-    // ========== Data ==========
-    let students = [];
-    let allResults = [];
-    let teachers = [];
-
-    async function loadData() {
-      const studentsResult = await getStudents();
-      if (studentsResult.success) {
-        students = studentsResult.data;
-        renderStudents();
-        updateStats();
-      } else {
-        showToast("فشل تحميل بيانات الطلاب", "error");
-      }
-
-      const resultsResult = await getResults();
-      if (resultsResult.success) {
-        allResults = resultsResult.data;
-        renderResults();
-        updateStats();
-      }
-
-      const teachersResult = await getTeachers();
-      if (teachersResult.success) {
-        teachers = teachersResult.data;
-        renderTeachers();
-        updateStats();
-      }
-    }
-
-    // ========== Tabs ==========
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", function() {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-        this.classList.add("active");
-        document.getElementById("panel-" + this.dataset.tab).classList.add("active");
-
-        // Animate panel content
-        gsap.from(`#panel-${this.dataset.tab} .card`, {
-          opacity: 0,
-          y: 30,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power2.out"
-        });
+    // ==================== Tabs System ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`panel-${btn.getAttribute('data-tab')}`).classList.add('active');
       });
     });
+
+    // ==================== Auth State ====================
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById('headerStatus').textContent = `مرحباً: ${user.email}`;
+        loadAllData();
+      } else {
+        showToast('يجب تسجيل الدخول أولاً', 'warning');
+        setTimeout(() => { window.location.href = 'talaea-almobdeeen.html'; }, 2000);
+      }
+    });
+
+    // ==================== Logout ====================
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      showConfirm('تسجيل الخروج', 'هل أنتِ متأكدة من تسجيل الخروج؟', '🚪', async () => {
+        await auth.signOut();
+        showToast('تم تسجيل الخروج بنجاح', 'success');
+        setTimeout(() => { window.location.href = 'talaea-almobdeeen.html'; }, 1500);
+      });
+    });
+
+    async function loadAllData() { await Promise.all([loadStudents(), loadTeachers(), loadResults()]); updateStats(); }
 
     function updateStats() {
-      const studentsEl = document.querySelector("#statStudents .num");
-      const teachersEl = document.querySelector("#statTeachers .num");
-      const resultsEl = document.querySelector("#statResults .num");
-
-      // Animate numbers
-      gsap.to(studentsEl, { innerText: students.length, duration: 1, snap: { innerText: 1 } });
-      gsap.to(teachersEl, { innerText: teachers.length, duration: 1, snap: { innerText: 1 } });
-      gsap.to(resultsEl, { innerText: allResults.length, duration: 1, snap: { innerText: 1 } });
+      animateNumber('statStudents', allStudents.length);
+      animateNumber('statTeachers', allTeachers.length);
+      animateNumber('statResults', allResults.length);
+    }
+    function animateNumber(elementId, target) {
+      const el = document.getElementById(elementId);
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 30));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(interval); }
+        el.textContent = current;
+      }, 30);
     }
 
-    // ========== Render Students ==========
-    function renderStudents() {
-      const search = document.getElementById("searchStudent").value.trim().toLowerCase();
-      const filtered = students.filter(s =>
-        !search || (s.name || "").toLowerCase().includes(search) || (s.code || "").toLowerCase().includes(search)
-      );
-
-      document.getElementById("studentCount").textContent = `(${filtered.length})`;
-
-      const tbody = document.getElementById("studentsTable");
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">📭</div><p>لا يوجد طلاب مطابقون</p></div></td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map((s, i) => `
-        <tr style="opacity:0;" class="student-row" data-index="${i}">
-          <td data-label="اسم الطالب" style="font-weight:700;">${esc(s.name)}</td>
-          <td data-label="الكود"><code style="background:#f1f5f9;padding:6px 12px;border-radius:8px;font-size:13px;">${esc(s.code)}</code></td>
-          <td data-label="الشعبة">${esc(s.className || "—")}</td>
-          <td data-label="إجراء"><button class="action-btn action-delete" data-id="${s.id}">🗑️ حذف</button></td>
-        </tr>`).join("");
-
-      // Animate rows
-      gsap.to(".student-row", {
-        opacity: 1,
-        duration: 0.4,
-        stagger: 0.05
-      });
-
-      // Delete handlers
-      document.querySelectorAll(".action-delete").forEach(btn => {
-        btn.addEventListener("click", async function() {
-          if (!confirm("هل تريد حذف هذا الطالب؟")) return;
-          const result = await deleteStudent(this.dataset.id);
-          if (result.success) {
-            showToast("تم حذف الطالب بنجاح", "success");
-            students = students.filter(s => s.id !== this.dataset.id);
-            renderStudents();
-            updateStats();
-          } else {
-            showToast("فشل حذف الطالب", "error");
-          }
-        });
-      });
+    // ==================== Students ====================
+    async function loadStudents() {
+      const snapshot = await db.collection('kindergartens').doc(KG_ID).collection('students').orderBy('name').get();
+      allStudents = [];
+      snapshot.forEach(doc => allStudents.push({ id: doc.id, ...doc.data() }));
+      renderStudents(allStudents);
     }
 
-    // ========== Add Student ==========
-    document.getElementById("addStudentBtn").addEventListener("click", async function() {
-      const name = document.getElementById("sName").value.trim();
-      const code = document.getElementById("sCode").value.trim().toUpperCase();
-      const cls = document.getElementById("sClass").value.trim();
-      const msg = document.getElementById("studentMsg");
+    function renderStudents(students) {
+      const tbody = document.getElementById('studentsTable');
+      document.getElementById('studentCount').textContent = `(${students.length} طالب)`;
+      if (students.length === 0) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">👧</div><h3>لا يوجد طلاب</h3><p>أضيفي طلاب جدد من النموذج أعلاه</p></div></td></tr>`; return; }
+      tbody.innerHTML = students.map((s, i) => `<tr><td><strong>${i+1}</strong></td><td><strong style="color:var(--navy);">${s.name||'—'}</strong></td><td><span class="badge badge-blue">${s.code||'—'}</span></td><td>${s.className||s.class||'—'}</td><td><button class="action-btn action-delete" onclick="deleteStudent('${s.id}','${s.name}')">🗑️ حذف</button></td></tr>`).join('');
+    }
 
-      if (!name || !code) {
-        msg.textContent = "⚠️ يرجى إدخال الاسم والكود على الأقل";
-        msg.className = "form-msg msg-err";
-        return;
-      }
-
-      if (students.find(s => s.code === code)) {
-        msg.textContent = "⚠️ هذا الكود مستخدم بالفعل";
-        msg.className = "form-msg msg-err";
-        return;
-      }
-
-      const result = await addStudent({
-        name, code,
-        className: cls,
-        kindergartenId: KG_ID
+    window.deleteStudent = function(id, name) {
+      showConfirm('حذف طالب', `هل أنتِ متأكدة من حذف الطالب "${name}"؟ لا يمكن التراجع.`, '🗑️', async () => {
+        await db.collection('kindergartens').doc(KG_ID).collection('students').doc(id).delete();
+        showToast(`تم حذف "${name}" بنجاح`, 'success');
+        await loadStudents(); updateStats();
       });
+    };
 
-      if (result.success) {
-        msg.textContent = "✅ تم إضافة الطالب بنجاح";
-        msg.className = "form-msg msg-ok";
-        showToast("تم إضافة الطالب بنجاح", "success");
-        students.unshift({ id: result.id, name, code, className: cls, kindergartenId: KG_ID });
-        document.getElementById("sName").value = "";
-        document.getElementById("sCode").value = "";
-        document.getElementById("sClass").value = "";
-        renderStudents();
-        updateStats();
-      } else {
-        msg.textContent = "⚠️ فشل إضافة الطالب: " + result.error;
-        msg.className = "form-msg msg-err";
-        showToast("فشل إضافة الطالب", "error");
-      }
+    document.getElementById('addStudentBtn').addEventListener('click', async () => {
+      const name = document.getElementById('sName').value.trim();
+      const code = document.getElementById('sCode').value.trim();
+      const className = document.getElementById('sClass').value.trim();
+      const msgEl = document.getElementById('studentMsg');
+      if (!name || !code) { msgEl.className = 'form-msg msg-err'; msgEl.textContent = '⚠️ الاسم والكود مطلوبان'; return; }
+      const duplicate = allStudents.find(s => s.code === code);
+      if (duplicate) { msgEl.className = 'form-msg msg-err'; msgEl.textContent = '⚠️ هذا الكود مستخدم'; return; }
+      await db.collection('kindergartens').doc(KG_ID).collection('students').add({ name, code, className: className||'غير محدد', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      document.getElementById('sName').value = ''; document.getElementById('sCode').value = ''; document.getElementById('sClass').value = '';
+      msgEl.className = 'form-msg msg-ok'; msgEl.textContent = `✅ تمت إضافة "${name}" بنجاح!`;
+      showToast(`تمت إضافة "${name}"`, 'success');
+      await loadStudents(); updateStats();
+      setTimeout(() => msgEl.textContent = '', 3000);
     });
 
-    document.getElementById("searchStudent").addEventListener("input", renderStudents);
+    document.getElementById('searchStudent').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return renderStudents(allStudents);
+      renderStudents(allStudents.filter(s => (s.name?.toLowerCase().includes(q)) || (s.code?.toLowerCase().includes(q))));
+    });
 
-    // ========== Render Teachers ==========
-    function renderTeachers() {
-      const tbody = document.getElementById("teachersTable");
-
-      if (!teachers.length) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">👩‍🏫</div><p>لا يوجد معلمات</p></div></td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = teachers.map(t => `
-        <tr>
-          <td data-label="الاسم" style="font-weight:700;">${esc(t.name || "—")}</td>
-          <td data-label="البريد الإلكتروني" style="direction:ltr;">${esc(t.email || "")}</td>
-          <td data-label="المادة">${subjectLabel(t.subject)}</td>
-          <td data-label="الحالة"><span class="badge ${t.isActive !== false ? 'badge-green' : 'badge-red'}">${t.isActive !== false ? "مفعل" : "معطل"}</span></td>
-        </tr>`).join("");
+    // ==================== Teachers ====================
+    async function loadTeachers() {
+      const snapshot = await db.collection('kindergartens').doc(KG_ID).collection('teachers').orderBy('name').get();
+      allTeachers = [];
+      snapshot.forEach(doc => allTeachers.push({ id: doc.id, ...doc.data() }));
+      renderTeachers(allTeachers);
     }
 
-    // ========== Render Results ==========
-    function renderResults(list = allResults) {
-      document.getElementById("resultsCount").textContent = `(${list.length})`;
+    function getSubjectName(subj) { const map = { math:'📐 الرياضيات', arabic:'📖 العربي', english:'🔤 الإنجليزي', science:'🔬 العلوم', quran:'📗 القرآن', art:'🎨 الفنون' }; return map[subj] || subj || '—'; }
 
-      const tbody = document.getElementById("resultsTable");
-
-      if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><p>لا توجد نتائج مطابقة</p></div></td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = list.map((r, i) => `
-        <tr style="opacity:0;" class="result-row" data-index="${i}">
-          <td data-label="اسم الطالب" style="font-weight:700;">${esc(r.studentName || "")}</td>
-          <td data-label="الكود"><code style="background:#f1f5f9;padding:6px 12px;border-radius:8px;font-size:13px;">${esc(r.studentCode || "")}</code></td>
-          <td data-label="الشعبة">${esc(r.className || "")}</td>
-          <td data-label="النتيجة"><strong>${esc(r.score ?? "")} / ${esc(r.total ?? "")}</strong></td>
-          <td data-label="المادة">${subjectLabel(r.subject)}</td>
-          <td data-label="رقم الصفحة">${esc(r.pageNumber ?? "")}</td>
-          <td data-label="التاريخ" style="direction:ltr;font-size:13px;">${formatShortDate(r.createdAt)}</td>
-        </tr>`).join("");
-
-      // Animate rows
-      gsap.to(".result-row", {
-        opacity: 1,
-        duration: 0.4,
-        stagger: 0.05
-      });
+    function renderTeachers(teachers) {
+      const tbody = document.getElementById('teachersTable');
+      if (teachers.length === 0) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">👩‍🏫</div><h3>لا يوجد معلمات</h3><p>لم يتم تسجيل أي معلمة بعد</p></div></td></tr>`; return; }
+      tbody.innerHTML = teachers.map((t, i) => `<tr><td>${i+1}</td><td><strong style="color:var(--navy);">${t.name||'—'}</strong></td><td>${t.email||'—'}</td><td>${getSubjectName(t.subject)}</td><td><span class="badge ${t.active!==false?'badge-green':'badge-red'}">${t.active!==false?'✅ نشطة':'❌ معطلة'}</span></td><td><div style="display:flex;gap:8px;"><button class="action-btn action-toggle" onclick="toggleTeacher('${t.id}',${t.active!==false})">${t.active!==false?'⏸️ تعطيل':'▶️ تفعيل'}</button><button class="action-btn action-delete" onclick="deleteTeacher('${t.id}','${t.name}')">🗑️ حذف</button></div></td></tr>`).join('');
     }
 
-    // ========== Filters ==========
-    function applyFilters() {
-      const fd = document.getElementById("fDate").value;
-      const fp = document.getElementById("fPage").value.trim();
-      const fs = document.getElementById("fStudent").value.trim().toLowerCase();
-      const fsub = document.getElementById("fSubject").value;
-
-      const filtered = allResults.filter(r => {
-        if (fd) {
-          const d = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.createdAt || 0);
-          if (isNaN(d) || d.toISOString().slice(0, 10) !== fd) return false;
-        }
-        if (fp && String(r.pageNumber ?? "") !== fp) return false;
-        if (fs && !(r.studentName || "").toLowerCase().includes(fs)) return false;
-        if (fsub && r.subject !== fsub) return false;
-        return true;
+    window.toggleTeacher = async (id, current) => {
+      showConfirm(`${current?'تعطيل':'تفعيل'} المعلمة`, `هل أنتِ متأكدة من ${current?'تعطيل':'تفعيل'} هذه المعلمة؟`, current?'⏸️':'▶️', async () => {
+        await db.collection('kindergartens').doc(KG_ID).collection('teachers').doc(id).update({ active: !current });
+        showToast(`تم ${current?'تعطيل':'تفعيل'} المعلمة`, 'success');
+        await loadTeachers();
       });
+    };
+    window.deleteTeacher = (id, name) => {
+      showConfirm('حذف معلمة', `هل أنتِ متأكدة من حذف "${name}"؟`, '🗑️', async () => {
+        await db.collection('kindergartens').doc(KG_ID).collection('teachers').doc(id).delete();
+        showToast(`تم حذف "${name}"`, 'success');
+        await loadTeachers(); updateStats();
+      });
+    };
+    document.getElementById('refreshTeachersBtn').addEventListener('click', async () => { await loadTeachers(); showToast('تم التحديث', 'success'); });
 
+    // ==================== Results ====================
+    async function loadResults(filters = {}) {
+      let query = db.collection('kindergartens').doc(KG_ID).collection('results').orderBy('createdAt', 'desc');
+      if (filters.subject) query = db.collection('kindergartens').doc(KG_ID).collection('results').where('subject','==',filters.subject).orderBy('createdAt','desc');
+      const snapshot = await query.limit(100).get();
+      allResults = [];
+      snapshot.forEach(doc => allResults.push({ id: doc.id, ...doc.data() }));
+      let filtered = [...allResults];
+      if (filters.date) filtered = filtered.filter(r => (r.date || (r.createdAt?.toDate?.()?.toISOString().split('T')[0])) === filters.date);
+      if (filters.page) filtered = filtered.filter(r => r.page && r.page.toString() === filters.page.toString());
+      if (filters.student) { const q = filters.student.toLowerCase(); filtered = filtered.filter(r => (r.studentName?.toLowerCase().includes(q)) || (r.studentCode?.toLowerCase().includes(q))); }
       renderResults(filtered);
-      showToast(`تم تطبيق الفلتر: ${filtered.length} نتيجة`, "success");
     }
 
-    document.getElementById("applyFilters").addEventListener("click", applyFilters);
+    function renderResults(results) {
+      const tbody = document.getElementById('resultsTable');
+      document.getElementById('resultsCount').textContent = `(${results.length} نتيجة)`;
+      if (results.length === 0) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">📊</div><h3>لا توجد نتائج</h3><p>لم يتم تسجيل أي نتائج بعد</p></div></td></tr>`; return; }
+      tbody.innerHTML = results.map((r, i) => {
+        let dateStr = r.date || (r.createdAt?.toDate?.()?.toLocaleDateString('ar-SA') || '—');
+        let scoreHTML = '—';
+        if (r.score!==undefined && r.score!==null) { const s = parseFloat(r.score); let cls = 'badge-blue'; if(s>=90) cls='badge-green'; else if(s<60) cls='badge-red'; scoreHTML = `<span class="badge ${cls}">${s}%</span>`; }
+        else if(r.result) scoreHTML = `<span class="badge badge-blue">${r.result}</span>`;
+        return `<tr><td>${i+1}</td><td><strong style="color:var(--navy);">${r.studentName||'—'}</strong></td><td><span class="badge badge-blue">${r.studentCode||r.code||'—'}</span></td><td>${r.className||r.class||'—'}</td><td>${scoreHTML}</td><td>${getSubjectName(r.subject)}</td><td>${r.page||'—'}</td><td>${dateStr}</td></tr>`;
+      }).join('');
+    }
 
-    document.getElementById("resetFilters").addEventListener("click", () => {
-      document.getElementById("fDate").value = "";
-      document.getElementById("fPage").value = "";
-      document.getElementById("fStudent").value = "";
-      document.getElementById("fSubject").value = "";
-      renderResults(allResults);
-      showToast("تم مسح الفلتر", "success");
+    document.getElementById('applyFilters').addEventListener('click', () => {
+      const filters = { date: document.getElementById('fDate').value, page: document.getElementById('fPage').value, student: document.getElementById('fStudent').value.trim(), subject: document.getElementById('fSubject').value };
+      if (!Object.values(filters).some(v=>v)) { showToast('اختاري فلتر واحد على الأقل', 'warning'); return; }
+      loadResults(filters);
+    });
+    document.getElementById('resetFilters').addEventListener('click', () => {
+      document.getElementById('fDate').value = ''; document.getElementById('fPage').value = ''; document.getElementById('fStudent').value = ''; document.getElementById('fSubject').value = '';
+      loadResults();
     });
 
-    // ========== Logout ==========
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOutUser();
-      sessionStorage.clear();
-      window.location.href = "talaea-almobdeeen.html";
-    });
+    // ==================== Enter Key Support ====================
+    ['sName','sCode','sClass'].forEach(id => { document.getElementById(id).addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('addStudentBtn').click(); }); });
+    ['fDate','fPage','fStudent','fSubject'].forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('applyFilters').click(); }); });
 
-    // ========== Header Scroll Effect ==========
-    window.addEventListener('scroll', () => {
-      document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
-    });
+    // ==================== AOS تهيئة ====================
+    AOS.init({ duration: 800, once: true, offset: 100, easing: 'ease-out-cubic' });
 
-    // ========== GSAP Animations ==========
-    // Hero Stats Animation
-    gsap.from(".stat-chip", {
-      opacity: 0,
-      y: 30,
-      scale: 0.9,
-      duration: 0.8,
-      stagger: 0.1,
-      delay: 0.3,
-      ease: "back.out(1.7)"
+    // ==================== Initial Load Animation ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.stat-chip').forEach((chip,i) => { chip.style.opacity='0'; chip.style.transform='translateY(30px)'; setTimeout(() => { chip.style.transition='all 0.6s var(--spring-bounce)'; chip.style.opacity='1'; chip.style.transform='translateY(0)'; }, 300+i*150); });
+      const tabsEl = document.querySelector('.tabs'); if(tabsEl) { tabsEl.style.opacity='0'; tabsEl.style.transform='translateY(20px)'; setTimeout(() => { tabsEl.style.transition='all 0.6s var(--spring-bounce)'; tabsEl.style.opacity='1'; tabsEl.style.transform='translateY(0)'; }, 500); }
+      document.querySelectorAll('.card').forEach((card,i) => { card.style.opacity='0'; card.style.transform='translateY(30px)'; setTimeout(() => { card.style.transition='all 0.6s var(--spring-bounce)'; card.style.opacity='1'; card.style.transform='translateY(0)'; }, 600+i*200); });
     });
-
-    // Tabs Animation
-    gsap.from(".tabs", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      delay: 0.5,
-      ease: "power2.out"
-    });
-
-    // Panel Cards Animation
-    gsap.from("#panel-students .card", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      stagger: 0.15,
-      delay: 0.7,
-      ease: "power2.out"
-    });
-
-    // ========== Init ==========
-    loadData();
   </script>
 </body>
 </html>

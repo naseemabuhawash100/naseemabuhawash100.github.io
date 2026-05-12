@@ -2,14 +2,25 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#0f2d5c"/>
   <title>معرض الصور - روضة طلائع المبدعين</title>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-  <!-- إضافة مكتبة AOS للحركات -->
+
+  <!-- AOS Animations CSS -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- GSAP for Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
       --navy: #0f2d5c;
@@ -21,282 +32,284 @@
       --coral: #ff6b6b;
       --mint: #4ecdc4;
       --lavender: #a78bfa;
+      --purple: #9333ea;
       --light: #f0f6ff;
       --white: #ffffff;
+      --gray-50: #f8fafc;
       --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
       --gray-400: #94a3b8;
       --gray-600: #475569;
       --gray-800: #1e293b;
       --border: #e2e8f0;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow: 0 4px 6px rgba(0,0,0,0.07);
-      --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
-      --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
-      --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+      --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
       --radius: 16px;
       --radius-lg: 24px;
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-xl: 32px;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
     body {
       font-family: 'Tajawal', sans-serif;
       direction: rtl;
-      background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f6ff 100%);
       color: var(--gray-800);
       overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.7;
+      min-height: 100vh;
     }
 
-    /* Animations */
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-    .animate-fade-in-up { animation: fadeInUp 0.7s ease-out; }
-    .animate-fade-in-down { animation: fadeInDown 0.7s ease-out; }
-    .animate-scale-in { animation: scaleIn 0.5s ease-out; }
-    .animate-float { animation: float 3s ease-in-out infinite; }
-
-    /* HEADER */
+    /* ─── HEADER ─── */
     header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(16px) saturate(180%);
-      border-bottom: 2px solid var(--gold);
-      box-shadow: var(--shadow);
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
       transition: var(--transition);
     }
+
     header.scrolled {
-      background: rgba(255,255,255,0.98);
-      box-shadow: var(--shadow-md);
+      background: rgba(255,255,255,0.95);
+      box-shadow: var(--shadow-lg);
+      border-bottom-color: var(--gold);
     }
+
     .header-inner {
-      max-width: 1280px; margin: auto;
-      padding: 16px 24px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      flex-wrap: wrap;
+      max-width: 1320px; margin: auto;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; flex-wrap: wrap;
     }
-    .logo-area { display: flex; align-items: center; gap: 16px; }
+
+    .logo-area {
+      display: flex; align-items: center; gap: 14px;
+      text-decoration: none;
+    }
+
     .logo-circle {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--navy), var(--teal));
+      width: 54px; height: 54px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px; color: white; font-weight: 900;
+      font-size: 26px;
       box-shadow: 0 4px 15px rgba(15,45,92,0.3);
       transition: var(--transition);
     }
-    .logo-circle:hover { transform: rotate(10deg) scale(1.05); }
+
+    .logo-circle:hover {
+      transform: rotate(10deg) scale(1.08);
+    }
+
     .logo-text h1 {
-      font-size: 20px; font-weight: 900; color: var(--navy);
+      font-size: 18px; font-weight: 900; color: var(--navy);
       line-height: 1.3; margin-bottom: 2px;
     }
-    .logo-text p { font-size: 13px; color: var(--gray-600); }
 
-    nav ul { display: flex; gap: 4px; list-style: none; flex-wrap: wrap; }
+    .logo-text p { font-size: 12px; color: var(--gray-500); }
+
+    nav ul {
+      display: flex; gap: 6px; list-style: none; flex-wrap: wrap;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      border-radius: 99px;
+    }
+
     nav a {
-      display: block; padding: 8px 16px; border-radius: 99px;
+      display: block; padding: 10px 18px; border-radius: 99px;
       font-size: 14px; font-weight: 700; color: var(--gray-600);
       text-decoration: none; transition: var(--transition);
     }
-    nav a:hover { color: var(--navy); background: var(--light); }
+
+    nav a:hover, nav a.active {
+      color: var(--navy);
+      background: white;
+      box-shadow: var(--shadow-sm);
+    }
 
     .btn-back {
-      background: linear-gradient(135deg, var(--gray-100), #e2e8f0);
-      color: var(--gray-600);
-      border: none;
-      border-radius: 99px;
-      padding: 10px 24px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: 'Tajawal', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      background: linear-gradient(135deg, var(--gold), #f97316);
+      color: white; border: none; border-radius: 99px;
+      padding: 12px 26px; font-size: 14px; font-weight: 800;
+      cursor: pointer; font-family: 'Tajawal', sans-serif;
+      box-shadow: 0 4px 15px rgba(245,166,35,0.35);
       transition: var(--transition);
-    }
-    .btn-back:hover {
-      transform: translateY(-2px);
-      background: var(--gray-100);
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
     }
 
-    /* HERO */
-    .hero {
-      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 55%, var(--teal) 100%);
-      color: white; padding: 60px 24px;
-      position: relative; overflow: hidden;
+    .btn-back:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(245,166,35,0.45);
     }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
+      color: white;
+      padding: 100px 24px 120px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
     .hero::before {
       content: ''; position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      z-index: -1;
     }
+
     .hero::after {
-      content: ''; position: absolute; top: -50%; right: -20%;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
+      content: ''; position: absolute;
+      top: -30%; right: -10%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%);
       border-radius: 50%;
+      z-index: -1;
+      animation: pulse 8s ease-in-out infinite;
     }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
     .hero-inner {
-      max-width: 1280px; margin: auto;
+      max-width: 1320px; margin: auto;
       text-align: center;
       position: relative; z-index: 1;
     }
-    .hero h2 {
-      font-size: clamp(32px, 5vw, 48px);
-      font-weight: 900; line-height: 1.3;
-      margin-bottom: 16px;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
-    }
-    .hero p {
-      font-size: 17px; opacity: 0.9; line-height: 1.9;
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(245,166,35,0.15);
+      border: 1px solid rgba(245,166,35,0.35);
+      color: var(--gold-light);
+      padding: 8px 20px; border-radius: 99px;
+      font-size: 13px; font-weight: 800;
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
     }
 
-    /* ALBUMS SECTION */
-    .albums-section {
+    .hero h2 {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 900; line-height: 1.2;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 17px; opacity: 0.95; line-height: 1.9;
+      max-width: 600px; margin: auto;
+    }
+
+    .wave {
+      height: 80px;
+      background: linear-gradient(180deg, #f0f6ff 0%, #e0f2fe 100%);
+      clip-path: ellipse(55% 100% at 50% 100%);
+      margin-top: -1px;
+    }
+
+    /* ─── GALLERY SECTION ─── */
+    .gallery-section {
       padding: 80px 24px;
     }
+
     .section-title {
-      text-align: center; margin-bottom: 60px;
+      text-align: center;
+      margin-bottom: 60px;
     }
+
     .section-title h2 {
-      font-size: 32px; font-weight: 900; color: var(--navy);
-      margin-bottom: 12px;
+      font-size: clamp(32px, 4vw, 44px);
+      font-weight: 900; color: var(--navy);
+      margin-bottom: 16px;
     }
+
     .section-title p {
-      color: var(--gray-600); font-size: 16px;
+      color: var(--gray-500); font-size: 17px;
     }
-    .albums-grid {
+
+    .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 28px;
-      max-width: 1280px;
+      max-width: 1320px;
       margin: 0 auto;
     }
-    .album-card {
+
+    .gallery-card {
       background: white;
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       overflow: hidden;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-md);
       transition: var(--transition);
       border: 1px solid var(--border);
       cursor: pointer;
+      position: relative;
     }
-    .album-card:hover {
-      transform: translateY(-8px);
+
+    .gallery-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
+      z-index: 1;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .gallery-card:hover::before {
+      opacity: 1;
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-12px);
       box-shadow: var(--shadow-xl);
     }
-    .album-cover {
-      width: 100%; height: 200px;
+
+    .gallery-img {
+      width: 100%; height: 240px;
       background-size: cover;
       background-position: center;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-card:hover .gallery-img {
+      transform: scale(1.1);
+    }
+
+    .gallery-info {
+      padding: 24px;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      z-index: 2;
+      background: white;
     }
-    .album-cover::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
-    }
-    .album-stats {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      backdrop-filter: blur(4px);
-      z-index: 1;
-    }
-    .album-info { padding: 20px; }
-    .album-info h3 {
-      font-size: 20px; font-weight: 900; color: var(--navy);
+
+    .gallery-info h3 {
+      font-size: 18px; font-weight: 800; color: var(--navy);
       margin-bottom: 8px;
     }
-    .album-info p {
-      font-size: 14px; color: var(--gray-600); line-height: 1.7;
+
+    .gallery-info p {
+      font-size: 14px; color: var(--gray-500); line-height: 1.8;
     }
-    .album-date {
+
+    .gallery-date {
       font-size: 12px;
       color: var(--gray-400);
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
-    /* PHOTOS SECTION (inside album) */
-    .photos-section {
-      padding: 40px 24px 80px;
-    }
-    .back-to-albums {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: none;
-      color: var(--teal);
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-bottom: 30px;
-      padding: 8px 16px;
-      border-radius: 99px;
-      transition: var(--transition);
-    }
-    .back-to-albums:hover {
-      background: var(--light);
-      transform: translateX(-5px);
-    }
-    .photos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-    }
-    .photo-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-      border: 1px solid var(--border);
-    }
-    .photo-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
-    }
-    .photo-img {
-      width: 100%; height: 220px;
-      background-size: cover;
-      background-position: center;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .photo-card:hover .photo-img { transform: scale(1.02); }
-    .photo-info { padding: 16px; }
-    .photo-info h4 {
-      font-size: 16px; font-weight: 800; color: var(--navy);
-      margin-bottom: 6px;
-    }
-    .photo-info p {
-      font-size: 13px; color: var(--gray-600);
-      line-height: 1.6;
-    }
-
-    /* LIGHTBOX MODAL */
+    /* ─── LIGHTBOX MODAL ─── */
     .lightbox {
       display: none;
       position: fixed;
@@ -310,21 +323,26 @@
       align-items: center;
       flex-direction: column;
     }
+
     .lightbox.active {
       display: flex;
+      animation: fadeIn 0.3s ease;
     }
+
     .lightbox-img {
       max-width: 90%;
       max-height: 80%;
       object-fit: contain;
       border-radius: 12px;
     }
+
     .lightbox-caption {
       color: white;
       margin-top: 20px;
       font-size: 16px;
       text-align: center;
     }
+
     .lightbox-close {
       position: absolute;
       top: 20px;
@@ -334,7 +352,9 @@
       cursor: pointer;
       transition: var(--transition);
     }
+
     .lightbox-close:hover { transform: scale(1.1); }
+
     .lightbox-prev, .lightbox-next {
       position: absolute;
       top: 50%;
@@ -351,39 +371,49 @@
       justify-content: center;
       transition: var(--transition);
     }
+
     .lightbox-prev { right: 20px; }
     .lightbox-next { left: 20px; }
+
     .lightbox-prev:hover, .lightbox-next:hover {
       background: rgba(0,0,0,0.8);
       transform: scale(1.1);
     }
 
-    /* LOADING */
+    /* ─── LOADING ─── */
     .loading-spinner {
       display: inline-block;
       width: 40px;
       height: 40px;
-      border: 3px solid var(--gray-100);
+      border: 4px solid var(--gray-100);
       border-top-color: var(--navy);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .loading-text {
       text-align: center;
       padding: 60px;
-      color: var(--gray-600);
+      color: var(--gray-500);
     }
+
     .empty-state {
       text-align: center;
       padding: 60px;
       color: var(--gray-500);
     }
+
     .empty-state .icon {
       font-size: 64px;
       margin-bottom: 16px;
+      opacity: 0.5;
     }
 
-    /* TOAST */
+    /* ─── TOAST ─── */
     .toast-container {
       position: fixed;
       top: 100px;
@@ -393,39 +423,58 @@
       flex-direction: column;
       gap: 12px;
     }
+
     .toast {
       background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      box-shadow: var(--shadow-lg);
+      border-radius: 16px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow-xl);
       border-right: 4px solid var(--navy);
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 280px;
-      animation: slideInLeft 0.3s ease;
+      gap: 14px;
+      min-width: 320px;
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .toast.info { border-right-color: var(--teal); }
-    .toast-icon { font-size: 20px; }
+
+    .toast.success { border-right-color: var(--mint); }
+    .toast.error { border-right-color: var(--coral); }
+
+    .toast-icon { font-size: 22px; }
     .toast-message { font-size: 14px; font-weight: 700; color: var(--gray-800); }
-    @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-30px); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-40px); }
       to { opacity: 1; transform: translateX(0); }
     }
 
-    /* Responsive */
+    /* ─── FOOTER ─── */
+    footer {
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: rgba(255,255,255,0.8);
+      padding: 50px 24px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    footer span { color: var(--gold-light); font-weight: 800; }
+
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .header-inner { padding: 12px 16px; }
-      .logo-circle { width: 48px; height: 48px; font-size: 22px; }
-      .logo-text h1 { font-size: 17px; }
-      nav a { padding: 6px 12px; font-size: 13px; }
-      .hero { padding: 40px 16px; }
-      .hero h2 { font-size: 28px; }
-      .albums-grid { grid-template-columns: 1fr; }
-      .photos-grid { grid-template-columns: 1fr; }
+      .logo-circle { width: 46px; height: 46px; font-size: 22px; }
+      .logo-text h1 { font-size: 16px; }
+      nav { order: 3; width: 100%; }
+      nav ul { justify-content: center; }
+      nav a { padding: 8px 14px; font-size: 13px; }
+      .btn-back { padding: 10px 20px; font-size: 13px; }
+      .hero { padding: 80px 16px 100px; }
+      .hero h2 { font-size: 32px; }
+      .gallery-grid { grid-template-columns: 1fr; }
       .lightbox-prev, .lightbox-next { width: 40px; height: 40px; font-size: 30px; }
       .lightbox-prev { right: 10px; }
       .lightbox-next { left: 10px; }
+      .toast { min-width: auto; max-width: calc(100vw - 48px); }
     }
   </style>
 </head>
@@ -433,19 +482,19 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
-  <header>
+  <header id="header">
     <div class="header-inner">
-      <div class="logo-area">
+      <a href="talaea-almobdeeen.html" class="logo-area">
         <div class="logo-circle">🖼️</div>
         <div class="logo-text">
           <h1>معرض الصور</h1>
-          <p id="pageSubtitle">روضة طلائع المبدعين</p>
+          <p>روضة طلائع المبدعين</p>
         </div>
-      </div>
+      </a>
       <nav>
         <ul>
-          <li><a href="talaea-almobdeeen.html">🏠 الرئيسية</a></li>
-          <li><a href="exercises.html">📚 التمارين</a></li>
+          <li><a href="talaea-almobdeeen.html">الرئيسية</a></li>
+          <li><a href="#" class="active">📸 الصور</a></li>
           <li><a href="videos.html">🎬 الفيديوهات</a></li>
         </ul>
       </nav>
@@ -454,33 +503,26 @@
   </header>
 
   <section class="hero">
-    <div class="hero-inner" data-aos="fade-down">
-      <h2>🖼️ معرض الصور</h2>
+    <div class="hero-inner">
+      <span class="hero-badge">📸 معرض اللحظات</span>
+      <h2>معرض الصور</h2>
       <p>استكشف أجمل اللحظات والأنشطة من داخل الروضة</p>
     </div>
   </section>
 
-  <!-- الألبومات -->
-  <div id="albumsView" class="albums-section">
-    <div class="section-title" data-aos="fade-down">
-      <h2>📁 الألبومات</h2>
-      <p>اختر الألبوم لتصور الصور</p>
-    </div>
-    <div id="albumsGrid" class="albums-grid">
-      <div class="loading-text"><div class="loading-spinner"></div> جاري تحميل الألبومات...</div>
-    </div>
-  </div>
+  <div class="wave"></div>
 
-  <!-- الصور داخل الألبوم -->
-  <div id="photosView" class="photos-section" style="display: none;">
-    <button class="back-to-albums" id="backToAlbumsBtn">
-      <span>←</span> العودة إلى الألبومات
-    </button>
-    <div id="albumHeader" class="section-title" style="margin-bottom: 30px;"></div>
-    <div id="photosGrid" class="photos-grid"></div>
-  </div>
+  <section class="gallery-section">
+    <div class="section-title">
+      <h2>📸 ألبوم الصور</h2>
+      <p>لحظات من داخل الروضة وأنشطة الأطفال</p>
+    </div>
+    <div id="galleryGrid" class="gallery-grid">
+      <div class="loading-text"><div class="loading-spinner"></div> جاري تحميل الصور...</div>
+    </div>
+  </section>
 
-  <!-- Lightbox لعرض الصور بتكبير -->
+  <!-- Lightbox -->
   <div id="lightbox" class="lightbox">
     <span class="lightbox-close">&times;</span>
     <span class="lightbox-prev">‹</span>
@@ -489,8 +531,14 @@
     <div class="lightbox-caption" id="lightboxCaption"></div>
   </div>
 
+  <footer>
+    <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
+  </footer>
+
+  <!-- AOS Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // Firebase Config
+    // ========== Firebase Config ==========
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -502,218 +550,234 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     const KG_ID = "kg_talaea";
 
-    // Elements
-    const albumsView = document.getElementById("albumsView");
-    const photosView = document.getElementById("photosView");
-    const albumsGrid = document.getElementById("albumsGrid");
-    const photosGrid = document.getElementById("photosGrid");
-    const albumHeader = document.getElementById("albumHeader");
-    const toastContainer = document.getElementById("toastContainer");
-
-    let currentAlbum = null;
-    let currentPhotos = [];
-    let currentPhotoIndex = 0;
-
-    // Toast
+    // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
       toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-message">${message}</span>`;
-      toastContainer.appendChild(toast);
+      document.getElementById('toastContainer').appendChild(toast);
       setTimeout(() => {
-        toast.style.animation = 'slideInLeft 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 300);
+        gsap.to(toast, {
+          opacity: 0,
+          x: -40,
+          duration: 0.3,
+          onComplete: () => toast.remove()
+        });
       }, 4000);
     }
 
-    // Load Albums
-    async function loadAlbums() {
+    function formatDate(timestamp) {
+      if (!timestamp) return "";
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      if (isNaN(date)) return "";
+      return date.toLocaleDateString("ar-EG");
+    }
+
+    // ========== Load Images ==========
+    let currentImages = [];
+    let currentImageIndex = 0;
+
+    async function loadGalleryImages() {
       try {
-        const snapshot = await db.collection("albums")
-          .where("type", "==", "photos")
+        // Load only approved images (status === "approved")
+        const snapshot = await db.collection("gallery_images")
+          .where("status", "==", "approved")
           .orderBy("createdAt", "desc")
           .get();
         
+        const galleryGrid = document.getElementById("galleryGrid");
+        
         if (snapshot.empty) {
-          albumsGrid.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>لا توجد ألبومات صور بعد</p></div>`;
+          galleryGrid.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>لا توجد صور في المعرض بعد</p></div>`;
           return;
         }
         
+        currentImages = [];
         let html = "";
+        
         snapshot.forEach(doc => {
-          const album = { id: doc.id, ...doc.data() };
-          const date = album.createdAt?.toDate ? new Date(album.createdAt.toDate()).toLocaleDateString("ar-EG") : "";
+          const image = { id: doc.id, ...doc.data() };
+          currentImages.push(image);
+          
           html += `
-            <div class="album-card" data-aos="fade-up" data-album-id="${album.id}" data-album-name="${album.name}" data-album-desc="${album.description || ''}">
-              <div class="album-cover" style="background-image: url('${album.coverImage || 'https://via.placeholder.com/400x200/0f2d5c/white?text=ألبوم'}');">
-                <div class="album-stats">📷 ${album.photoCount || 0} صورة</div>
-              </div>
-              <div class="album-info">
-                <h3>${album.name}</h3>
-                <p>${album.description || "لا يوجد وصف"}</p>
-                <div class="album-date">📅 ${date}</div>
+            <div class="gallery-card" data-aos="fade-up" data-index="${currentImages.length - 1}">
+              <div class="gallery-img" style="background-image: url('${image.imageUrl}');"></div>
+              <div class="gallery-info">
+                <h3>${image.title || "بدون عنوان"}</h3>
+                <p>${image.description || ""}</p>
+                <div class="gallery-date">📅 ${formatDate(image.createdAt)}</div>
               </div>
             </div>
           `;
         });
-        albumsGrid.innerHTML = html;
         
-        // Add click events to album cards
-        document.querySelectorAll('.album-card').forEach(card => {
+        galleryGrid.innerHTML = html;
+        
+        // Add click events to gallery cards
+        document.querySelectorAll('.gallery-card').forEach(card => {
           card.addEventListener('click', () => {
-            const albumId = card.dataset.albumId;
-            const albumName = card.dataset.albumName;
-            const albumDesc = card.dataset.albumDesc;
-            showAlbumPhotos(albumId, albumName, albumDesc);
+            const index = parseInt(card.dataset.index);
+            openLightbox(index);
           });
         });
-      } catch (error) {
-        console.error("Error loading albums:", error);
-        albumsGrid.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>حدث خطأ في تحميل الألبومات</p></div>`;
-        showToast("حدث خطأ في تحميل الألبومات", "error");
-      }
-    }
-
-    // Load Photos of an Album
-    async function showAlbumPhotos(albumId, albumName, albumDesc) {
-      currentAlbum = { id: albumId, name: albumName, description: albumDesc };
-      
-      albumHeader.innerHTML = `
-        <h2>📷 ${albumName}</h2>
-        <p>${albumDesc || "استمتع بمشاهدة الصور"}</p>
-      `;
-      
-      photosGrid.innerHTML = `<div class="loading-text"><div class="loading-spinner"></div> جاري تحميل الصور...</div>`;
-      
-      try {
-        const snapshot = await db.collection("album_photos")
-          .where("albumId", "==", albumId)
-          .orderBy("createdAt", "desc")
-          .get();
         
-        if (snapshot.empty) {
-          photosGrid.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>لا توجد صور في هذا الألبوم بعد</p></div>`;
-        } else {
-          currentPhotos = [];
-          let html = "";
-          snapshot.forEach(doc => {
-            const photo = { id: doc.id, ...doc.data() };
-            currentPhotos.push(photo);
-            html += `
-              <div class="photo-card" data-aos="zoom-in" data-photo-index="${currentPhotos.length - 1}">
-                <div class="photo-img" style="background-image: url('${photo.imageUrl}');"></div>
-                <div class="photo-info">
-                  <h4>${photo.title || "بدون عنوان"}</h4>
-                  <p>${photo.description || ""}</p>
-                </div>
-              </div>
-            `;
+        // GSAP Animation for cards
+        gsap.utils.toArray('.gallery-card').forEach((card, i) => {
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            },
+            opacity: 0,
+            y: 60,
+            duration: 0.8,
+            delay: i * 0.1,
+            ease: "back.out(1.7)"
           });
-          photosGrid.innerHTML = html;
-          
-          // Add click events to photos
-          document.querySelectorAll('.photo-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-              const index = parseInt(card.dataset.photoIndex);
-              openLightbox(index);
-            });
-          });
-        }
-        
-        // Switch views
-        albumsView.style.display = "none";
-        photosView.style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        });
         
       } catch (error) {
-        console.error("Error loading photos:", error);
-        photosGrid.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>حدث خطأ في تحميل الصور</p></div>`;
+        console.error("Error loading images:", error);
+        document.getElementById("galleryGrid").innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>حدث خطأ في تحميل الصور</p></div>`;
         showToast("حدث خطأ في تحميل الصور", "error");
       }
     }
 
-    // Back to Albums
-    function backToAlbums() {
-      albumsView.style.display = "block";
-      photosView.style.display = "none";
-      currentAlbum = null;
-      currentPhotos = [];
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    // Lightbox functions
+    // ========== Lightbox Functions ==========
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightboxImg");
     const lightboxCaption = document.getElementById("lightboxCaption");
 
     function openLightbox(index) {
-      if (!currentPhotos.length) return;
-      currentPhotoIndex = index;
+      if (!currentImages.length) return;
+      currentImageIndex = index;
       updateLightbox();
       lightbox.classList.add("active");
+      document.body.style.overflow = "hidden";
     }
     
     function updateLightbox() {
-      const photo = currentPhotos[currentPhotoIndex];
-      if (photo) {
-        lightboxImg.src = photo.imageUrl;
-        lightboxCaption.textContent = photo.title || photo.description || "";
+      const image = currentImages[currentImageIndex];
+      if (image) {
+        lightboxImg.src = image.imageUrl;
+        lightboxCaption.textContent = image.title || image.description || "";
       }
     }
     
-    function nextPhoto() {
-      if (currentPhotoIndex < currentPhotos.length - 1) {
-        currentPhotoIndex++;
+    function nextImage() {
+      if (currentImageIndex < currentImages.length - 1) {
+        currentImageIndex++;
         updateLightbox();
       }
     }
     
-    function prevPhoto() {
-      if (currentPhotoIndex > 0) {
-        currentPhotoIndex--;
+    function prevImage() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
         updateLightbox();
       }
     }
     
     function closeLightbox() {
       lightbox.classList.remove("active");
+      document.body.style.overflow = "";
     }
 
-    // Event Listeners
-    document.getElementById("backToAlbumsBtn").addEventListener("click", backToAlbums);
+    // ========== Event Listeners ==========
     document.querySelector(".lightbox-close").addEventListener("click", closeLightbox);
-    document.querySelector(".lightbox-prev").addEventListener("click", prevPhoto);
-    document.querySelector(".lightbox-next").addEventListener("click", nextPhoto);
+    document.querySelector(".lightbox-prev").addEventListener("click", prevImage);
+    document.querySelector(".lightbox-next").addEventListener("click", nextImage);
+    
     lightbox.addEventListener("click", (e) => {
       if (e.target === lightbox) closeLightbox();
     });
+    
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
       if (e.key === "Escape") closeLightbox();
-      if (e.key === "ArrowRight") nextPhoto();
-      if (e.key === "ArrowLeft") prevPhoto();
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
     });
 
-    // AOS
+    // ========== Header Scroll Effect ==========
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      header.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ========== GSAP Animations ==========
+    // Hero Animation
+    gsap.from(".hero-badge", {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.2
+    });
+
+    gsap.from(".hero h2", {
+      opacity: 0,
+      y: 40,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.4
+    });
+
+    gsap.from(".hero p", {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.6
+    });
+
+    // Section Title Animation
+    gsap.from(".section-title", {
+      scrollTrigger: {
+        trigger: ".section-title",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // AOS Initialization
     AOS.init({
       duration: 800,
       once: true,
       offset: 100
     });
 
-    // Header Scroll Effect
-    window.addEventListener('scroll', () => {
-      const header = document.querySelector('header');
-      header.classList.toggle('scrolled', window.scrollY > 50);
-    });
+    // ========== Auth Check for Admin Actions (Optional) ==========
+    // Check if user is logged in as manager to show admin controls (can be added later)
+    const loggedIn = sessionStorage.getItem("loggedIn");
+    const userRole = sessionStorage.getItem("userRole");
+    
+    if (loggedIn && userRole === "manager") {
+      // Add admin button to header (optional)
+      const headerBtns = document.querySelector(".header-inner");
+      if (headerBtns && !document.getElementById("adminGalleryBtn")) {
+        const adminBtn = document.createElement("a");
+        adminBtn.id = "adminGalleryBtn";
+        adminBtn.href = "admin-gallery-manager.html";
+        adminBtn.className = "btn-back";
+        adminBtn.style.background = "linear-gradient(135deg, var(--mint), #10b981)";
+        adminBtn.innerHTML = "⚙️ إدارة الصور";
+        headerBtns.appendChild(adminBtn);
+      }
+    }
 
-    // Load Albums on page load
-    loadAlbums();
+    // ========== Load Images ==========
+    loadGalleryImages();
   </script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </body>
 </html>
