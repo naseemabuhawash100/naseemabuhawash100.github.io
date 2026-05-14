@@ -21,6 +21,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -692,9 +693,9 @@
     <div id="panel-upload-media" class="panel">
       <div class="card" data-aos="fade-up">
         <div class="card-title"><span>🖼️</span><span>إرسال صور لموافقة المديرة</span></div>
-        <p style="color:var(--gray-500);margin-bottom:24px;font-size:15px;background:#f0f9ff;padding:16px;border-radius:16px;border-right:4px solid var(--teal);">
-          📋 الصور التي ترسليها ستذهب إلى المديرة أولاً للمراجعة. بعد موافقتها يتم نشرها في معرض الصور على الصفحة الرئيسية.
-        </p>
+        <div style="background:#f0f9ff;padding:16px;border-radius:16px;border-right:4px solid var(--teal);margin-bottom:24px;">
+          <p style="color:var(--gray-600);font-size:15px;">📋 الصور التي ترسليها ستذهب إلى المديرة أولاً. بعد موافقتها تظهر في معرض الصور.</p>
+        </div>
         <div class="form-grid">
           <div class="form-field">
             <label for="tImgTitle">عنوان الصورة</label>
@@ -705,11 +706,24 @@
             <input id="tImgDesc" type="text" placeholder="مثال: الأطفال يبدعون بالألوان">
           </div>
         </div>
-        <div class="form-field" style="margin-bottom:20px;">
-          <label for="tImgUrl">رابط الصورة (من Google Drive أو رابط مباشر)</label>
-          <input id="tImgUrl" type="url" placeholder="https://drive.google.com/... أو https://i.imgur.com/...">
+        <!-- منطقة رفع الصورة -->
+        <div id="tImgUploadArea" onclick="document.getElementById('tImgFile').click()" style="border:2px dashed var(--teal);border-radius:20px;padding:36px;text-align:center;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);cursor:pointer;transition:all 0.3s;margin-bottom:16px;">
+          <div style="font-size:52px;margin-bottom:12px;">📸</div>
+          <h3 style="font-size:17px;font-weight:800;color:var(--navy);margin-bottom:6px;">اضغطي هنا لاختيار صورة من جهازك</h3>
+          <p style="font-size:13px;color:var(--gray-500);">JPG · PNG · WEBP — ترفع مباشرة على Firebase</p>
+          <input type="file" id="tImgFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
         </div>
-        <p style="font-size:13px;color:var(--gray-400);margin-bottom:16px;">💡 يمكنك رفع الصورة على Google Drive، ثم نسخ الرابط هنا</p>
+        <div id="tImgPreview" style="margin-bottom:16px;"></div>
+        <!-- شريط التقدم -->
+        <div id="tImgProgressWrap" style="display:none;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:700;color:var(--navy);">جاري الرفع...</span>
+            <span id="tImgProgressPct" style="font-size:13px;font-weight:700;color:var(--teal);">0%</span>
+          </div>
+          <div style="background:var(--gray-200);border-radius:99px;height:10px;overflow:hidden;">
+            <div id="tImgProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--navy));border-radius:99px;transition:width 0.3s;"></div>
+          </div>
+        </div>
         <button class="btn btn-green" id="tSubmitImgBtn" type="button">
           <span class="btn-icon">📤</span><span>إرسال للموافقة</span>
         </button>
@@ -776,11 +790,12 @@
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
     };
 
-    let auth, db;
+    let auth, db, storage;
     try {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
       db = firebase.firestore();
+      storage = firebase.storage();
       // تفعيل الكاش المحلي ليعمل أوفلاين
       db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
     } catch (e) {
@@ -1392,27 +1407,87 @@
     const tVidBtn = document.getElementById('tSubmitVidBtn');
     const tRefresh = document.getElementById('tRefreshMyMedia');
 
+    // ── رفع صورة المعلمة عبر Firebase Storage ──
+    let tSelectedFile = null;
+
+    const tImgFileInput = document.getElementById('tImgFile');
+    if (tImgFileInput) {
+      tImgFileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        tSelectedFile = file;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const prev = document.getElementById('tImgPreview');
+          if (prev) prev.innerHTML = `
+            <div style="position:relative;display:inline-block;">
+              <img src="${ev.target.result}" style="width:180px;height:140px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
+              <button onclick="clearTImg()" style="position:absolute;top:-10px;right:-10px;background:var(--coral);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+            </div>
+            <p style="margin-top:8px;font-size:13px;color:var(--teal);font-weight:700;">✅ ${file.name} — جاهزة للإرسال</p>`;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.clearTImg = () => {
+      tSelectedFile = null;
+      const p = document.getElementById('tImgPreview'); if(p) p.innerHTML='';
+      const f = document.getElementById('tImgFile'); if(f) f.value='';
+      const pw = document.getElementById('tImgProgressWrap'); if(pw) pw.style.display='none';
+    };
+
     if (tImgBtn) tImgBtn.addEventListener('click', async () => {
       const title = (document.getElementById('tImgTitle')?.value || '').trim();
-      const desc = (document.getElementById('tImgDesc')?.value || '').trim();
-      const url = (document.getElementById('tImgUrl')?.value || '').trim();
+      const desc  = (document.getElementById('tImgDesc')?.value  || '').trim();
       const m = document.getElementById('tImgMsg');
       if (!title) { if(m){m.className='form-msg msg-err';m.textContent='⚠️ يرجى إدخال عنوان الصورة';} return; }
-      if(m){m.className='form-msg';m.textContent='⏳ جاري الإرسال...';}
+      if (!tSelectedFile) { if(m){m.className='form-msg msg-err';m.textContent='⚠️ يرجى اختيار صورة من جهازك';} return; }
+
+      tImgBtn.disabled = true; tImgBtn.textContent = '⏳ جاري الرفع...';
+      if(m){m.className='form-msg';m.textContent='';}
+      const pw = document.getElementById('tImgProgressWrap'); if(pw) pw.style.display='block';
+
       try {
-        await db.collection('gallery_images').add({
-          title, description:desc, imageUrl:url||'',
-          status:'pending', uploadedBy:userName,
-          uploadedByEmail:sessionStorage.getItem('userEmail')||'',
-          createdAt:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        if(m){m.className='form-msg msg-ok';m.textContent='✅ تم إرسال الصورة للمديرة بنجاح! في انتظار الموافقة.';}
-        showToast('تم إرسال الصورة للمديرة ✅','success');
-        if(document.getElementById('tImgTitle')) document.getElementById('tImgTitle').value='';
-        if(document.getElementById('tImgDesc')) document.getElementById('tImgDesc').value='';
-        if(document.getElementById('tImgUrl')) document.getElementById('tImgUrl').value='';
-        setTimeout(()=>{if(m)m.textContent='';},5000);
-      } catch(e) { if(m){m.className='form-msg msg-err';m.textContent='❌ حدث خطأ: '+e.message;} }
+        const fileName = `gallery/pending/${Date.now()}_${tSelectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+        const storageRef = storage.ref(fileName);
+        const uploadTask = storageRef.put(tSelectedFile);
+
+        uploadTask.on('state_changed',
+          snap => {
+            const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+            const bar = document.getElementById('tImgProgressBar'); if(bar) bar.style.width = pct+'%';
+            const pctEl = document.getElementById('tImgProgressPct'); if(pctEl) pctEl.textContent = pct+'%';
+          },
+          err => {
+            if(m){m.className='form-msg msg-err';m.textContent='❌ فشل الرفع: '+err.message;}
+            tImgBtn.disabled=false; tImgBtn.innerHTML='<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+            if(pw) pw.style.display='none';
+          },
+          async () => {
+            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+            await db.collection('gallery_images').add({
+              title, description: desc,
+              imageUrl: downloadURL,
+              status: 'pending',
+              uploadedBy: userName,
+              uploadedByEmail: sessionStorage.getItem('userEmail') || '',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            if(m){m.className='form-msg msg-ok';m.textContent='✅ تم إرسال الصورة للمديرة! في انتظار الموافقة.';}
+            showToast('تم إرسال الصورة للمديرة ✅','success');
+            if(document.getElementById('tImgTitle')) document.getElementById('tImgTitle').value='';
+            if(document.getElementById('tImgDesc')) document.getElementById('tImgDesc').value='';
+            window.clearTImg();
+            tImgBtn.disabled=false; tImgBtn.innerHTML='<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+            setTimeout(()=>{if(m)m.textContent='';},5000);
+          }
+        );
+      } catch(e) {
+        if(m){m.className='form-msg msg-err';m.textContent='❌ خطأ: '+e.message;}
+        tImgBtn.disabled=false; tImgBtn.innerHTML='<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+        if(pw) pw.style.display='none';
+      }
     });
 
     if (tVidBtn) tVidBtn.addEventListener('click', async () => {
