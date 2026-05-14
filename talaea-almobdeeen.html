@@ -393,8 +393,8 @@
           <li><a href="#home">🏠 الرئيسية</a></li>
           <li><a href="#sections">📂 الأقسام</a></li>
           <li><a href="#about">ℹ️ من نحن</a></li>
-          <li><a href="#gallery">🖼️ المعرض</a></li>
-          <li><a href="#videos">🎥 الفيديوهات</a></li>
+          <li><a href="gallery.html">🖼️ المعرض</a></li>
+          <li><a href="videos.html">🎥 الفيديوهات</a></li>
           <li><a href="#worksheets">📝 أوراق العمل</a></li>
         </ul>
       </nav>
@@ -507,8 +507,9 @@
       <div class="section-title" data-aos="fade-down">
         <h2>🖼️ معرض الصور</h2>
         <p>لحظات جميلة من أنشطة الروضة</p>
+        <a href="gallery.html" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;text-decoration:none;padding:12px 28px;background:linear-gradient(135deg,#0f2d5c,#0e7490);color:white;border-radius:99px;font-family:Tajawal,sans-serif;font-size:15px;font-weight:800;box-shadow:0 6px 20px rgba(15,45,92,0.25);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">🖼️ عرض كل الصور</a>
       </div>
-      <div class="gallery-grid">
+      <div class="gallery-grid" id="homeGalleryGrid">
         <div class="gallery-card" data-aos="fade-up">
           <div class="gallery-img" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">🎨</div>
           <div class="gallery-info"><h3>حصة الرسم</h3><p>أطفالنا يبدعون بالألوان</p></div>
@@ -543,8 +544,9 @@
       <div class="section-title" data-aos="fade-down">
         <h2>🎥 فيديوهات تعليمية</h2>
         <p>مقاطع ممتعة ومفيدة لأطفالنا</p>
+        <a href="videos.html" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;text-decoration:none;padding:12px 28px;background:linear-gradient(135deg,#f5a623,#f97316);color:white;border-radius:99px;font-family:Tajawal,sans-serif;font-size:15px;font-weight:800;box-shadow:0 6px 20px rgba(245,166,35,0.35);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">🎥 عرض كل الفيديوهات</a>
       </div>
-      <div class="videos-grid">
+      <div class="videos-grid" id="homeVideosGrid">
         <div class="video-card" data-aos="fade-up">
           <div class="video-thumb" style="background: linear-gradient(135deg, #dbeafe, #93c5fd);">
             🔤
@@ -850,7 +852,98 @@
     });
 
     console.log('%c🌟 روضة طلائع المبدعين', 'font-size: 24px; font-weight: bold; color: #0f2d5c;');
-    console.log('%cتم تحميل الصفحة بنجاح ✅', 'font-size: 14px; color: #0e7490;');
+
+    // ═══ تحميل الصور والفيديوهات من Firebase ═══
+    async function loadHomeGallery() {
+      const grid = document.getElementById('homeGalleryGrid');
+      if (!grid) return;
+      try {
+        const snap = await db.collection('gallery_images').where('status','==','approved').orderBy('createdAt','desc').limit(6).get();
+        if (!snap.empty) {
+          const colors = [
+            'linear-gradient(135deg,#dbeafe,#bfdbfe)',
+            'linear-gradient(135deg,#d1fae5,#a7f3d0)',
+            'linear-gradient(135deg,#fef3c7,#fde68a)',
+            'linear-gradient(135deg,#ede9fe,#ddd6fe)',
+            'linear-gradient(135deg,#fce7f3,#fbcfe8)',
+            'linear-gradient(135deg,#fed7aa,#fdba74)'
+          ];
+          const placeholders = ['🎨','🎪','📖','🎭','🌱','🏆'];
+          let html = '';
+          snap.docs.forEach((doc, i) => {
+            const d = doc.data();
+            const bg = colors[i % colors.length];
+            const emoji = placeholders[i % placeholders.length];
+            const imgContent = d.imageUrl && !d.isPlaceholder
+              ? `<img src="${d.imageUrl}" alt="${d.title||''}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+              : `<div style="font-size:70px;">${emoji}</div>`;
+            html += `<div class="gallery-card" data-aos="fade-up" data-aos-delay="${i*100}">
+              <div class="gallery-img" style="background:${bg};">${imgContent}</div>
+              <div class="gallery-info"><h3>${d.title||'صورة من الروضة'}</h3><p>${d.description||'لحظة جميلة من أنشطتنا'}</p></div>
+            </div>`;
+          });
+          grid.innerHTML = html;
+          AOS.refresh();
+        }
+      } catch(e) { /* استخدام البطاقات الافتراضية */ }
+    }
+
+    async function loadHomeVideos() {
+      const grid = document.getElementById('homeVideosGrid');
+      if (!grid) return;
+      const colors = [
+        'linear-gradient(135deg,#dbeafe,#93c5fd)',
+        'linear-gradient(135deg,#d1fae5,#6ee7b7)',
+        'linear-gradient(135deg,#fef3c7,#fcd34d)'
+      ];
+      const emojis = ['🔤','🔢','🎵'];
+      try {
+        const snap = await db.collection('videos').where('status','==','approved').orderBy('createdAt','desc').limit(3).get();
+        if (!snap.empty) {
+          let html = '';
+          snap.docs.forEach((doc, i) => {
+            const d = doc.data();
+            const bg = colors[i % colors.length];
+            const emoji = emojis[i % emojis.length];
+            html += `<div class="video-card" data-aos="fade-up" data-aos-delay="${i*100}" onclick="window.location.href='videos.html'" style="cursor:pointer;">
+              <div class="video-thumb" style="background:${bg};">
+                ${emoji}
+                <div class="play-btn"><div class="play-triangle"></div></div>
+              </div>
+              <div class="video-info"><h3>${d.title||'فيديو تعليمي'}</h3><p>${d.description||'مقطع ممتع ومفيد'}</p></div>
+            </div>`;
+          });
+          grid.innerHTML = html;
+          AOS.refresh();
+        } else {
+          // Add click-through to all existing video cards
+          document.querySelectorAll('.video-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => window.location.href = 'videos.html');
+          });
+        }
+      } catch(e) {
+        document.querySelectorAll('.video-card').forEach(card => {
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => window.location.href = 'videos.html');
+        });
+      }
+    }
+
+    // Make gallery cards clickable
+    document.querySelectorAll('.gallery-card').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => window.location.href = 'gallery.html');
+    });
+
+    // Load dynamic content after Firebase init
+    db.enableNetwork().then(() => {
+      loadHomeGallery();
+      loadHomeVideos();
+    }).catch(() => {
+      loadHomeGallery();
+      loadHomeVideos();
+    });
   </script>
 </body>
 </html>
