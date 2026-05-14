@@ -685,7 +685,7 @@
         snapshot.forEach((doc, index) => {
           const video = { id: doc.id, ...doc.data() };
           currentVideos.push(video);
-          const embedUrl = getYouTubeEmbedUrl(video.videoUrl);
+          const embedUrl = getYouTubeEmbedUrl(video.youtubeUrl || video.videoUrl);
           
           html += `
             <div class="video-card" data-index="${index}" data-aos="fade-up">
@@ -752,7 +752,7 @@
       currentVideo = currentVideos[index];
       if (!currentVideo) return;
       
-      const embedUrl = getYouTubeEmbedUrl(currentVideo.videoUrl);
+      const embedUrl = getYouTubeEmbedUrl(currentVideo.youtubeUrl || currentVideo.videoUrl);
       modalVideo.src = embedUrl + "?autoplay=1";
       modalTitle.textContent = currentVideo.title || "بدون عنوان";
       modalDesc.textContent = currentVideo.description || "";
