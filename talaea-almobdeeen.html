@@ -725,10 +725,37 @@
     // ═══════════════════════════════════════════════════════════
     // 7. GET USER DATA FROM FIRESTORE
     // ═══════════════════════════════════════════════════════════
-    async function getUserData(uid) {
+    async function getUserData(uid, email) {
       try {
+        // 1) البحث بالـ uid أولاً (المستخدمين الجدد)
         const doc = await db.collection('users').doc(uid).get();
         if (doc.exists) return { success: true, data: doc.data() };
+
+        // 2) البحث بالـ email كـ fallback (البيانات القديمة بـ uid ثابت)
+        const snap = await db.collection('users').where('email', '==', email).limit(1).get();
+        if (!snap.empty) {
+          const userData = snap.docs[0].data();
+          // تحديث الـ document ليحمل الـ uid الصحيح للمرات القادمة
+          await db.collection('users').doc(uid).set({ ...userData, uid }, { merge: true });
+          return { success: true, data: userData };
+        }
+
+        // 3) البحث في kindergartens/teachers كـ fallback إضافي
+        const tSnap = await db.collection('kindergartens').doc('kg_talaea')
+          .collection('teachers').where('email', '==', email).limit(1).get();
+        if (!tSnap.empty) {
+          const tData = tSnap.docs[0].data();
+          const userData = {
+            name: tData.name || 'معلمة',
+            email: email,
+            role: 'teacher',
+            kindergartenId: 'kg_talaea',
+            ...tData
+          };
+          await db.collection('users').doc(uid).set({ ...userData, uid }, { merge: true });
+          return { success: true, data: userData };
+        }
+
         return { success: false, error: 'No user data' };
       } catch (error) {
         return { success: false, error: error.message };
@@ -763,7 +790,7 @@
         const user = userCredential.user;
 
         // Get user data from Firestore
-        const userDataResult = await getUserData(user.uid);
+        const userDataResult = await getUserData(user.uid, email);
 
         if (userDataResult.success) {
           const userData = userDataResult.data;
