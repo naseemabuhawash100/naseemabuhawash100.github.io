@@ -11,7 +11,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <style>
     :root {
       --navy: #0f2d5c; --navy-light: #1a4a8a;
@@ -56,9 +55,6 @@
     .btn-green:hover { transform: translateY(-3px); }
     .btn-gold { background: linear-gradient(135deg, var(--gold), #f97316); color: white; box-shadow: 0 4px 15px rgba(245,166,35,0.3); }
     .btn-gold:hover { transform: translateY(-3px); }
-    .btn-purple { background: linear-gradient(135deg, var(--lavender), var(--purple)); color: white; }
-    .btn-purple:hover { transform: translateY(-3px); }
-    /* Hero */
     .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%); color: white; padding: 80px 24px 100px; position: relative; overflow: hidden; }
     .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
     .hero::after { content: ''; position: absolute; top: -30%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 60%); border-radius: 50%; animation: pulse 8s ease-in-out infinite; }
@@ -71,25 +67,20 @@
     .stat-chip:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); }
     .stat-chip .num { font-size: 36px; font-weight: 900; color: var(--gold-light); }
     .stat-chip .lbl { font-size: 13px; opacity: 0.85; margin-top: 6px; }
-    /* Tabs */
     .tabs-wrap { max-width: 1200px; margin: -40px auto 0; padding: 0 24px; position: relative; z-index: 10; }
     .tabs { display: flex; gap: 8px; background: white; border-radius: 99px; padding: 8px; border: 1px solid var(--border); box-shadow: var(--shadow-xl); flex-wrap: wrap; }
     .tab-btn { flex: 1; min-width: 120px; padding: 12px 20px; border-radius: 99px; border: none; background: transparent; font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-600); cursor: pointer; transition: all 0.3s var(--spring-bounce); white-space: nowrap; }
     .tab-btn.active { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; box-shadow: var(--shadow-md); }
     .tab-btn:hover:not(.active) { background: var(--gray-100); color: var(--navy); }
-    /* Notification badge */
     .tab-btn .notif-badge { background: var(--coral); color: white; border-radius: 99px; padding: 2px 7px; font-size: 11px; margin-right: 4px; animation: pop 0.4s var(--spring-bounce); }
     @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
-    /* Panels */
     .panels { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
     .panel { display: none; animation: fadeIn 0.4s var(--spring-bounce); }
     .panel.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    /* Cards */
     .card { background: white; border-radius: 32px; border: 1px solid var(--border); box-shadow: var(--shadow-md); padding: 36px; margin-bottom: 32px; transition: all 0.4s var(--spring-bounce); }
     .card:hover { box-shadow: var(--shadow-xl); transform: translateY(-4px); }
     .card-title { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
-    /* Forms */
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 24px; }
     .form-field label { display: block; font-size: 14px; font-weight: 700; color: var(--gray-700); margin-bottom: 10px; }
     .form-field input, .form-field select, .form-field textarea { width: 100%; border: 2px solid var(--gray-200); border-radius: 16px; padding: 14px 16px; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; transition: all 0.2s; background: white; }
@@ -97,7 +88,6 @@
     .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,116,144,0.15); }
     .form-msg { font-size: 14px; font-weight: 700; margin-top: 16px; min-height: 24px; }
     .msg-ok { color: #10b981; } .msg-err { color: var(--coral); }
-    /* Tables */
     .table-wrap { overflow-x: auto; border-radius: 24px; border: 1px solid var(--gray-200); background: white; }
     table { width: 100%; border-collapse: collapse; min-width: 700px; }
     thead th { background: linear-gradient(135deg, var(--navy), var(--teal)); color: white; padding: 16px 14px; font-size: 14px; font-weight: 800; text-align: center; }
@@ -118,7 +108,6 @@
     .badge-red { background: linear-gradient(135deg, #fee2e2, #fca5a5); color: #991b1b; }
     .badge-blue { background: linear-gradient(135deg, #dbeafe, #93c5fd); color: #1e40af; }
     .badge-yellow { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #92400e; }
-    /* Media Grid */
     .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; margin-top: 24px; }
     .media-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); transition: all 0.3s var(--spring-bounce); }
     .media-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
@@ -129,37 +118,31 @@
     .media-info h4 { font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
     .media-info p { font-size: 13px; color: var(--gray-500); margin-bottom: 12px; }
     .media-actions { display: flex; gap: 8px; }
-    /* Upload area */
     .upload-area { border: 2px dashed var(--teal); border-radius: 24px; padding: 40px; text-align: center; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); cursor: pointer; transition: all 0.3s; }
     .upload-area:hover { border-color: var(--navy); background: linear-gradient(135deg, #e0f2fe, #dbeafe); }
     .upload-area .upload-icon { font-size: 56px; margin-bottom: 16px; }
     .upload-area h3 { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
     .upload-area p { font-size: 14px; color: var(--gray-500); }
     .upload-area input[type="file"] { display: none !important; }
-    /* Preview strip */
     .preview-strip { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
     .preview-item { position: relative; width: 100px; height: 100px; border-radius: 16px; overflow: hidden; border: 3px solid var(--teal); }
     .preview-item img { width: 100%; height: 100%; object-fit: cover; }
     .preview-item .remove-preview { position: absolute; top: 4px; right: 4px; background: var(--coral); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-    /* Search */
     .search-box { max-width: 280px; }
     .search-box input { width: 100%; border: 2px solid var(--gray-200); border-radius: 99px; padding: 12px 18px; font-family: 'Tajawal', sans-serif; font-size: 14px; outline: none; transition: all 0.2s; }
     .search-box input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(14,116,144,0.15); }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
-    /* Empty/Loading */
     .empty-state { text-align: center; padding: 60px; color: var(--gray-500); }
     .empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
     .empty-state h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--gray-600); }
     .loading { text-align: center; padding: 40px; }
     .loading-spinner { width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Toast */
     .toast-container { position: fixed; top: 100px; left: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 12px; }
     .toast { background: white; border-radius: 16px; padding: 16px 22px; box-shadow: var(--shadow-xl); border-right: 4px solid var(--navy); display: flex; align-items: center; gap: 12px; animation: slideIn 0.4s var(--spring-bounce); max-width: 350px; }
     .toast.success { border-right-color: #10b981; } .toast.error { border-right-color: var(--coral); } .toast.warning { border-right-color: var(--gold); }
     .toast-text { font-size: 14px; font-weight: 700; color: var(--gray-700); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(-40px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
-    /* Confirm */
     .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .confirm-overlay.open { display: flex; }
     .confirm-box { background: white; border-radius: 24px; padding: 36px; max-width: 400px; width: 100%; text-align: center; box-shadow: var(--shadow-xl); }
@@ -167,10 +150,8 @@
     .confirm-box h3 { font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 12px; }
     .confirm-box p { font-size: 15px; color: var(--gray-600); margin-bottom: 24px; line-height: 1.7; }
     .confirm-btns { display: flex; gap: 12px; justify-content: center; }
-    /* Footer */
     footer { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: rgba(255,255,255,0.8); padding: 50px 24px; text-align: center; }
     footer span { color: var(--gold-light); font-weight: 800; }
-    /* Responsive */
     @media (max-width: 900px) { .hero-inner { flex-direction: column; text-align: center; } .hero-stats { justify-content: center; } .tabs { border-radius: 24px; } .tab-btn { min-width: 90px; padding: 10px 14px; font-size: 12px; } .card { padding: 24px; border-radius: 24px; } }
     @media (max-width: 768px) { .header-inner { padding: 12px 16px; } .header-btns { width: 100%; justify-content: center; } .hero { padding: 60px 16px 80px; } .tabs-wrap, .panels { padding: 0 16px; } .panels { margin: 30px auto; } .confirm-btns { flex-direction: column; } }
   </style>
@@ -190,7 +171,6 @@
     </div>
   </div>
 
-  <!-- HEADER -->
   <header id="header">
     <div class="header-inner">
       <div class="logo-area">
@@ -209,7 +189,6 @@
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
       <div data-aos="fade-up">
@@ -225,7 +204,6 @@
     </div>
   </section>
 
-  <!-- TABS -->
   <div class="tabs-wrap" data-aos="fade-up" data-aos-delay="200">
     <div class="tabs">
       <button class="tab-btn active" data-tab="students">👧 إدارة الطلاب</button>
@@ -236,7 +214,6 @@
     </div>
   </div>
 
-  <!-- PANELS -->
   <div class="panels">
 
     <!-- ─── طلاب ─── -->
@@ -257,8 +234,10 @@
           <div class="search-box"><input id="searchStudent" type="text" placeholder="🔍 ابحث باسم أو كود..."></div>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>إجراء</th></tr></thead>
-          <tbody id="studentsTable"><tr><td colspan="5"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody></table>
+          <table>
+            <thead><tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>إجراء</th></tr></thead>
+            <tbody id="studentsTable"><tr><td colspan="5"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -269,8 +248,10 @@
         <div class="card-title">👩‍🏫 معلمات الروضة</div>
         <button id="refreshTeachersBtn" class="btn btn-blue" style="margin-bottom:20px;">🔄 تحديث القائمة</button>
         <div class="table-wrap">
-          <table><thead><tr><th>#</th><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th><th>إجراء</th></tr></thead>
-          <tbody id="teachersTable"><tr><td colspan="6"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody></table>
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>البريد الإلكتروني</th><th>المادة</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="teachersTable"><tr><td colspan="6"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -295,10 +276,13 @@
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
           <div class="card-title" style="margin-bottom:0;">📊 النتائج <span id="resultsCount" style="font-size:14px;color:var(--gray-500);"></span></div>
+          <button class="btn btn-green" id="exportResultsBtn">⬇️ تصدير CSV</button>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th></tr></thead>
-          <tbody id="resultsTable"><tr><td colspan="8"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody></table>
+          <table>
+            <thead><tr><th>#</th><th>اسم الطالب</th><th>الكود</th><th>الشعبة</th><th>النتيجة</th><th>المادة</th><th>رقم الصفحة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
+            <tbody id="resultsTable"><tr><td colspan="9"><div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div></td></tr></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -324,7 +308,6 @@
     <!-- ─── رفع من الإدارة ─── -->
     <div id="panel-upload-media" class="panel">
 
-      <!-- رفع صورة مباشر -->
       <div class="card">
         <div class="card-title">🖼️ إضافة صورة للمعرض (بدون موافقة)</div>
         <div class="form-grid">
@@ -353,7 +336,6 @@
         <p class="form-msg" id="adminImgMsg" style="margin-top:14px;"></p>
       </div>
 
-      <!-- رفع فيديو مباشر -->
       <div class="card">
         <div class="card-title">🎥 إضافة فيديو (بدون موافقة)</div>
         <div class="form-grid">
@@ -365,14 +347,12 @@
         <p class="form-msg" id="adminVidMsg" style="margin-top:14px;"></p>
       </div>
 
-      <!-- الصور المنشورة -->
       <div class="card">
         <div class="card-title">🗂️ الصور المنشورة حالياً</div>
         <button class="btn btn-blue" id="refreshPublishedImgs" style="margin-bottom:20px;">🔄 تحديث</button>
         <div id="publishedImgsGrid" class="media-grid"></div>
       </div>
 
-      <!-- الفيديوهات المنشورة -->
       <div class="card">
         <div class="card-title">🗂️ الفيديوهات المنشورة حالياً</div>
         <button class="btn btn-blue" id="refreshPublishedVids" style="margin-bottom:20px;">🔄 تحديث</button>
@@ -380,6 +360,7 @@
       </div>
 
     </div>
+  </div>
 
   <footer>
     <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة ❤️</p>
@@ -387,603 +368,682 @@
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
-      authDomain: "interactive-book-37270.firebaseapp.com",
-      projectId: "interactive-book-37270",
-      storageBucket: "interactive-book-37270.firebasestorage.app",
-      messagingSenderId: "350364566140",
-      appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    const storage = firebase.storage();
-    const KG_ID = "kg_talaea";
+    (function() {
+      // --------------------- 1. Firebase Config ---------------------
+      const firebaseConfig = {
+        apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+        authDomain: "interactive-book-37270.firebaseapp.com",
+        projectId: "interactive-book-37270",
+        storageBucket: "interactive-book-37270.firebasestorage.app",
+        messagingSenderId: "350364566140",
+        appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      const storage = firebase.storage();
 
-    let allStudents = [], allTeachers = [], allResults = [], confirmCallback = null;
+      const KG_ID = "kg_talaea";
 
-    // ── Toast ──
-    function showToast(msg, type='success') {
-      const c = document.getElementById('toastContainer');
-      const t = document.createElement('div'); t.className = `toast ${type}`;
-      const icons = {success:'✅',error:'❌',warning:'⚠️'};
-      t.innerHTML = `<span style="font-size:20px;">${icons[type]||'💬'}</span><span class="toast-text">${msg}</span>`;
-      c.appendChild(t);
-      setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-40px)'; t.style.transition='all 0.3s'; setTimeout(()=>t.remove(),300); }, 3500);
-    }
+      // --------------------- 2. متغيرات عامة ---------------------
+      let allStudents = [], allTeachers = [], allResults = [];
+      let adminSelectedFile = null;
+      let confirmResolve = null;
 
-    // ── Confirm ──
-    function showConfirm(title, text, icon, cb) {
-      document.getElementById('confirmTitle').textContent = title;
-      document.getElementById('confirmText').textContent = text;
-      document.getElementById('confirmIcon').textContent = icon || '⚠️';
-      confirmCallback = cb;
-      document.getElementById('confirmDialog').classList.add('open');
-    }
-    document.getElementById('confirmYes').addEventListener('click', () => {
-      document.getElementById('confirmDialog').classList.remove('open');
-      if (confirmCallback) confirmCallback(); confirmCallback = null;
-    });
-    document.getElementById('confirmNo').addEventListener('click', () => {
-      document.getElementById('confirmDialog').classList.remove('open'); confirmCallback = null;
-    });
-
-    // ── Header scroll ──
-    window.addEventListener('scroll', () => {
-      document.getElementById('header').classList.toggle('scrolled', window.pageYOffset > 50);
-    });
-
-    // ── Tabs ──
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.getAttribute('data-tab');
-        document.getElementById(`panel-${tab}`).classList.add('active');
-        if (tab === 'approve-media') loadPendingMedia();
-        if (tab === 'upload-media') { loadPublishedImages(); loadPublishedVideos(); }
-      });
-    });
-
-    // ── Auth ──
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('headerStatus').textContent = `مرحباً: ${user.email}`;
-        loadAllData(); loadPendingCount();
-      } else {
-        showToast('يجب تسجيل الدخول أولاً','warning');
-        setTimeout(() => window.location.href = 'talaea-almobdeeen.html', 2000);
+      // --------------------- 3. دوال مساعدة ---------------------
+      function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icons = { success: '✅', error: '❌', warning: '⚠️' };
+        toast.innerHTML = `<span style="font-size:20px;">${icons[type] || 'ℹ️'}</span><span class="toast-text">${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.transition = 'opacity 0.3s, transform 0.3s';
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(-40px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
       }
-    });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      showConfirm('تسجيل الخروج','هل أنتِ متأكدة من تسجيل الخروج؟','🚪', async () => {
-        await auth.signOut(); showToast('تم تسجيل الخروج','success');
-        setTimeout(() => window.location.href='talaea-almobdeeen.html', 1500);
+      function showConfirm(title, text, icon) {
+        return new Promise((resolve) => {
+          document.getElementById('confirmTitle').textContent = title;
+          document.getElementById('confirmText').textContent = text;
+          document.getElementById('confirmIcon').textContent = icon || '⚠️';
+          document.getElementById('confirmDialog').classList.add('open');
+          confirmResolve = resolve;
+        });
+      }
+
+      document.getElementById('confirmYes').onclick = () => {
+        document.getElementById('confirmDialog').classList.remove('open');
+        if (confirmResolve) confirmResolve(true);
+        confirmResolve = null;
+      };
+      document.getElementById('confirmNo').onclick = () => {
+        document.getElementById('confirmDialog').classList.remove('open');
+        if (confirmResolve) confirmResolve(false);
+        confirmResolve = null;
+      };
+
+      // --------------------- 4. جلب البيانات ---------------------
+      async function loadStudents() {
+        const snap = await db.collection('students').where('kindergartenId', '==', KG_ID).get();
+        allStudents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderStudents();
+      }
+
+      async function loadTeachers() {
+        const snap = await db.collection('users').where('kindergartenId', '==', KG_ID).where('role', '==', 'teacher').get();
+        allTeachers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderTeachers();
+      }
+
+      async function loadResults() {
+        const snap = await db.collection('results').where('kindergartenId', '==', KG_ID).orderBy('createdAt', 'desc').limit(500).get();
+        allResults = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderResults();
+      }
+
+      // --------------------- 5. عرض البيانات ---------------------
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
+      }
+
+      function getSubjectName(sub) {
+        const map = { math: 'الرياضيات', arabic: 'العربي', english: 'الإنجليزي' };
+        return map[sub] || sub || '—';
+      }
+
+      function formatDate(timestamp) {
+        if (!timestamp) return '';
+        const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        return isNaN(d) ? '' : d.toLocaleDateString('ar-EG');
+      }
+
+      function renderStudents() {
+        const tbody = document.getElementById('studentsTable');
+        document.getElementById('studentCount').innerHTML = `(${allStudents.length})`;
+        if (!allStudents.length) {
+          tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">👧</div><h3>لا يوجد طلاب</h3><p>أضيفي طلاباً جدداً</p></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = allStudents.map((s, i) => `
+          <tr>
+            <td><strong>${i+1}</strong></td>
+            <td><strong style="color:var(--navy);">${escapeHtml(s.name)}</strong></td>
+            <td><span class="badge badge-blue">${escapeHtml(s.code)}</span></td>
+            <td>${escapeHtml(s.className || '—')}</td>
+            <td><button class="action-btn action-delete" onclick="window.deleteStudent('${s.id}','${escapeHtml(s.name)}')">🗑️ حذف</button></td>
+          </tr>
+        `).join('');
+      }
+
+      function renderTeachers() {
+        const tbody = document.getElementById('teachersTable');
+        if (!allTeachers.length) {
+          tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">👩‍🏫</div><h3>لا يوجد معلمات</h3></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = allTeachers.map((t, i) => `
+          <tr>
+            <td>${i+1}</td>
+            <td><strong style="color:var(--navy);">${escapeHtml(t.name)}</strong></td>
+            <td>${escapeHtml(t.email)}</td>
+            <td>${getSubjectName(t.subject)}</td>
+            <td><span class="badge ${t.isActive !== false ? 'badge-green' : 'badge-red'}">${t.isActive !== false ? '✅ نشطة' : '❌ معطلة'}</span></td>
+            <td>
+              <button class="action-btn action-toggle" onclick="window.toggleTeacher('${t.id}', ${t.isActive !== false})">${t.isActive !== false ? '⏸️ تعطيل' : '▶️ تفعيل'}</button>
+              <button class="action-btn action-delete" onclick="window.deleteTeacher('${t.id}','${escapeHtml(t.name)}')">🗑️ حذف</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function renderResults() {
+        const tbody = document.getElementById('resultsTable');
+        document.getElementById('resultsCount').innerHTML = `(${allResults.length})`;
+        if (!allResults.length) {
+          tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">📊</div><h3>لا توجد نتائج</h3></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = allResults.map((r, i) => {
+          const pct = r.total ? Math.round(r.score / r.total * 100) : 0;
+          const badgeClass = pct >= 80 ? 'badge-green' : (pct >= 50 ? 'badge-yellow' : 'badge-red');
+          return `
+            <tr>
+              <td>${i+1}</td>
+              <td><strong style="color:var(--navy);">${escapeHtml(r.studentName)}</strong></td>
+              <td><span class="badge badge-blue">${escapeHtml(r.studentCode)}</span></td>
+              <td>${escapeHtml(r.className || '—')}</td>
+              <td><span class="badge ${badgeClass}">${r.score}/${r.total}</span></td>
+              <td>${getSubjectName(r.subject)}</td>
+              <td>${r.pageNumber || '—'}</td>
+              <td>${formatDate(r.createdAt)}</td>
+              <td><button class="action-btn action-delete" onclick="window.deleteResult('${r.id}')">🗑️ حذف</button></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // --------------------- 6. دوال الحذف والتعديل العامة ---------------------
+      window.deleteStudent = async (id, name) => {
+        const ok = await showConfirm('حذف طالب', `حذف "${name}"؟`, '🗑️');
+        if (!ok) return;
+        await db.collection('students').doc(id).delete();
+        showToast(`تم حذف "${name}"`, 'success');
+        await loadStudents();
+        updateStats();
+      };
+      window.deleteTeacher = async (id, name) => {
+        const ok = await showConfirm('حذف معلمة', `حذف "${name}"؟`, '🗑️');
+        if (!ok) return;
+        await db.collection('users').doc(id).delete();
+        showToast(`تم حذف "${name}"`, 'success');
+        await loadTeachers();
+        updateStats();
+      };
+      window.deleteResult = async (id) => {
+        const ok = await showConfirm('حذف نتيجة', 'هل تريد حذف هذه النتيجة؟', '🗑️');
+        if (!ok) return;
+        await db.collection('results').doc(id).delete();
+        showToast('تم حذف النتيجة', 'success');
+        await loadResults();
+        updateStats();
+      };
+      window.toggleTeacher = async (id, currentActive) => {
+        const newActive = !currentActive;
+        const ok = await showConfirm(`${newActive ? 'تفعيل' : 'تعطيل'} المعلمة`, `هل تريد ${newActive ? 'تفعيل' : 'تعطيل'} هذه المعلمة؟`, '⚙️');
+        if (!ok) return;
+        await db.collection('users').doc(id).update({ isActive: newActive });
+        showToast(`تم ${newActive ? 'تفعيل' : 'تعطيل'} المعلمة`, 'success');
+        await loadTeachers();
+        updateStats();
+      };
+
+      // --------------------- 7. إضافة طالب ---------------------
+      document.getElementById('addStudentBtn').addEventListener('click', async () => {
+        const name = document.getElementById('sName').value.trim();
+        const code = document.getElementById('sCode').value.trim();
+        const cls = document.getElementById('sClass').value.trim();
+        const msg = document.getElementById('studentMsg');
+        if (!name || !code) {
+          msg.textContent = '⚠️ الاسم والكود مطلوبان';
+          msg.className = 'form-msg msg-err';
+          return;
+        }
+        if (allStudents.some(s => s.code === code)) {
+          msg.textContent = '⚠️ الكود مستخدم مسبقاً';
+          msg.className = 'form-msg msg-err';
+          return;
+        }
+        await db.collection('students').add({
+          name, code, className: cls || '',
+          kindergartenId: KG_ID,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        msg.textContent = '✅ تم إضافة الطالب';
+        msg.className = 'form-msg msg-ok';
+        document.getElementById('sName').value = '';
+        document.getElementById('sCode').value = '';
+        document.getElementById('sClass').value = '';
+        await loadStudents();
+        updateStats();
+        setTimeout(() => msg.textContent = '', 3000);
       });
-    });
 
-    async function loadAllData() { await Promise.all([loadStudents(), loadTeachers(), loadResults()]); updateStats(); }
+      // --------------------- 8. إحصائيات سريعة ---------------------
+      function updateStats() {
+        document.getElementById('statStudents').innerText = allStudents.length;
+        document.getElementById('statTeachers').innerText = allTeachers.length;
+        document.getElementById('statResults').innerText = allResults.length;
+        loadPendingCount();
+      }
 
-    function updateStats() {
-      animateNumber('statStudents', allStudents.length);
-      animateNumber('statTeachers', allTeachers.length);
-      animateNumber('statResults', allResults.length);
-    }
-    function animateNumber(id, target) {
-      const el = document.getElementById(id); let cur=0;
-      const step = Math.max(1,Math.floor(target/30));
-      const iv = setInterval(() => { cur+=step; if(cur>=target){cur=target;clearInterval(iv);} el.textContent=cur; }, 30);
-    }
+      async function loadPendingCount() {
+        try {
+          const imgSnap = await db.collection('gallery_images').where('status', '==', 'pending').get();
+          const vidSnap = await db.collection('videos').where('status', '==', 'pending').get();
+          const total = imgSnap.size + vidSnap.size;
+          const badge = document.getElementById('pendingBadge');
+          badge.textContent = total;
+          badge.style.display = total > 0 ? 'inline' : 'none';
+          document.getElementById('statPending').innerText = total;
+        } catch(e) {}
+      }
 
-    // ── Students ──
-    async function loadStudents() {
-      const snap = await db.collection('kindergartens').doc(KG_ID).collection('students').orderBy('name').get();
-      allStudents = []; snap.forEach(d => allStudents.push({id:d.id,...d.data()}));
-      renderStudents(allStudents);
-    }
-    function renderStudents(students) {
-      const t = document.getElementById('studentsTable');
-      document.getElementById('studentCount').textContent = `(${students.length} طالب)`;
-      if (!students.length) { t.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="icon">👧</div><h3>لا يوجد طلاب</h3><p>أضيفي طلاباً جدداً</p></div></td></tr>`; return; }
-      t.innerHTML = students.map((s,i) => `<tr><td><strong>${i+1}</strong></td><td><strong style="color:var(--navy);">${s.name||'—'}</strong></td><td><span class="badge badge-blue">${s.code||'—'}</span></td><td>${s.className||'—'}</td><td><button class="action-btn action-delete" onclick="deleteStudent('${s.id}','${s.name}')">🗑️ حذف</button></td></tr>`).join('');
-    }
-    window.deleteStudent = (id, name) => showConfirm('حذف طالب',`حذف "${name}"؟`,'🗑️',async()=>{ await db.collection('kindergartens').doc(KG_ID).collection('students').doc(id).delete(); showToast(`تم حذف "${name}"`,'success'); await loadStudents(); updateStats(); });
-    document.getElementById('addStudentBtn').addEventListener('click', async () => {
-      const name=document.getElementById('sName').value.trim(), code=document.getElementById('sCode').value.trim(), cls=document.getElementById('sClass').value.trim();
-      const m=document.getElementById('studentMsg');
-      if (!name||!code) { m.className='form-msg msg-err'; m.textContent='⚠️ الاسم والكود مطلوبان'; return; }
-      if (allStudents.find(s=>s.code===code)) { m.className='form-msg msg-err'; m.textContent='⚠️ الكود مستخدم'; return; }
-      await db.collection('kindergartens').doc(KG_ID).collection('students').add({name,code,className:cls||'غير محدد',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      document.getElementById('sName').value=''; document.getElementById('sCode').value=''; document.getElementById('sClass').value='';
-      m.className='form-msg msg-ok'; m.textContent=`✅ تمت إضافة "${name}"!`; showToast(`تمت إضافة "${name}"`,'success');
-      await loadStudents(); updateStats(); setTimeout(()=>m.textContent='',3000);
-    });
-    document.getElementById('searchStudent').addEventListener('input', e => {
-      const q=e.target.value.trim().toLowerCase();
-      if (!q) return renderStudents(allStudents);
-      renderStudents(allStudents.filter(s=>(s.name?.toLowerCase().includes(q))||(s.code?.toLowerCase().includes(q))));
-    });
+      // --------------------- 9. رفع الصور (المديرة) ---------------------
+      document.getElementById('adminImgFile').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        adminSelectedFile = file;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          document.getElementById('adminImgPreview').innerHTML = `
+            <div style="position:relative;display:inline-block;">
+              <img src="${ev.target.result}" style="width:180px;height:140px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
+              <button onclick="window.clearAdminImg()" style="position:absolute;top:-10px;right:-10px;background:var(--coral);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;">×</button>
+            </div>
+            <p style="margin-top:10px;font-size:13px;color:var(--teal);font-weight:700;">✅ ${file.name} — جاهزة للرفع</p>`;
+        };
+        reader.readAsDataURL(file);
+      });
 
-    // ── Teachers ──
-    async function loadTeachers() {
-      const snap = await db.collection('kindergartens').doc(KG_ID).collection('teachers').orderBy('name').get();
-      allTeachers = []; snap.forEach(d => allTeachers.push({id:d.id,...d.data()}));
-      renderTeachers(allTeachers);
-    }
-    const subMap = {math:'📐 الرياضيات',arabic:'📖 العربي',english:'🔤 الإنجليزي',science:'🔬 العلوم',quran:'📗 القرآن',art:'🎨 الفنون'};
-    function getSubjectName(s) { return subMap[s]||s||'—'; }
-    function renderTeachers(teachers) {
-      const t=document.getElementById('teachersTable');
-      if (!teachers.length) { t.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="icon">👩‍🏫</div><h3>لا يوجد معلمات</h3></div></td></tr>`; return; }
-      t.innerHTML=teachers.map((t2,i)=>`<tr><td>${i+1}</td><td><strong style="color:var(--navy);">${t2.name||'—'}</strong></td><td>${t2.email||'—'}</td><td>${getSubjectName(t2.subject)}</td><td><span class="badge ${t2.active!==false?'badge-green':'badge-red'}">${t2.active!==false?'✅ نشطة':'❌ معطلة'}</span></td><td><div style="display:flex;gap:8px;"><button class="action-btn action-toggle" onclick="toggleTeacher('${t2.id}',${t2.active!==false})">${t2.active!==false?'⏸️ تعطيل':'▶️ تفعيل'}</button><button class="action-btn action-delete" onclick="deleteTeacher('${t2.id}','${t2.name}')">🗑️ حذف</button></div></td></tr>`).join('');
-    }
-    window.toggleTeacher=(id,cur)=>showConfirm(`${cur?'تعطيل':'تفعيل'} المعلمة`,`هل أنتِ متأكدة؟`,cur?'⏸️':'▶️',async()=>{ await db.collection('kindergartens').doc(KG_ID).collection('teachers').doc(id).update({active:!cur}); showToast('تم التحديث','success'); await loadTeachers(); });
-    window.deleteTeacher=(id,name)=>showConfirm('حذف معلمة',`حذف "${name}"؟`,'🗑️',async()=>{ await db.collection('kindergartens').doc(KG_ID).collection('teachers').doc(id).delete(); showToast(`تم حذف "${name}"`,'success'); await loadTeachers(); updateStats(); });
-    document.getElementById('refreshTeachersBtn').addEventListener('click', async()=>{ await loadTeachers(); showToast('تم التحديث','success'); });
+      window.clearAdminImg = () => {
+        adminSelectedFile = null;
+        document.getElementById('adminImgPreview').innerHTML = '';
+        document.getElementById('adminImgFile').value = '';
+        document.getElementById('adminUploadProgressWrap').style.display = 'none';
+      };
 
-    // ── Results ──
-    async function loadResults(filters={}) {
-      let q=db.collection('kindergartens').doc(KG_ID).collection('results').orderBy('createdAt','desc');
-      if (filters.subject) q=db.collection('kindergartens').doc(KG_ID).collection('results').where('subject','==',filters.subject).orderBy('createdAt','desc');
-      const snap=await q.limit(100).get(); allResults=[];
-      snap.forEach(d=>allResults.push({id:d.id,...d.data()}));
-      let f=[...allResults];
-      if (filters.date) f=f.filter(r=>(r.date||(r.createdAt?.toDate?.()?.toISOString().split('T')[0]))===filters.date);
-      if (filters.page) f=f.filter(r=>r.page&&r.page.toString()===filters.page.toString());
-      if (filters.student) { const qq=filters.student.toLowerCase(); f=f.filter(r=>(r.studentName?.toLowerCase().includes(qq))||(r.studentCode?.toLowerCase().includes(qq))); }
-      renderResults(f);
-    }
-    function renderResults(results) {
-      const t=document.getElementById('resultsTable');
-      document.getElementById('resultsCount').textContent=`(${results.length} نتيجة)`;
-      if (!results.length) { t.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="icon">📊</div><h3>لا توجد نتائج</h3></div></td></tr>`; return; }
-      t.innerHTML=results.map((r,i)=>{
-        let d=r.date||(r.createdAt?.toDate?.()?.toLocaleDateString('ar-SA')||'—');
-        let sc='—'; if(r.score!=null){const s=parseFloat(r.score);let c='badge-blue';if(s>=90)c='badge-green';else if(s<60)c='badge-red';sc=`<span class="badge ${c}">${s}%</span>`;}
-        else if(r.result) sc=`<span class="badge badge-blue">${r.result}</span>`;
-        return `<tr><td>${i+1}</td><td><strong style="color:var(--navy);">${r.studentName||'—'}</strong></td><td><span class="badge badge-blue">${r.studentCode||r.code||'—'}</span></td><td>${r.className||r.class||'—'}</td><td>${sc}</td><td>${getSubjectName(r.subject)}</td><td>${r.page||'—'}</td><td>${d}</td></tr>`;
-      }).join('');
-    }
-    document.getElementById('applyFilters').addEventListener('click', () => {
-      const f={date:document.getElementById('fDate').value,page:document.getElementById('fPage').value,student:document.getElementById('fStudent').value.trim(),subject:document.getElementById('fSubject').value};
-      if (!Object.values(f).some(v=>v)) { showToast('اختاري فلتراً على الأقل','warning'); return; }
-      loadResults(f);
-    });
-    document.getElementById('resetFilters').addEventListener('click', () => {
-      ['fDate','fPage','fStudent'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('fSubject').value=''; loadResults();
-    });
+      document.getElementById('adminPublishImgBtn').addEventListener('click', async () => {
+        const title = document.getElementById('adminImgTitle').value.trim();
+        const desc = document.getElementById('adminImgDesc').value.trim();
+        const m = document.getElementById('adminImgMsg');
+        if (!title) {
+          m.textContent = '⚠️ يرجى إدخال عنوان الصورة';
+          m.className = 'form-msg msg-err';
+          return;
+        }
+        if (!adminSelectedFile) {
+          m.textContent = '⚠️ يرجى اختيار صورة من جهازك';
+          m.className = 'form-msg msg-err';
+          return;
+        }
 
-    // ═══════════════════════════════════════════
-    // ── MEDIA APPROVAL SYSTEM ──
-    // ═══════════════════════════════════════════
+        const btn = document.getElementById('adminPublishImgBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ جاري الرفع...';
+        m.textContent = '';
+        document.getElementById('adminUploadProgressWrap').style.display = 'block';
 
-    async function loadPendingCount() {
-      try {
-        const imgSnap = await db.collection('gallery_images').where('status','==','pending').get();
-        const vidSnap = await db.collection('videos').where('status','==','pending').get();
-        const total = imgSnap.size + vidSnap.size;
-        const badge = document.getElementById('pendingBadge');
-        badge.textContent = total;
-        badge.style.display = total > 0 ? 'inline' : 'none';
-        animateNumber('statPending', total);
-      } catch(e) {}
-    }
+        try {
+          const safeName = adminSelectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const ref = storage.ref(`gallery/${Date.now()}_${safeName}`);
+          const task = ref.put(adminSelectedFile);
+          task.on('state_changed',
+            snap => {
+              const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+              document.getElementById('adminUploadBar').style.width = pct + '%';
+              document.getElementById('adminUploadPct').textContent = pct + '%';
+            },
+            err => {
+              m.textContent = '❌ فشل الرفع: ' + err.message;
+              m.className = 'form-msg msg-err';
+              btn.disabled = false;
+              btn.textContent = '🚀 نشر الصورة مباشرة';
+              document.getElementById('adminUploadProgressWrap').style.display = 'none';
+            },
+            async () => {
+              const url = await task.snapshot.ref.getDownloadURL();
+              await db.collection('gallery_images').add({
+                title, description: desc, imageUrl: url,
+                status: 'approved',
+                uploadedBy: 'المديرة',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              m.textContent = '✅ تم رفع الصورة ونشرها في المعرض!';
+              m.className = 'form-msg msg-ok';
+              showToast('تم رفع الصورة ونشرها ✅', 'success');
+              document.getElementById('adminImgTitle').value = '';
+              document.getElementById('adminImgDesc').value = '';
+              window.clearAdminImg();
+              btn.disabled = false;
+              btn.textContent = '🚀 نشر الصورة مباشرة';
+              loadPublishedImages();
+              setTimeout(() => m.textContent = '', 5000);
+            }
+          );
+        } catch(e) {
+          m.textContent = '❌ خطأ: ' + e.message;
+          m.className = 'form-msg msg-err';
+          btn.disabled = false;
+          btn.textContent = '🚀 نشر الصورة مباشرة';
+          document.getElementById('adminUploadProgressWrap').style.display = 'none';
+        }
+      });
 
-    async function loadPendingMedia() {
-      // ── Pending Images ──
-      const imgGrid = document.getElementById('pendingImagesGrid');
-      imgGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
-      try {
-        const snap = await db.collection('gallery_images').where('status','==','pending').orderBy('createdAt','desc').get();
+      // --------------------- 10. إدارة الفيديوهات (المديرة) ---------------------
+      document.getElementById('adminPublishVidBtn').addEventListener('click', async () => {
+        const title = document.getElementById('adminVidTitle').value.trim();
+        const url = document.getElementById('adminVidUrl').value.trim();
+        const desc = document.getElementById('adminVidDesc').value.trim();
+        const m = document.getElementById('adminVidMsg');
+        if (!title || !url) {
+          m.textContent = '⚠️ العنوان والرابط مطلوبان';
+          m.className = 'form-msg msg-err';
+          return;
+        }
+        m.textContent = '⏳ جاري النشر...';
+        m.className = 'form-msg';
+        await db.collection('videos').add({
+          title, description: desc, youtubeUrl: url,
+          status: 'approved',
+          uploadedBy: 'المديرة',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        m.textContent = '✅ تم نشر الفيديو بنجاح!';
+        m.className = 'form-msg msg-ok';
+        showToast('تم نشر الفيديو ✅', 'success');
+        document.getElementById('adminVidTitle').value = '';
+        document.getElementById('adminVidUrl').value = '';
+        document.getElementById('adminVidDesc').value = '';
+        loadPublishedVideos();
+        setTimeout(() => m.textContent = '', 5000);
+      });
+
+      // --------------------- 11. تحميل الصور والفيديوهات المنشورة ---------------------
+      async function loadPublishedImages() {
+        const grid = document.getElementById('publishedImgsGrid');
+        grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
+        const snap = await db.collection('gallery_images').where('status', '==', 'approved').orderBy('createdAt', 'desc').limit(20).get();
         if (snap.empty) {
-          imgGrid.innerHTML = '<div class="empty-state"><div class="icon">🎉</div><h3>لا توجد طلبات معلقة</h3><p>كل الصور تمت مراجعتها</p></div>';
+          grid.innerHTML = '<div class="empty-state"><div class="icon">🖼️</div><h3>لا توجد صور منشورة</h3></div>';
+          return;
+        }
+        grid.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const card = document.createElement('div');
+          card.className = 'media-card';
+          card.innerHTML = `
+            <div class="media-thumb">
+              ${d.imageUrl ? `<img src="${d.imageUrl}" alt="${escapeHtml(d.title)}" onerror="this.parentElement.innerHTML='<span style=font-size:60px>🖼️</span>'">` : '<span style="font-size:60px;">🖼️</span>'}
+            </div>
+            <div class="media-info">
+              <h4>${escapeHtml(d.title)}</h4>
+              <p>${escapeHtml(d.description)}</p>
+              <div class="media-actions"><button class="action-btn action-delete" onclick="window.deleteImage('${doc.id}','${escapeHtml(d.title)}')">🗑️ حذف</button></div>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+
+      async function loadPublishedVideos() {
+        const grid = document.getElementById('publishedVidsGrid');
+        grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
+        const snap = await db.collection('videos').where('status', '==', 'approved').orderBy('createdAt', 'desc').limit(20).get();
+        if (snap.empty) {
+          grid.innerHTML = '<div class="empty-state"><div class="icon">🎥</div><h3>لا توجد فيديوهات منشورة</h3></div>';
+          return;
+        }
+        grid.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const card = document.createElement('div');
+          card.className = 'media-card';
+          card.innerHTML = `
+            <div class="media-thumb">
+              <span style="font-size:60px;">🎥</span>
+            </div>
+            <div class="media-info">
+              <h4>${escapeHtml(d.title)}</h4>
+              <p>${escapeHtml(d.description)}</p>
+              ${d.youtubeUrl ? `<a href="${d.youtubeUrl}" target="_blank" style="font-size:12px;color:var(--teal);">🔗 رابط</a>` : ''}
+              <div class="media-actions" style="margin-top:8px;"><button class="action-btn action-delete" onclick="window.deleteVideo('${doc.id}','${escapeHtml(d.title)}')">🗑️ حذف</button></div>
+            </div>`;
+          grid.appendChild(card);
+        });
+      }
+
+      window.deleteImage = async (id, title) => {
+        const ok = await showConfirm('حذف صورة', `حذف "${title}" من المعرض؟`, '🗑️');
+        if (!ok) return;
+        await db.collection('gallery_images').doc(id).delete();
+        showToast('تم حذف الصورة', 'success');
+        loadPublishedImages();
+      };
+      window.deleteVideo = async (id, title) => {
+        const ok = await showConfirm('حذف فيديو', `حذف "${title}"؟`, '🗑️');
+        if (!ok) return;
+        await db.collection('videos').doc(id).delete();
+        showToast('تم حذف الفيديو', 'success');
+        loadPublishedVideos();
+      };
+
+      document.getElementById('refreshPublishedImgs').addEventListener('click', loadPublishedImages);
+      document.getElementById('refreshPublishedVids').addEventListener('click', loadPublishedVideos);
+
+      // --------------------- 12. طلبات الموافقة ---------------------
+      async function loadPendingMedia() {
+        // الصور المعلقة
+        const imgGrid = document.getElementById('pendingImagesGrid');
+        imgGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
+        const imgSnap = await db.collection('gallery_images').where('status', '==', 'pending').orderBy('createdAt', 'desc').get();
+        if (imgSnap.empty) {
+          imgGrid.innerHTML = '<div class="empty-state"><div class="icon">🎉</div><h3>لا توجد طلبات صور معلقة</h3><p>كل الصور تمت مراجعتها</p></div>';
         } else {
           imgGrid.innerHTML = '';
-          snap.forEach(doc => {
-            const d = {id:doc.id,...doc.data()};
+          imgSnap.forEach(doc => {
+            const d = doc.data();
             const card = document.createElement('div');
             card.className = 'media-card';
             card.innerHTML = `
-              <div class="media-thumb" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">
-                ${d.imageUrl ? `<img src="${d.imageUrl}" alt="${d.title||''}" onerror="this.style.display='none'">` : '<span style="font-size:60px;">🖼️</span>'}
-                <div class="overlay"></div>
+              <div class="media-thumb">
+                ${d.imageUrl ? `<img src="${d.imageUrl}" alt="${escapeHtml(d.title)}">` : '<span style="font-size:60px;">🖼️</span>'}
               </div>
               <div class="media-info">
-                <h4>${d.title||'بدون عنوان'}</h4>
-                <p>${d.description||''}</p>
-                <p style="font-size:12px;color:var(--gray-400);">المعلمة: ${d.uploadedBy||'غير معروف'}</p>
-                <p style="font-size:12px;color:var(--gray-400);">${d.createdAt?.toDate?.()?.toLocaleDateString('ar-SA')||''}</p>
+                <h4>${escapeHtml(d.title)}</h4>
+                <p>${escapeHtml(d.description)}</p>
+                <p style="font-size:12px;color:var(--gray-400);">المعلمة: ${escapeHtml(d.uploadedBy)}</p>
                 <div class="media-actions">
-                  <button class="action-btn action-approve" onclick="approveImage('${d.id}')">✅ موافقة ونشر</button>
-                  <button class="action-btn action-reject" onclick="rejectImage('${d.id}','${(d.title||'').replace(/'/g,"\\'")}')">❌ رفض</button>
+                  <button class="action-btn action-approve" onclick="window.approveImage('${doc.id}')">✅ موافقة ونشر</button>
+                  <button class="action-btn action-reject" onclick="window.rejectImage('${doc.id}','${escapeHtml(d.title)}')">❌ رفض</button>
                 </div>
               </div>`;
             imgGrid.appendChild(card);
           });
         }
-      } catch(e) { imgGrid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>خطأ في التحميل</p></div>'; }
 
-      // ── Pending Videos ──
-      const vidGrid = document.getElementById('pendingVideosGrid');
-      vidGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
-      try {
-        const snap = await db.collection('videos').where('status','==','pending').orderBy('createdAt','desc').get();
-        if (snap.empty) {
-          vidGrid.innerHTML = '<div class="empty-state"><div class="icon">🎉</div><h3>لا توجد طلبات معلقة</h3><p>كل الفيديوهات تمت مراجعتها</p></div>';
+        // الفيديوهات المعلقة
+        const vidGrid = document.getElementById('pendingVideosGrid');
+        vidGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>جاري التحميل...</p></div>';
+        const vidSnap = await db.collection('videos').where('status', '==', 'pending').orderBy('createdAt', 'desc').get();
+        if (vidSnap.empty) {
+          vidGrid.innerHTML = '<div class="empty-state"><div class="icon">🎉</div><h3>لا توجد طلبات فيديو معلقة</h3><p>كل الفيديوهات تمت مراجعتها</p></div>';
         } else {
           vidGrid.innerHTML = '';
-          snap.forEach(doc => {
-            const d = {id:doc.id,...doc.data()};
+          vidSnap.forEach(doc => {
+            const d = doc.data();
             const card = document.createElement('div');
             card.className = 'media-card';
             card.innerHTML = `
-              <div class="media-thumb" style="background:linear-gradient(135deg,#d1fae5,#6ee7b7);">
+              <div class="media-thumb">
                 <span style="font-size:60px;">🎥</span>
-                <div class="overlay"></div>
               </div>
               <div class="media-info">
-                <h4>${d.title||'بدون عنوان'}</h4>
-                <p>${d.description||''}</p>
-                <p style="font-size:12px;color:var(--gray-400);">المعلمة: ${d.uploadedBy||'غير معروف'}</p>
-                ${d.youtubeUrl?`<a href="${d.youtubeUrl}" target="_blank" style="font-size:12px;color:var(--teal);">🔗 رابط الفيديو</a>`:''}
-                <div class="media-actions" style="margin-top:8px;">
-                  <button class="action-btn action-approve" onclick="approveVideo('${d.id}')">✅ موافقة ونشر</button>
-                  <button class="action-btn action-reject" onclick="rejectVideo('${d.id}','${(d.title||'').replace(/'/g,"\\'")}')">❌ رفض</button>
+                <h4>${escapeHtml(d.title)}</h4>
+                <p>${escapeHtml(d.description)}</p>
+                <p style="font-size:12px;color:var(--gray-400);">المعلمة: ${escapeHtml(d.uploadedBy)}</p>
+                <div class="media-actions">
+                  <button class="action-btn action-approve" onclick="window.approveVideo('${doc.id}')">✅ موافقة ونشر</button>
+                  <button class="action-btn action-reject" onclick="window.rejectVideo('${doc.id}','${escapeHtml(d.title)}')">❌ رفض</button>
                 </div>
               </div>`;
             vidGrid.appendChild(card);
           });
         }
-      } catch(e) { vidGrid.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>خطأ في التحميل</p></div>'; }
-    }
-
-    window.approveImage = async (id) => {
-      await db.collection('gallery_images').doc(id).update({status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      showToast('تم نشر الصورة في المعرض ✅','success'); loadPendingMedia(); loadPendingCount();
-    };
-    window.rejectImage = (id, title) => showConfirm('رفض الصورة',`رفض صورة "${title}"؟`,'❌',async()=>{
-      await db.collection('gallery_images').doc(id).update({status:'rejected'});
-      showToast('تم رفض الصورة','warning'); loadPendingMedia(); loadPendingCount();
-    });
-    window.approveVideo = async (id) => {
-      await db.collection('videos').doc(id).update({status:'approved',approvedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      showToast('تم نشر الفيديو ✅','success'); loadPendingMedia(); loadPendingCount();
-    };
-    window.rejectVideo = (id, title) => showConfirm('رفض الفيديو',`رفض فيديو "${title}"؟`,'❌',async()=>{
-      await db.collection('videos').doc(id).update({status:'rejected'});
-      showToast('تم رفض الفيديو','warning'); loadPendingMedia(); loadPendingCount();
-    });
-
-    // ═══════════════════════════════════════════
-    // ── ADMIN DIRECT UPLOAD - Firebase Storage ──
-    // ═══════════════════════════════════════════
-
-    let adminSelectedFile = null;
-
-    // عرض معاينة الصورة عند الاختيار
-    document.getElementById('adminImgFile').addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      adminSelectedFile = file;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('adminImgPreview').innerHTML = `
-          <div style="position:relative;display:inline-block;">
-            <img src="${ev.target.result}" style="width:200px;height:160px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
-            <button onclick="clearAdminImg()" style="position:absolute;top:-10px;right:-10px;background:var(--coral);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
-          </div>
-          <p style="margin-top:10px;font-size:14px;color:var(--teal);font-weight:700;">✅ ${file.name} — جاهزة للرفع</p>`;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    window.clearAdminImg = () => {
-      adminSelectedFile = null;
-      document.getElementById('adminImgPreview').innerHTML = '';
-      document.getElementById('adminImgFile').value = '';
-      document.getElementById('adminUploadProgressWrap').style.display = 'none';
-    };
-
-    document.getElementById('adminPublishImgBtn').addEventListener('click', async () => {
-      const title = document.getElementById('adminImgTitle').value.trim();
-      const desc  = document.getElementById('adminImgDesc').value.trim();
-      const m = document.getElementById('adminImgMsg');
-
-      if (!title) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى إدخال عنوان الصورة'; return; }
-      if (!adminSelectedFile) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى اختيار صورة من جهازك'; return; }
-
-      // تعطيل الزر أثناء الرفع
-      const btn = document.getElementById('adminPublishImgBtn');
-      btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
-      m.className='form-msg'; m.textContent='';
-
-      // إظهار شريط التقدم
-      document.getElementById('adminUploadProgressWrap').style.display = 'block';
-
-      try {
-        // رفع الصورة لـ Firebase Storage
-        const fileName = `gallery/${Date.now()}_${adminSelectedFile.name.replace(/\s/g,'_')}`;
-        const storageRef = storage.ref(fileName);
-        const uploadTask = storageRef.put(adminSelectedFile);
-
-        uploadTask.on('state_changed',
-          // تقدم الرفع
-          snapshot => {
-            const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            document.getElementById('adminUploadBar').style.width = pct + '%';
-            document.getElementById('adminUploadPct').textContent = pct + '%';
-          },
-          // خطأ
-          err => {
-            m.className='form-msg msg-err'; m.textContent='❌ فشل الرفع: ' + err.message;
-            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-            document.getElementById('adminUploadProgressWrap').style.display = 'none';
-          },
-          // نجاح الرفع
-          async () => {
-            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-
-            // حفظ بيانات الصورة في Firestore
-            await db.collection('gallery_images').add({
-              title,
-              description: desc,
-              imageUrl: downloadURL,
-              status: 'approved',
-              uploadedBy: 'المديرة',
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            // إعادة تعيين الواجهة
-            m.className='form-msg msg-ok'; m.textContent='✅ تم رفع الصورة ونشرها في المعرض بنجاح!';
-            showToast('تم رفع الصورة ونشرها ✅', 'success');
-            document.getElementById('adminImgTitle').value='';
-            document.getElementById('adminImgDesc').value='';
-            window.clearAdminImg();
-            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-            loadPublishedImages();
-            setTimeout(()=>m.textContent='', 5000);
-          }
-        );
-      } catch(e) {
-        m.className='form-msg msg-err'; m.textContent='❌ خطأ: ' + e.message;
-        btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-        document.getElementById('adminUploadProgressWrap').style.display = 'none';
       }
-    });
 
-    document.getElementById('adminPublishVidBtn').addEventListener('click', async () => {
-      const title=document.getElementById('adminVidTitle').value.trim();
-      const url=document.getElementById('adminVidUrl').value.trim();
-      const desc=document.getElementById('adminVidDesc').value.trim();
-      const m=document.getElementById('adminVidMsg');
-      if (!title||!url) { m.className='form-msg msg-err'; m.textContent='⚠️ العنوان والرابط مطلوبان'; return; }
-      m.className='form-msg'; m.textContent='⏳ جاري النشر...';
-      await db.collection('videos').add({
-        title, description:desc, youtubeUrl:url,
-        status:'approved', uploadedBy:'المديرة',
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
-      m.className='form-msg msg-ok'; m.textContent='✅ تم نشر الفيديو بنجاح!';
-      showToast('تم نشر الفيديو ✅','success');
-      document.getElementById('adminVidTitle').value=''; document.getElementById('adminVidUrl').value=''; document.getElementById('adminVidDesc').value='';
-      loadPublishedVideos(); setTimeout(()=>m.textContent='',4000);
-    });
-
-    async function loadPublishedImages() {
-      const grid=document.getElementById('publishedImgsGrid');
-      grid.innerHTML='<div class="loading"><div class="loading-spinner"></div></div>';
-      const snap=await db.collection('gallery_images').where('status','==','approved').orderBy('createdAt','desc').limit(20).get();
-      if (snap.empty) { grid.innerHTML='<div class="empty-state"><div class="icon">🖼️</div><h3>لا توجد صور منشورة</h3></div>'; return; }
-      grid.innerHTML='';
-      snap.forEach(doc=>{
-        const d={id:doc.id,...doc.data()};
-        const card=document.createElement('div'); card.className='media-card';
-        card.innerHTML=`
-          <div class="media-thumb" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">
-            ${d.imageUrl&&!d.isPlaceholder?`<img src="${d.imageUrl}" alt="${d.title||''}" onerror="this.parentElement.innerHTML='<span style=font-size:60px>${d.imageUrl||'🖼️'}</span>'">`:
-            `<span style="font-size:60px;">${d.imageUrl||'🖼️'}</span>`}
-          </div>
-          <div class="media-info">
-            <h4>${d.title||'بدون عنوان'}</h4>
-            <p>${d.description||''}</p>
-            <div class="media-actions"><button class="action-btn action-delete" onclick="deleteImage('${d.id}','${(d.title||'').replace(/'/g,"\\'")}')">🗑️ حذف</button></div>
-          </div>`;
-        grid.appendChild(card);
-      });
-    }
-
-    async function loadPublishedVideos() {
-      const grid=document.getElementById('publishedVidsGrid');
-      grid.innerHTML='<div class="loading"><div class="loading-spinner"></div></div>';
-      const snap=await db.collection('videos').where('status','==','approved').orderBy('createdAt','desc').limit(20).get();
-      if (snap.empty) { grid.innerHTML='<div class="empty-state"><div class="icon">🎥</div><h3>لا توجد فيديوهات منشورة</h3></div>'; return; }
-      grid.innerHTML='';
-      snap.forEach(doc=>{
-        const d={id:doc.id,...doc.data()};
-        const card=document.createElement('div'); card.className='media-card';
-        card.innerHTML=`
-          <div class="media-thumb" style="background:linear-gradient(135deg,#d1fae5,#6ee7b7);">
-            <span style="font-size:60px;">🎥</span>
-          </div>
-          <div class="media-info">
-            <h4>${d.title||'بدون عنوان'}</h4>
-            <p>${d.description||''}</p>
-            ${d.youtubeUrl?`<a href="${d.youtubeUrl}" target="_blank" style="font-size:12px;color:var(--teal);">🔗 رابط</a>`:''}
-            <div class="media-actions" style="margin-top:8px;"><button class="action-btn action-delete" onclick="deleteVideo('${d.id}','${(d.title||'').replace(/'/g,"\\'")}')">🗑️ حذف</button></div>
-          </div>`;
-        grid.appendChild(card);
-      });
-    }
-
-    window.deleteImage=(id,title)=>showConfirm('حذف صورة',`حذف "${title}" من المعرض؟`,'🗑️',async()=>{
-      await db.collection('gallery_images').doc(id).delete(); showToast('تم حذف الصورة','success'); loadPublishedImages();
-    });
-    window.deleteVideo=(id,title)=>showConfirm('حذف فيديو',`حذف "${title}"؟`,'🗑️',async()=>{
-      await db.collection('videos').doc(id).delete(); showToast('تم حذف الفيديو','success'); loadPublishedVideos();
-    });
-
-    document.getElementById('refreshPublishedImgs').addEventListener('click',loadPublishedImages);
-    document.getElementById('refreshPublishedVids').addEventListener('click',loadPublishedVideos);
-
-    // Enter keys
-    ['sName','sCode','sClass'].forEach(id=>{document.getElementById(id).addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('addStudentBtn').click();});});
-
-    // ══════════════════════════════════════
-    // رفع الصور - Firebase Storage (مديرة)
-    // ══════════════════════════════════════
-    let adminSelectedFile = null;
-
-    document.getElementById('adminImgFile').addEventListener('change', e => {
-      const file = e.target.files[0]; if (!file) return;
-      adminSelectedFile = file;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('adminImgPreview').innerHTML = `
-          <div style="position:relative;display:inline-block;">
-            <img src="${ev.target.result}" style="width:200px;height:160px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
-            <button onclick="clearAdminImg()" style="position:absolute;top:-10px;right:-10px;background:#ff6b6b;color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;font-weight:900;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
-          </div>
-          <p style="margin-top:10px;font-size:13px;color:var(--teal);font-weight:700;">✅ ${file.name} — جاهزة للرفع</p>`;
+      window.approveImage = async (id) => {
+        await db.collection('gallery_images').doc(id).update({ status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        showToast('تم نشر الصورة في المعرض ✅', 'success');
+        loadPendingMedia();
+        loadPublishedImages();
+        loadPendingCount();
       };
-      reader.readAsDataURL(file);
-    });
+      window.rejectImage = async (id, title) => {
+        const ok = await showConfirm('رفض الصورة', `رفض صورة "${title}"؟`, '❌');
+        if (!ok) return;
+        await db.collection('gallery_images').doc(id).update({ status: 'rejected' });
+        showToast('تم رفض الصورة', 'warning');
+        loadPendingMedia();
+        loadPendingCount();
+      };
+      window.approveVideo = async (id) => {
+        await db.collection('videos').doc(id).update({ status: 'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        showToast('تم نشر الفيديو ✅', 'success');
+        loadPendingMedia();
+        loadPublishedVideos();
+        loadPendingCount();
+      };
+      window.rejectVideo = async (id, title) => {
+        const ok = await showConfirm('رفض الفيديو', `رفض فيديو "${title}"؟`, '❌');
+        if (!ok) return;
+        await db.collection('videos').doc(id).update({ status: 'rejected' });
+        showToast('تم رفض الفيديو', 'warning');
+        loadPendingMedia();
+        loadPendingCount();
+      };
 
-    window.clearAdminImg = () => {
-      adminSelectedFile = null;
-      document.getElementById('adminImgPreview').innerHTML = '';
-      document.getElementById('adminImgFile').value = '';
-      document.getElementById('adminUploadProgressWrap').style.display = 'none';
-    };
-
-    document.getElementById('adminPublishImgBtn').addEventListener('click', async () => {
-      const title = document.getElementById('adminImgTitle').value.trim();
-      const desc  = document.getElementById('adminImgDesc').value.trim();
-      const m     = document.getElementById('adminImgMsg');
-      const btn   = document.getElementById('adminPublishImgBtn');
-
-      if (!title) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى إدخال عنوان الصورة'; return; }
-      if (!adminSelectedFile) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى اختيار صورة من جهازك'; return; }
-
-      btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
-      m.textContent = '';
-      document.getElementById('adminUploadProgressWrap').style.display = 'block';
-
-      try {
-        const safeName = adminSelectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const ref = storage.ref(`gallery/${Date.now()}_${safeName}`);
-        const task = ref.put(adminSelectedFile);
-
-        task.on('state_changed',
-          snap => {
-            const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-            document.getElementById('adminUploadBar').style.width = pct + '%';
-            document.getElementById('adminUploadPct').textContent = pct + '%';
-          },
-          err => {
-            m.className='form-msg msg-err'; m.textContent='❌ فشل الرفع: ' + err.message;
-            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-            document.getElementById('adminUploadProgressWrap').style.display = 'none';
-          },
-          async () => {
-            const downloadURL = await task.snapshot.ref.getDownloadURL();
-            await db.collection('gallery_images').add({
-              title, description: desc, imageUrl: downloadURL,
-              status: 'approved', uploadedBy: 'المديرة',
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            m.className='form-msg msg-ok'; m.textContent='✅ تم رفع الصورة ونشرها في المعرض!';
-            showToast('تم رفع الصورة ونشرها ✅', 'success');
-            document.getElementById('adminImgTitle').value = '';
-            document.getElementById('adminImgDesc').value = '';
-            window.clearAdminImg();
-            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-            loadPublishedImages();
-            setTimeout(() => m.textContent = '', 5000);
-          }
-        );
-      } catch(e) {
-        m.className='form-msg msg-err'; m.textContent='❌ خطأ: ' + e.message;
-        btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
-        document.getElementById('adminUploadProgressWrap').style.display = 'none';
+      // --------------------- 13. فلاتر النتائج ---------------------
+      document.getElementById('applyFilters').addEventListener('click', () => {
+        const date = document.getElementById('fDate').value;
+        const page = document.getElementById('fPage').value.trim();
+        const student = document.getElementById('fStudent').value.trim().toLowerCase();
+        const subject = document.getElementById('fSubject').value;
+        let filtered = [...allResults];
+        if (date) filtered = filtered.filter(r => formatDate(r.createdAt) === date);
+        if (page) filtered = filtered.filter(r => String(r.pageNumber) === page);
+        if (student) filtered = filtered.filter(r => (r.studentName || '').toLowerCase().includes(student));
+        if (subject) filtered = filtered.filter(r => r.subject === subject);
+        renderFilteredResults(filtered);
+      });
+      document.getElementById('resetFilters').addEventListener('click', () => {
+        document.getElementById('fDate').value = '';
+        document.getElementById('fPage').value = '';
+        document.getElementById('fStudent').value = '';
+        document.getElementById('fSubject').value = '';
+        renderResults();
+      });
+      function renderFilteredResults(results) {
+        const tbody = document.getElementById('resultsTable');
+        if (!results.length) {
+          tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">🔍</div><h3>لا توجد نتائج مطابقة</h3></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = results.map((r, i) => {
+          const pct = r.total ? Math.round(r.score / r.total * 100) : 0;
+          const badgeClass = pct >= 80 ? 'badge-green' : (pct >= 50 ? 'badge-yellow' : 'badge-red');
+          return `
+            <tr>
+              <td>${i+1}</td>
+              <td><strong>${escapeHtml(r.studentName)}</strong></td>
+              <td><span class="badge badge-blue">${escapeHtml(r.studentCode)}</span></td>
+              <td>${escapeHtml(r.className || '—')}</td>
+              <td><span class="badge ${badgeClass}">${r.score}/${r.total}</span></td>
+              <td>${getSubjectName(r.subject)}</td>
+              <td>${r.pageNumber || '—'}</td>
+              <td>${formatDate(r.createdAt)}</td>
+              <td><button class="action-btn action-delete" onclick="window.deleteResult('${r.id}')">🗑️ حذف</button></td>
+            </tr>
+          `;
+        }).join('');
       }
-    });
 
-    document.getElementById('adminPublishVidBtn').addEventListener('click', async () => {
-      const title = document.getElementById('adminVidTitle').value.trim();
-      const url   = document.getElementById('adminVidUrl').value.trim();
-      const desc  = document.getElementById('adminVidDesc').value.trim();
-      const m = document.getElementById('adminVidMsg');
-      if (!title || !url) { m.className='form-msg msg-err'; m.textContent='⚠️ العنوان والرابط مطلوبان'; return; }
-      m.className='form-msg'; m.textContent='⏳ جاري النشر...';
-      await db.collection('videos').add({
-        title, description: desc, youtubeUrl: url,
-        status: 'approved', uploadedBy: 'المديرة',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      // --------------------- 14. تصدير CSV ---------------------
+      document.getElementById('exportResultsBtn').addEventListener('click', () => {
+        const rows = [['#', 'الطالب', 'الكود', 'الشعبة', 'النتيجة', 'المادة', 'رقم الصفحة', 'التاريخ']];
+        allResults.forEach((r, i) => {
+          rows.push([
+            i+1, r.studentName, r.studentCode, r.className || '',
+            `${r.score}/${r.total}`, getSubjectName(r.subject), r.pageNumber, formatDate(r.createdAt)
+          ]);
+        });
+        exportCSV(`النتائج-${new Date().toISOString().slice(0,10)}.csv`, rows);
       });
-      m.className='form-msg msg-ok'; m.textContent='✅ تم نشر الفيديو بنجاح!';
-      showToast('تم نشر الفيديو ✅', 'success');
-      document.getElementById('adminVidTitle').value = '';
-      document.getElementById('adminVidUrl').value   = '';
-      document.getElementById('adminVidDesc').value  = '';
-      loadPublishedVideos();
-      setTimeout(() => m.textContent = '', 4000);
-    });
+      function exportCSV(filename, rows) {
+        const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast('تم التصدير', 'success');
+      }
 
-    document.getElementById('refreshPublishedImgs').addEventListener('click', loadPublishedImages);
-    document.getElementById('refreshPublishedVids').addEventListener('click', loadPublishedVideos);
-
-    async function loadPublishedImages() {
-      const grid = document.getElementById('publishedImgsGrid');
-      grid.innerHTML = '<div style="text-align:center;padding:30px;">⏳ جاري التحميل...</div>';
-      const snap = await db.collection('gallery_images').where('status','==','approved').orderBy('createdAt','desc').limit(20).get();
-      if (snap.empty) { grid.innerHTML='<div class="empty-state"><div class="icon">🖼️</div><h3>لا توجد صور منشورة</h3></div>'; return; }
-      grid.innerHTML = '';
-      snap.forEach(doc => {
-        const d = {id:doc.id,...doc.data()};
-        const card = document.createElement('div'); card.className='media-card';
-        card.innerHTML=`<div class="media-thumb" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">
-          ${d.imageUrl?`<img src="${d.imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`:'<span style="font-size:50px;">🖼️</span>'}
-        </div>
-        <div class="media-info"><h4>${d.title||'بدون عنوان'}</h4><p>${d.description||''}</p>
-        <div class="media-actions"><button class="action-btn action-delete" onclick="deleteImage('${d.id}','${(d.title||'').replace(/'/g,"\'")}')">🗑️ حذف</button></div></div>`;
-        grid.appendChild(card);
+      // --------------------- 15. التبويبات ---------------------
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          const tab = btn.getAttribute('data-tab');
+          document.getElementById(`panel-${tab}`).classList.add('active');
+          if (tab === 'approve-media') loadPendingMedia();
+          if (tab === 'upload-media') { loadPublishedImages(); loadPublishedVideos(); }
+        });
       });
-    }
 
-    async function loadPublishedVideos() {
-      const grid = document.getElementById('publishedVidsGrid');
-      grid.innerHTML = '<div style="text-align:center;padding:30px;">⏳ جاري التحميل...</div>';
-      const snap = await db.collection('videos').where('status','==','approved').orderBy('createdAt','desc').limit(20).get();
-      if (snap.empty) { grid.innerHTML='<div class="empty-state"><div class="icon">🎥</div><h3>لا توجد فيديوهات</h3></div>'; return; }
-      grid.innerHTML = '';
-      snap.forEach(doc => {
-        const d = {id:doc.id,...doc.data()};
-        const card = document.createElement('div'); card.className='media-card';
-        card.innerHTML=`<div class="media-thumb" style="background:linear-gradient(135deg,#d1fae5,#6ee7b7);font-size:50px;">🎥</div>
-        <div class="media-info"><h4>${d.title||'بدون عنوان'}</h4><p>${d.description||''}</p>
-        ${d.youtubeUrl?`<a href="${d.youtubeUrl}" target="_blank" style="font-size:12px;color:var(--teal);">🔗 رابط</a>`:''}
-        <div class="media-actions" style="margin-top:8px;"><button class="action-btn action-delete" onclick="deleteVideo('${d.id}','${(d.title||'').replace(/'/g,"\'")}')">🗑️ حذف</button></div></div>`;
-        grid.appendChild(card);
+      // --------------------- 16. تسجيل الخروج ---------------------
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        const ok = await showConfirm('تسجيل الخروج', 'هل أنتِ متأكدة من تسجيل الخروج؟', '🚪');
+        if (!ok) return;
+        await auth.signOut();
+        sessionStorage.clear();
+        window.location.href = 'talaea-almobdeeen.html';
       });
-    }
 
-    window.deleteImage = (id,title) => showConfirm('حذف صورة',`حذف "${title}" من المعرض؟`,'🗑️',async()=>{
-      await db.collection('gallery_images').doc(id).delete(); showToast('تم حذف الصورة','success'); loadPublishedImages();
-    });
-    window.deleteVideo = (id,title) => showConfirm('حذف فيديو',`حذف "${title}"؟`,'🗑️',async()=>{
-      await db.collection('videos').doc(id).delete(); showToast('تم حذف الفيديو','success'); loadPublishedVideos();
-    });
+      // --------------------- 17. التحقق من صلاحيات المستخدم ---------------------
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (!userDoc.exists || userDoc.data().role !== 'manager') {
+            showToast('غير مصرح لك بالدخول إلى لوحة المديرة', 'error');
+            setTimeout(() => window.location.href = 'talaea-almobdeeen.html', 1500);
+            return;
+          }
+          document.getElementById('headerStatus').textContent = `مرحباً: ${user.email}`;
+          await Promise.all([loadStudents(), loadTeachers(), loadResults()]);
+          updateStats();
+          loadPublishedImages();
+          loadPublishedVideos();
+        } else {
+          window.location.href = 'talaea-almobdeeen.html';
+        }
+      });
 
-    // ══════════════════════════════════════
-    AOS.init({duration:800,once:true,offset:100,easing:'ease-out-cubic'});
-    window.addEventListener('DOMContentLoaded',()=>{
-      document.querySelectorAll('.stat-chip').forEach((c,i)=>{c.style.opacity='0';c.style.transform='translateY(30px)';setTimeout(()=>{c.style.transition='all 0.6s';c.style.opacity='1';c.style.transform='translateY(0)';},300+i*150);});
-    });
+      // --------------------- 18. تأثيرات إضافية ---------------------
+      window.addEventListener('scroll', () => {
+        document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+      });
+      AOS.init({ duration: 800, once: true, offset: 100 });
+
+      // Refresh teachers button
+      document.getElementById('refreshTeachersBtn').addEventListener('click', async () => {
+        await loadTeachers();
+        showToast('تم تحديث قائمة المعلمات', 'success');
+      });
+
+      // Search student
+      document.getElementById('searchStudent').addEventListener('input', e => {
+        const q = e.target.value.trim().toLowerCase();
+        if (!q) return renderStudents();
+        const filtered = allStudents.filter(s => (s.name || '').toLowerCase().includes(q) || (s.code || '').toLowerCase().includes(q));
+        const tbody = document.getElementById('studentsTable');
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">🔍</div><h3>لا توجد نتائج</h3></div></td></tr>';
+          return;
+        }
+        tbody.innerHTML = filtered.map((s, i) => `
+          <tr>
+            <td><strong>${i+1}</strong></td>
+            <td><strong style="color:var(--navy);">${escapeHtml(s.name)}</strong></td>
+            <td><span class="badge badge-blue">${escapeHtml(s.code)}</span></td>
+            <td>${escapeHtml(s.className || '—')}</td>
+            <td><button class="action-btn action-delete" onclick="window.deleteStudent('${s.id}','${escapeHtml(s.name)}')">🗑️ حذف</button></td>
+          </tr>
+        `).join('');
+      });
+    })();
   </script>
 </body>
 </html>
