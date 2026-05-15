@@ -1,75 +1,56 @@
-
-    <!DOCTYPE html>
-    <html lang="ar" dir="rtl">
-    <head>
-      <meta charset="UTF-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-      <meta name="theme-color" content="#0f2d5c"/>
-      <title>روضة طلائع المبدعين</title>
-      <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-      <style>
-        :root {
-          --navy: #0f2d5c;
-          --navy-light: #1a4a8a;
-          --gold: #f5a623;
-          --gold-light: #fbbf24;
-          --teal: #0e7490;
-          --teal-light: #159db9;
-          --coral: #ff6b6b;
-          --mint: #4ecdc4;
-          --lavender: #a78bfa;
-          --light: #f0f6ff;
-          --white: #ffffff;
-          --gray-100: #f1f5f9;
-          --gray-400: #94a3b8;
-          --gray-600: #475569;
-          --gray-800: #1e293b;
-          --border: #e2e8f0;
-          --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-          --shadow: 0 4px 6px rgba(0,0,0,0.07);
-          --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
-          --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
-          --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
-          --radius: 16px;
-          --radius-lg: 24px;
-          --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-          font-family: 'Tajawal', sans-serif;
-          direction: rtl;
-          background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
-          color: var(--gray-800);
-          line-height: 1.6;
-        }
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-      </style>
-    </head>
-    <body>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم الرئيسية</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <!-- Firebase SDK -->
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#0f2d5c"/>
+  <title>روضة طلائع المبدعين - إدارة متقدمة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; }
+    :root {
+      --navy: #0f2d5c;
+      --navy-light: #1a4a8a;
+      --gold: #f5a623;
+      --gold-light: #fbbf24;
+      --teal: #0e7490;
+      --teal-light: #159db9;
+      --coral: #ff6b6b;
+      --mint: #4ecdc4;
+      --lavender: #a78bfa;
+      --light: #f0f6ff;
+      --white: #ffffff;
+      --gray-100: #f1f5f9;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-md: 0 10px 25px rgba(0,0,0,0.1);
+      --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+      --shadow-xl: 0 25px 50px rgba(0,0,0,0.15);
+      --radius: 16px;
+      --radius-lg: 24px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      background: linear-gradient(180deg, #f8fafd 0%, #f0f6ff 100%);
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
     .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
     .tab-btn.active { background:#1e3a8a; color:white; }
     .tab-panel { display:none; }
@@ -78,7 +59,7 @@
     .btn-hover:hover { transform: scale(1.03); }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-right">
+<body class="min-h-screen bg-gray-50 text-right" style="font-family:'Tajawal',Arial,sans-serif; direction:rtl; background:#f0f6ff;">
 
   <header class="bg-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
@@ -218,7 +199,7 @@
         </div>
       </div>
 
-      <!-- تبويب التمارين - ✅ ميزة تحميل وحفظ التمارين موجودة هنا -->
+      <!-- تبويب التمارين -->
       <div id="tab-pages" class="tab-panel space-y-6">
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100" data-aos="fade-up">
           <h3 class="text-2xl font-bold text-blue-900 mb-5">📖 إضافة / تعديل تمرين</h3>
@@ -271,12 +252,9 @@
     </div>
   </section>
 
-  <!-- AOS Library -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    // ============================================================
-    // Firebase Configuration (مضمنة مثل باقي الملفات)
-    // ============================================================
+    // --------------------- Firebase Config ---------------------
     const firebaseConfig = {
       apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
       authDomain: "interactive-book-37270.firebaseapp.com",
@@ -285,14 +263,10 @@
       messagingSenderId: "350364566140",
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
     };
-
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ============================================================
-    // Helper Functions
-    // ============================================================
+    // --------------------- Helper Functions ---------------------
     function showToast(message, type = 'info') {
       let toastContainer = document.getElementById('toastContainer');
       if (!toastContainer) {
@@ -312,7 +286,6 @@
     // Auth Check
     const loggedIn = sessionStorage.getItem("loggedIn");
     const userRole = sessionStorage.getItem("userRole");
-
     if (!loggedIn || userRole !== "manager") {
       window.location.replace("talaea-almobdeeen.html");
     }
@@ -329,9 +302,7 @@
     let allTeachers = [];
     let allPages = [];
 
-    // ============================================================
-    // Kindergartens
-    // ============================================================
+    // --------------------- Kindergartens ---------------------
     async function loadKindergartens() {
       const snapshot = await db.collection("kindergartens").get();
       kindergartens = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -354,7 +325,6 @@
           <button class="delete-kg bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700" data-id="${kg.id}">🗑️ حذف</button>
         </div>
       `).join("");
-
       document.querySelectorAll(".delete-kg").forEach(btn => {
         btn.addEventListener("click", async function() {
           if (!confirm("هل تريد حذف هذه الروضة؟")) return;
@@ -378,13 +348,11 @@
       const name = kgName.value.trim();
       const id = kgId.value.trim().toLowerCase();
       const active = kgActive.value === "true";
-
       if (!name || !id) {
         kgMsg.textContent = "⚠️ يرجى إدخال اسم الروضة والمعرف";
         kgMsg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       try {
         await db.collection("kindergartens").doc(id).set({ id, name, active });
         kgMsg.textContent = "✅ تم حفظ الروضة بنجاح";
@@ -398,9 +366,7 @@
       }
     });
 
-    // ============================================================
-    // Students
-    // ============================================================
+    // --------------------- Students ---------------------
     async function loadStudents() {
       const snapshot = await db.collection("students").get();
       allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -448,20 +414,17 @@
       const code = document.getElementById("studentCode").value.trim().toUpperCase();
       const className = document.getElementById("studentClass").value.trim();
       const msg = document.getElementById("studentMsg");
-
       if (!kindergartenId || !name || !code) {
         msg.textContent = "⚠️ يرجى تعبئة الروضة واسم الطالب والكود";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       const existing = await db.collection("students").where("code", "==", code).get();
       if (!existing.empty) {
         msg.textContent = "⚠️ هذا الكود مستخدم بالفعل";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       await db.collection("students").add({ kindergartenId, name, code, className });
       msg.textContent = "✅ تم حفظ الطالب بنجاح";
       msg.className = "mt-4 text-sm text-green-600";
@@ -474,9 +437,7 @@
     document.getElementById("filterKgStudents").addEventListener("change", renderStudents);
     document.getElementById("searchStudent").addEventListener("input", renderStudents);
 
-    // ============================================================
-    // Teachers
-    // ============================================================
+    // --------------------- Teachers ---------------------
     async function loadTeachers() {
       const snapshot = await db.collection("users").where("role", "==", "teacher").get();
       allTeachers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -491,9 +452,9 @@
         tbody.innerHTML = '<tr><td colspan="6" class="p-4 border text-center text-gray-500">لا توجد معلمات</td></tr>';
         return;
       }
+      const subjectMap = { math: "الرياضيات", arabic: "العربي", english: "الإنجليزي" };
       tbody.innerHTML = filtered.map(t => {
         const kg = kindergartens.find(k => k.id === t.kindergartenId);
-        const subjectMap = { math: "الرياضيات", arabic: "العربي", english: "الإنجليزي" };
         return `
           <tr>
             <td class="p-3 border">${kg?.name || t.kindergartenId}</td>
@@ -520,20 +481,17 @@
       const email = document.getElementById("teacherEmail").value.trim();
       const subject = document.getElementById("teacherSubject").value;
       const msg = document.getElementById("teacherMsg");
-
       if (!kindergartenId || !name || !email || !subject) {
         msg.textContent = "⚠️ يرجى تعبئة جميع البيانات";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       const existing = await db.collection("users").where("email", "==", email).get();
       if (!existing.empty) {
         msg.textContent = "⚠️ هذا البريد مستخدم بالفعل";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       await db.collection("users").add({
         kindergartenId, name, email, subject, role: "teacher", isActive: true
       });
@@ -547,9 +505,7 @@
 
     document.getElementById("filterKgTeachers").addEventListener("change", renderTeachers);
 
-    // ============================================================
-    // Pages (Exercises) - ✅ ميزة تحميل وحفظ التمارين
-    // ============================================================
+    // --------------------- Pages (Exercises) ---------------------
     async function loadPages() {
       const snapshot = await db.collection("interactive_pages").get();
       allPages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -562,10 +518,10 @@
         tbody.innerHTML = '<tr><td colspan="6" class="p-4 border text-center text-gray-500">لا توجد تمارين محفوظة</td></tr>';
         return;
       }
+      const stageMap = { tamheedi: "التمهيدي", tahdiri: "التحضيري" };
+      const subjectMap = { math: "الرياضيات", arabic: "العربي", english: "الإنجليزي" };
       tbody.innerHTML = allPages.map(p => {
         const kg = kindergartens.find(k => k.id === p.kindergartenId);
-        const stageMap = { tamheedi: "التمهيدي", tahdiri: "التحضيري" };
-        const subjectMap = { math: "الرياضيات", arabic: "العربي", english: "الإنجليزي" };
         return `
           <tr>
             <td class="p-3 border">${kg?.name || p.kindergartenId}</td>
@@ -592,7 +548,6 @@
       return `${kindergartenId}__${stage}__${subject}__p${String(pageNumber).padStart(2, "0")}`;
     }
 
-    // حفظ التمرين
     document.getElementById("savePageBtn").addEventListener("click", async () => {
       const kindergartenId = document.getElementById("pageKgSelect").value;
       const stage = document.getElementById("pageStage").value;
@@ -601,19 +556,16 @@
       const title = document.getElementById("pageTitle").value;
       const code = document.getElementById("exerciseCode").value;
       const msg = document.getElementById("pageMsg");
-
       if (!kindergartenId || !stage || !subject || !pageNumber) {
         msg.textContent = "⚠️ يرجى تعبئة الروضة والمرحلة والمادة ورقم الصفحة";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       if (!code.trim()) {
         msg.textContent = "⚠️ يرجى لصق كود HTML للتمرين";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       const docId = pageDocId(kindergartenId, stage, subject, pageNumber);
       await db.collection("interactive_pages").doc(docId).set({
         kindergartenId, stage, subject, pageNumber: Number(pageNumber), title, code
@@ -624,20 +576,17 @@
       loadPages();
     });
 
-    // تحميل التمرين
     document.getElementById("loadPageBtn").addEventListener("click", async () => {
       const kindergartenId = document.getElementById("pageKgSelect").value;
       const stage = document.getElementById("pageStage").value;
       const subject = document.getElementById("pageSubject").value;
       const pageNumber = document.getElementById("pageNumber").value;
       const msg = document.getElementById("pageMsg");
-
       if (!kindergartenId || !stage || !subject || !pageNumber) {
         msg.textContent = "⚠️ اختاري الروضة والمرحلة والمادة ورقم الصفحة أولاً";
         msg.className = "mt-4 text-sm text-red-600";
         return;
       }
-
       const docId = pageDocId(kindergartenId, stage, subject, pageNumber);
       const doc = await db.collection("interactive_pages").doc(docId).get();
       if (!doc.exists) {
