@@ -12,10 +12,9 @@
   <!-- AOS Animations CSS -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-  <!-- GSAP for Animations with Spring Physics -->
+  <!-- GSAP for Animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -56,9 +55,7 @@
       --radius-lg: 24px;
       --radius-xl: 32px;
       --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      /* Spring easing */
       --spring-ease: cubic-bezier(0.34, 1.2, 0.64, 1);
-      --gentle-spring: cubic-bezier(0.25, 1.5, 0.5, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,28 +71,17 @@
       min-height: 100vh;
     }
 
-    /* Custom Spring Animations */
     @keyframes springFadeIn {
       0% { opacity: 0; transform: scale(0.95) translateY(30px); }
       60% { opacity: 0.9; transform: scale(1.02) translateY(-2px); }
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    @keyframes springBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0.4); }
-      50% { box-shadow: 0 0 0 20px rgba(245,166,35,0); }
-    }
-
-    .spring-animate {
-      animation: springFadeIn 0.6s var(--spring-ease) forwards;
-    }
-
-    /* ─── HEADER ─── */
     header {
       position: sticky; top: 0; z-index: 1000;
       background: rgba(255,255,255,0.85);
@@ -177,7 +163,6 @@
       box-shadow: 0 12px 30px rgba(245,166,35,0.45);
     }
 
-    /* ─── HERO ─── */
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 40%, var(--teal) 100%);
       color: white;
@@ -201,11 +186,6 @@
       border-radius: 50%;
       z-index: -1;
       animation: pulse 8s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 0.8; }
     }
 
     .hero-inner {
@@ -244,7 +224,6 @@
       margin-top: -1px;
     }
 
-    /* ─── VIDEOS SECTION ─── */
     .videos-section {
       padding: 80px 24px;
     }
@@ -335,7 +314,7 @@
 
     .video-card:hover .play-circle {
       transform: scale(1.2);
-      animation: pulseGlow 1.5s infinite;
+      animation: pulse 1.5s infinite;
     }
 
     .play-triangle {
@@ -370,7 +349,6 @@
       gap: 6px;
     }
 
-    /* Modern Modal for Video */
     .video-modal {
       display: none;
       position: fixed;
@@ -442,7 +420,6 @@
       background: rgba(0,0,0,0.8);
     }
 
-    /* ─── LOADING ─── */
     .loading-spinner {
       display: inline-block;
       width: 50px;
@@ -475,7 +452,6 @@
       opacity: 0.5;
     }
 
-    /* ─── TOAST ─── */
     .toast-container {
       position: fixed;
       top: 100px;
@@ -510,7 +486,6 @@
       to { opacity: 1; transform: translateX(0); }
     }
 
-    /* ─── FOOTER ─── */
     footer {
       background: linear-gradient(135deg, var(--navy), var(--navy-light));
       color: rgba(255,255,255,0.8);
@@ -521,7 +496,6 @@
 
     footer span { color: var(--gold-light); font-weight: 800; }
 
-    /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .header-inner { padding: 12px 16px; }
       .logo-circle { width: 46px; height: 46px; font-size: 22px; }
@@ -582,7 +556,6 @@
     </div>
   </section>
 
-  <!-- Video Modal -->
   <div id="videoModal" class="video-modal">
     <div class="modal-close" id="modalClose">&times;</div>
     <div class="modal-content">
@@ -598,7 +571,6 @@
     <p>&copy; 2026 <span>روضة طلائع المبدعين</span> — جميع الحقوق محفوظة</p>
   </footer>
 
-  <!-- AOS Library -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
     // ========== Firebase Config ==========
@@ -611,7 +583,7 @@
       appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
@@ -644,7 +616,6 @@
 
     function getYouTubeEmbedUrl(url) {
       if (!url) return "";
-      // Handle different YouTube URL formats
       let videoId = null;
       const patterns = [
         /(?:youtube\.com\/embed\/)([^&\s]+)/,
@@ -662,7 +633,7 @@
       return url;
     }
 
-    // ========== Load Videos with Spring Physics ==========
+    // ========== Load Videos ==========
     let currentVideos = [];
 
     async function loadVideos() {
@@ -698,8 +669,8 @@
                 </div>
               </div>
               <div class="video-info">
-                <h3>${video.title || "بدون عنوان"}</h3>
-                <p>${video.description || ""}</p>
+                <h3>${escapeHtml(video.title) || "بدون عنوان"}</h3>
+                <p>${escapeHtml(video.description) || ""}</p>
                 <div class="video-date">📅 ${formatDate(video.createdAt)}</div>
               </div>
             </div>
@@ -708,7 +679,6 @@
         
         videosGrid.innerHTML = html;
         
-        // Add click events with spring animation
         document.querySelectorAll('.video-card').forEach(card => {
           card.addEventListener('click', () => {
             const index = parseInt(card.dataset.index);
@@ -716,9 +686,7 @@
           });
         });
         
-        // GSAP Spring Physics Animations
         gsap.utils.toArray('.video-card').forEach((card, i) => {
-          // Spring physics effect - each card bounces in with spring motion
           gsap.from(card, {
             scrollTrigger: {
               trigger: card,
@@ -729,7 +697,7 @@
             y: 80,
             scale: 0.9,
             duration: 1.2,
-            ease: "back.out(1.5)", // Spring-like back out
+            ease: "back.out(1.5)",
             delay: i * 0.08
           });
         });
@@ -741,7 +709,17 @@
       }
     }
 
-    // ========== Video Modal with Spring Physics ==========
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    // ========== Video Modal ==========
     const modal = document.getElementById("videoModal");
     const modalVideo = document.getElementById("modalVideo");
     const modalTitle = document.getElementById("modalTitle");
@@ -760,7 +738,6 @@
       modal.classList.add("active");
       document.body.style.overflow = "hidden";
       
-      // Spring scale animation for modal content
       const modalContent = document.querySelector(".modal-content");
       gsap.fromTo(modalContent,
         { scale: 0.8, y: 50, opacity: 0 },
@@ -783,7 +760,6 @@
       });
     }
 
-    // ========== Event Listeners ==========
     document.getElementById("modalClose").addEventListener("click", closeVideoModal);
     modal.addEventListener("click", (e) => {
       if (e.target === modal) closeVideoModal();
@@ -800,8 +776,7 @@
       header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // ========== GSAP Spring Physics Animations ==========
-    // Hero spring animation
+    // ========== GSAP Animations ==========
     gsap.from(".hero-badge", {
       opacity: 0,
       y: -30,
@@ -828,7 +803,6 @@
       delay: 0.6
     });
 
-    // Section title animation
     gsap.from(".section-title", {
       scrollTrigger: {
         trigger: ".section-title",
@@ -842,7 +816,6 @@
       ease: "elastic.out(1, 0.6)"
     });
 
-    // AOS Initialization for extra effects
     AOS.init({
       duration: 800,
       once: true,
