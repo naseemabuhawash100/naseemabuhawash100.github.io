@@ -22,6 +22,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -763,6 +764,92 @@
         </div>
       </div>
     </div>
+    <!-- 📤 رفع الوسائط -->
+    <div id="panel-upload-media" class="panel">
+
+      <!-- رفع صور -->
+      <div class="card" data-aos="fade-up">
+        <div class="card-title"><span>🖼️</span><span>إرسال صور لموافقة المديرة</span></div>
+        <div style="background:#f0f9ff;padding:16px;border-radius:16px;border-right:4px solid var(--teal);margin-bottom:24px;">
+          <p style="color:var(--gray-600);font-size:15px;margin:0;">📋 الصور التي ترسليها ستذهب للمديرة أولاً. بعد موافقتها تظهر في معرض الصور.</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>عنوان الصورة</label>
+            <input id="tImgTitle" type="text" placeholder="مثال: حصة الرسم الإبداعي">
+          </div>
+          <div class="form-field">
+            <label>وصف الصورة</label>
+            <input id="tImgDesc" type="text" placeholder="مثال: الأطفال يبدعون بالألوان">
+          </div>
+        </div>
+        <!-- منطقة رفع الصورة -->
+        <div id="tImgUploadArea" onclick="document.getElementById('tImgFile').click()"
+          style="border:2px dashed var(--teal);border-radius:20px;padding:40px;text-align:center;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);cursor:pointer;transition:all 0.3s;margin-bottom:16px;"
+          onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--teal)'">
+          <div style="font-size:56px;margin-bottom:12px;">📸</div>
+          <h3 style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;">اضغطي هنا لاختيار صورة من جهازك</h3>
+          <p style="font-size:14px;color:var(--gray-500);">JPG · PNG · WEBP — ترفع مباشرة على Firebase Storage</p>
+          <input type="file" id="tImgFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+        </div>
+        <div id="tImgPreview" style="margin-bottom:16px;"></div>
+        <!-- شريط التقدم -->
+        <div id="tImgProgressWrap" style="display:none;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:14px;font-weight:700;color:var(--navy);">⬆️ جاري الرفع...</span>
+            <span id="tImgProgressPct" style="font-size:14px;font-weight:700;color:var(--teal);">0%</span>
+          </div>
+          <div style="background:var(--gray-200);border-radius:99px;height:12px;overflow:hidden;">
+            <div id="tImgProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--teal),#0f2d5c);border-radius:99px;transition:width 0.3s;"></div>
+          </div>
+        </div>
+        <button class="btn btn-success" id="tSubmitImgBtn" type="button">
+          <span class="btn-icon">📤</span><span>إرسال للموافقة</span>
+        </button>
+        <p class="form-msg" id="tImgMsg" style="margin-top:14px;font-size:14px;font-weight:700;min-height:24px;"></p>
+      </div>
+
+      <!-- رفع فيديو -->
+      <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-title"><span>🎥</span><span>إرسال فيديو لموافقة المديرة</span></div>
+        <div style="background:#f0f9ff;padding:16px;border-radius:16px;border-right:4px solid var(--teal);margin-bottom:24px;">
+          <p style="color:var(--gray-600);font-size:15px;margin:0;">📋 الفيديو سيذهب للمديرة للمراجعة. بعد موافقتها يظهر في صفحة الفيديوهات.</p>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>عنوان الفيديو</label>
+            <input id="tVidTitle" type="text" placeholder="مثال: أناشيد الأطفال التعليمية">
+          </div>
+          <div class="form-field">
+            <label>رابط يوتيوب</label>
+            <input id="tVidUrl" type="url" placeholder="https://youtube.com/watch?v=...">
+          </div>
+        </div>
+        <div class="form-field" style="margin-bottom:20px;">
+          <label>وصف الفيديو</label>
+          <input id="tVidDesc" type="text" placeholder="وصف مختصر للفيديو">
+        </div>
+        <button class="btn btn-success" id="tSubmitVidBtn" type="button">
+          <span class="btn-icon">📤</span><span>إرسال للموافقة</span>
+        </button>
+        <p class="form-msg" id="tVidMsg" style="margin-top:14px;font-size:14px;font-weight:700;min-height:24px;"></p>
+      </div>
+
+      <!-- طلباتي السابقة -->
+      <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-title"><span>📋</span><span>طلباتي السابقة</span></div>
+        <button class="btn btn-primary" id="tRefreshMyMedia" type="button" style="margin-bottom:20px;">
+          <span class="btn-icon">🔄</span><span>تحديث</span>
+        </button>
+        <div id="tMyMediaList">
+          <div style="text-align:center;padding:40px;color:var(--gray-500);">
+            <div style="font-size:48px;margin-bottom:12px;">📂</div>
+            <p>اضغطي على تحديث لعرض طلباتك</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <footer>
@@ -795,6 +882,7 @@
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
       db = firebase.firestore();
+      storage = firebase.storage();
       storage = firebase.storage();
       // تفعيل الكاش المحلي ليعمل أوفلاين
       db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
@@ -1540,6 +1628,189 @@
     }
 
     if (tRefresh) tRefresh.addEventListener('click', loadMyMedia);
+
+
+    /* ══════════════════════════════════════════
+       رفع الوسائط - Firebase Storage
+    ══════════════════════════════════════════ */
+
+    // ── تبديل التبويبات يشمل upload-media ──
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const target = document.getElementById('panel-' + btn.getAttribute('data-tab'));
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // ── رفع الصورة ──
+    let tSelectedFile = null;
+
+    document.getElementById('tImgFile')?.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      tSelectedFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('tImgPreview').innerHTML = `
+          <div style="position:relative;display:inline-block;">
+            <img src="${ev.target.result}" style="width:180px;height:140px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
+            <button onclick="clearTImg()" style="position:absolute;top:-10px;right:-10px;background:#ff6b6b;color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:18px;font-weight:900;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
+          </div>
+          <p style="margin-top:10px;font-size:13px;color:var(--teal);font-weight:700;">✅ ${file.name}</p>`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.clearTImg = () => {
+      tSelectedFile = null;
+      const p = document.getElementById('tImgPreview'); if (p) p.innerHTML = '';
+      const f = document.getElementById('tImgFile'); if (f) f.value = '';
+      const pw = document.getElementById('tImgProgressWrap'); if (pw) pw.style.display = 'none';
+    };
+
+    document.getElementById('tSubmitImgBtn')?.addEventListener('click', async () => {
+      const title = document.getElementById('tImgTitle')?.value.trim() || '';
+      const desc  = document.getElementById('tImgDesc')?.value.trim()  || '';
+      const m     = document.getElementById('tImgMsg');
+      const btn   = document.getElementById('tSubmitImgBtn');
+
+      if (!title) { m.style.color='#ff6b6b'; m.textContent='⚠️ يرجى إدخال عنوان الصورة'; return; }
+      if (!tSelectedFile) { m.style.color='#ff6b6b'; m.textContent='⚠️ يرجى اختيار صورة من جهازك'; return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-icon">⏳</span><span>جاري الرفع...</span>';
+      m.textContent = '';
+      document.getElementById('tImgProgressWrap').style.display = 'block';
+
+      try {
+        const safeName = tSelectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const ref = storage.ref(`gallery/pending/${Date.now()}_${safeName}`);
+        const task = ref.put(tSelectedFile);
+
+        task.on('state_changed',
+          snap => {
+            const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+            document.getElementById('tImgProgressBar').style.width = pct + '%';
+            document.getElementById('tImgProgressPct').textContent = pct + '%';
+          },
+          err => {
+            m.style.color='#ff6b6b'; m.textContent='❌ فشل الرفع: ' + err.message;
+            btn.disabled = false;
+            btn.innerHTML = '<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+            document.getElementById('tImgProgressWrap').style.display = 'none';
+          },
+          async () => {
+            const url = await task.snapshot.ref.getDownloadURL();
+            await db.collection('gallery_images').add({
+              title, description: desc, imageUrl: url,
+              status: 'pending',
+              uploadedBy: userName,
+              uploadedByEmail: sessionStorage.getItem('userEmail') || '',
+              kindergartenId: KG_ID,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            m.style.color='#10b981'; m.textContent='✅ تم إرسال الصورة للمديرة! في انتظار الموافقة.';
+            showToast('تم إرسال الصورة للمديرة ✅', 'success');
+            document.getElementById('tImgTitle').value = '';
+            document.getElementById('tImgDesc').value = '';
+            window.clearTImg();
+            btn.disabled = false;
+            btn.innerHTML = '<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+            setTimeout(() => m.textContent = '', 5000);
+          }
+        );
+      } catch(e) {
+        m.style.color='#ff6b6b'; m.textContent='❌ خطأ: ' + e.message;
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+        document.getElementById('tImgProgressWrap').style.display = 'none';
+      }
+    });
+
+    // ── إرسال فيديو ──
+    document.getElementById('tSubmitVidBtn')?.addEventListener('click', async () => {
+      const title = document.getElementById('tVidTitle')?.value.trim() || '';
+      const url   = document.getElementById('tVidUrl')?.value.trim()   || '';
+      const desc  = document.getElementById('tVidDesc')?.value.trim()  || '';
+      const m     = document.getElementById('tVidMsg');
+      const btn   = document.getElementById('tSubmitVidBtn');
+
+      if (!title) { m.style.color='#ff6b6b'; m.textContent='⚠️ يرجى إدخال عنوان الفيديو'; return; }
+      if (!url)   { m.style.color='#ff6b6b'; m.textContent='⚠️ يرجى إدخال رابط يوتيوب';   return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-icon">⏳</span><span>جاري الإرسال...</span>';
+
+      try {
+        await db.collection('videos').add({
+          title, description: desc, youtubeUrl: url,
+          status: 'pending',
+          uploadedBy: userName,
+          uploadedByEmail: sessionStorage.getItem('userEmail') || '',
+          kindergartenId: KG_ID,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        m.style.color='#10b981'; m.textContent='✅ تم إرسال الفيديو للمديرة! في انتظار الموافقة.';
+        showToast('تم إرسال الفيديو للمديرة ✅', 'success');
+        document.getElementById('tVidTitle').value = '';
+        document.getElementById('tVidUrl').value   = '';
+        document.getElementById('tVidDesc').value  = '';
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+        setTimeout(() => m.textContent = '', 5000);
+      } catch(e) {
+        m.style.color='#ff6b6b'; m.textContent='❌ خطأ: ' + e.message;
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-icon">📤</span><span>إرسال للموافقة</span>';
+      }
+    });
+
+    // ── عرض طلباتي السابقة ──
+    document.getElementById('tRefreshMyMedia')?.addEventListener('click', async () => {
+      const list = document.getElementById('tMyMediaList');
+      list.innerHTML = '<div style="text-align:center;padding:30px;"><div style="width:36px;height:36px;border:4px solid #e2e8f0;border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;"></div><p>جاري التحميل...</p></div>';
+
+      try {
+        const [imgSnap, vidSnap] = await Promise.all([
+          db.collection('gallery_images').where('uploadedBy','==',userName).orderBy('createdAt','desc').limit(15).get(),
+          db.collection('videos').where('uploadedBy','==',userName).orderBy('createdAt','desc').limit(15).get()
+        ]);
+
+        const items = [];
+        imgSnap.forEach(d => items.push({type:'image', ...d.data()}));
+        vidSnap.forEach(d => items.push({type:'video', ...d.data()}));
+        items.sort((a,b)=>(b.createdAt?.toDate?.()?.getTime()||0)-(a.createdAt?.toDate?.()?.getTime()||0));
+
+        if (!items.length) {
+          list.innerHTML='<div style="text-align:center;padding:40px;color:var(--gray-500);"><div style="font-size:48px;margin-bottom:12px;">📂</div><p>لم ترسلي أي وسائط بعد</p></div>';
+          return;
+        }
+
+        const badge = s => ({
+          approved: '<span style="background:#dcfce7;color:#166534;padding:4px 14px;border-radius:99px;font-size:12px;font-weight:800;">✅ منشور</span>',
+          pending:  '<span style="background:#fef3c7;color:#92400e;padding:4px 14px;border-radius:99px;font-size:12px;font-weight:800;">⏳ قيد المراجعة</span>',
+          rejected: '<span style="background:#fee2e2;color:#991b1b;padding:4px 14px;border-radius:99px;font-size:12px;font-weight:800;">❌ مرفوض</span>'
+        }[s] || '');
+
+        list.innerHTML = '<div style="display:grid;gap:12px;">' + items.map(it => `
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            ${it.type==='image' && it.imageUrl
+              ? `<img src="${it.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:12px;flex-shrink:0;">`
+              : `<div style="width:60px;height:60px;border-radius:12px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">${it.type==='image'?'🖼️':'🎥'}</div>`}
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:800;color:#0f2d5c;margin-bottom:4px;">${it.title||'بدون عنوان'}</div>
+              <div style="font-size:13px;color:#64748b;">${it.description||''}</div>
+            </div>
+            <div>${badge(it.status)}</div>
+          </div>`).join('') + '</div>';
+
+      } catch(e) {
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#ff6b6b;">⚠️ خطأ في التحميل</div>';
+      }
+    });
 
   })(); // end IIFE
   </script>
