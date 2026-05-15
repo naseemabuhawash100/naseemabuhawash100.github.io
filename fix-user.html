@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إصلاح بيانات المستخدمين</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl; background: #f0f9ff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+    .box { background: white; border-radius: 24px; padding: 40px; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.1); text-align: center; }
+    h2 { color: #0f2d5c; font-size: 22px; margin-bottom: 6px; }
+    .sub { color: #64748b; margin-bottom: 28px; font-size: 14px; }
+    label { display: block; text-align: right; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+    input { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; font-size: 15px; font-family: inherit; outline: none; box-sizing: border-box; margin-bottom: 16px; transition: border 0.2s; }
+    input:focus { border-color: #0e7490; }
+    button { background: linear-gradient(135deg, #0f2d5c, #0e7490); color: white; border: none; border-radius: 99px; padding: 14px 40px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: all 0.3s; font-family: inherit; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,45,92,0.3); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .log { margin-top: 20px; text-align: right; }
+    .log-item { padding: 11px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+    .log-ok   { background: #dcfce7; color: #166534; }
+    .log-err  { background: #fee2e2; color: #991b1b; }
+    .log-info { background: #dbeafe; color: #1e40af; }
+    .done { background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 16px; padding: 20px; margin-top: 16px; }
+    .done h3 { color: #166534; margin: 0 0 6px; }
+    .done p  { color: #166534; margin: 0; font-size: 13px; }
+    .step { background: #f1f5f9; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; text-align: right; font-size: 13px; color: #475569; line-height: 1.8; }
+    .step strong { color: #0f2d5c; }
+  </style>
+</head>
+<body>
+<div class="box">
+  <h2>🔧 إصلاح بيانات المستخدمين</h2>
+  <p class="sub">سجّلي دخول بحساب المديرة أولاً حتى يتم الإصلاح</p>
+
+  <div class="step">
+    <strong>📋 التعليمات:</strong><br>
+    أدخلي إيميل وكلمة مرور حساب المديرة<br>
+    ثم اضغطي "تسجيل الدخول والإصلاح"
+  </div>
+
+  <div style="text-align:right;">
+    <label>📧 إيميل المديرة</label>
+    <input type="email" id="email" placeholder="director@talaea.com">
+    <label>🔑 كلمة المرور</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
+
+  <button id="fixBtn" onclick="loginAndFix()">🚀 تسجيل الدخول والإصلاح</button>
+  <div class="log" id="log"></div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVmD5nCvSVsKtSWMFlelNFlFHXSv3LSi0",
+    authDomain: "interactive-book-37270.firebaseapp.com",
+    projectId: "interactive-book-37270",
+    storageBucket: "interactive-book-37270.firebasestorage.app",
+    messagingSenderId: "350364566140",
+    appId: "1:350364566140:web:7997fb848a9b512f6b7ff9"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  function addLog(msg, type='info') {
+    const div = document.createElement('div');
+    div.className = `log-item log-${type}`;
+    div.textContent = msg;
+    document.getElementById('log').appendChild(div);
+  }
+
+  async function loginAndFix() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('fixBtn');
+
+    if (!email || !password) {
+      addLog('⚠️ يرجى إدخال الإيميل وكلمة المرور', 'err'); return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري تسجيل الدخول...';
+    document.getElementById('log').innerHTML = '';
+
+    try {
+      // ── 1. تسجيل الدخول ──
+      addLog('🔐 جاري تسجيل الدخول...', 'info');
+      await auth.signInWithEmailAndPassword(email, password);
+      addLog('✅ تم تسجيل الدخول بنجاح', 'ok');
+
+      btn.textContent = '⏳ جاري إضافة البيانات...';
+
+      // ── 2. إضافة بيانات المديرة ──
+      addLog('📝 إضافة بيانات المديرة...', 'info');
+      await db.collection('users').doc('u3be3EV3DJgMwUXkrw5aQIZsMFQ2').set({
+        name: 'مديرة الروضة',
+        email: 'director@talaea.com',
+        role: 'manager',
+        kindergartenId: 'kg_talaea',
+        isActive: true,
+        uid: 'u3be3EV3DJgMwUXkrw5aQIZsMFQ2',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      addLog('✅ تم إضافة بيانات المديرة', 'ok');
+
+      // ── 3. إضافة بيانات المعلمة ──
+      addLog('📝 إضافة بيانات المعلمة...', 'info');
+      await db.collection('users').doc('UoqCnjnOh7aQyj29D0rpfw4jQWs2').set({
+        name: 'معلمة الروضة',
+        email: 'teacher@talaea.com',
+        role: 'teacher',
+        kindergartenId: 'kg_talaea',
+        subject: 'math',
+        isActive: true,
+        uid: 'UoqCnjnOh7aQyj29D0rpfw4jQWs2',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      addLog('✅ تم إضافة بيانات المعلمة', 'ok');
+
+      // ── 4. تحقق ──
+      addLog('🔍 جاري التحقق...', 'info');
+      const [d1, d2] = await Promise.all([
+        db.collection('users').doc('u3be3EV3DJgMwUXkrw5aQIZsMFQ2').get(),
+        db.collection('users').doc('UoqCnjnOh7aQyj29D0rpfw4jQWs2').get()
+      ]);
+
+      if (d1.exists && d2.exists) {
+        addLog('✅ التحقق ناجح — كلا الحسابين موجودان في Firestore', 'ok');
+        document.getElementById('log').insertAdjacentHTML('beforeend', `
+          <div class="done">
+            <h3>🎉 تم الإصلاح بنجاح!</h3>
+            <p>ارجعي الآن لصفحة الروضة وجربي تسجيل الدخول</p>
+          </div>`);
+        btn.textContent = '✅ اكتمل الإصلاح';
+        btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+      }
+
+      await auth.signOut();
+
+    } catch(e) {
+      let msg = e.message;
+      if (e.code === 'auth/wrong-password')    msg = 'كلمة المرور غير صحيحة';
+      if (e.code === 'auth/user-not-found')    msg = 'الإيميل غير موجود في Firebase';
+      if (e.code === 'auth/invalid-email')     msg = 'صيغة الإيميل غير صحيحة';
+      if (e.code === 'permission-denied')      msg = 'لا يوجد صلاحية — تحققي من Firestore Rules';
+      addLog('❌ خطأ: ' + msg, 'err');
+      btn.disabled = false;
+      btn.textContent = '🔄 إعادة المحاولة';
+    }
+  }
+
+  // Enter key
+  document.addEventListener('keypress', e => {
+    if (e.key === 'Enter') loginAndFix();
+  });
+</script>
+</body>
+</html>
