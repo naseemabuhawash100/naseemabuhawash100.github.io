@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <style>
     :root {
       --navy: #0f2d5c; --navy-light: #1a4a8a;
@@ -133,7 +134,7 @@
     .upload-area .upload-icon { font-size: 56px; margin-bottom: 16px; }
     .upload-area h3 { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
     .upload-area p { font-size: 14px; color: var(--gray-500); }
-    .upload-area input[type="file"] { display: none; }
+    .upload-area input[type="file"] { display: none !important; }
     /* Preview strip */
     .preview-strip { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
     .preview-item { position: relative; width: 100px; height: 100px; border-radius: 16px; overflow: hidden; border: 3px solid var(--teal); }
@@ -323,21 +324,30 @@
     <div id="panel-upload-media" class="panel">
       <!-- رفع صور مباشر من الإدارة -->
       <div class="card">
-        <div class="card-title">🖼️ رفع صور للمعرض (مباشرة بدون موافقة)</div>
+        <div class="card-title">🖼️ إضافة صورة للمعرض (مباشرة بدون موافقة)</div>
         <div class="form-grid">
           <div class="form-field"><label>عنوان الصورة</label><input id="adminImgTitle" type="text" placeholder="مثال: حصة الرسم الإبداعي"></div>
           <div class="form-field"><label>وصف الصورة</label><input id="adminImgDesc" type="text" placeholder="مثال: الأطفال يبدعون بالألوان"></div>
         </div>
         <div class="upload-area" id="adminImgUploadArea" onclick="document.getElementById('adminImgFile').click()">
-          <div class="upload-icon">🖼️</div>
-          <h3>اضغطي لاختيار صور</h3>
-          <p>JPG, PNG, WEBP - يمكن اختيار عدة صور</p>
-          <input type="file" id="adminImgFile" accept="image/*" multiple>
+          <div class="upload-icon">📸</div>
+          <h3>اضغطي هنا لاختيار صورة من جهازك</h3>
+          <p>JPG · PNG · WEBP · GIF — يتم رفعها على Firebase Storage مباشرة</p>
+          <input type="file" id="adminImgFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
         </div>
-        <div id="adminImgPreview" class="preview-strip"></div>
-        <div id="adminImgUrlFields" style="margin-top:16px;"></div>
+        <div id="adminImgPreview" style="margin-top:16px;"></div>
+        <!-- شريط التقدم -->
+        <div id="adminUploadProgressWrap" style="display:none;margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:700;color:var(--navy);">جاري الرفع...</span>
+            <span id="adminUploadPct" style="font-size:13px;font-weight:700;color:var(--teal);">0%</span>
+          </div>
+          <div style="background:var(--gray-200);border-radius:99px;height:10px;overflow:hidden;">
+            <div id="adminUploadBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--navy));border-radius:99px;transition:width 0.3s;"></div>
+          </div>
+        </div>
         <div style="margin-top:20px;">
-          <button class="btn btn-gold" id="adminPublishImgBtn">🚀 نشر الصور مباشرة</button>
+          <button class="btn btn-gold" id="adminPublishImgBtn">🚀 نشر الصورة مباشرة</button>
         </div>
         <p class="form-msg" id="adminImgMsg"></p>
       </div>
@@ -390,10 +400,10 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const storage = firebase.storage();
     const KG_ID = "kg_talaea";
 
     let allStudents = [], allTeachers = [], allResults = [], confirmCallback = null;
-    let adminImgFiles = [];
 
     // ── Toast ──
     function showToast(msg, type='success') {
@@ -651,95 +661,101 @@
     });
 
     // ═══════════════════════════════════════════
-    // ── ADMIN DIRECT UPLOAD ──
+    // ── ADMIN DIRECT UPLOAD - Firebase Storage ──
     // ═══════════════════════════════════════════
 
-    // Image file selection preview
+    let adminSelectedFile = null;
+
+    // عرض معاينة الصورة عند الاختيار
     document.getElementById('adminImgFile').addEventListener('change', e => {
-      const files = Array.from(e.target.files);
-      adminImgFiles = files;
-      const preview = document.getElementById('adminImgPreview');
-      preview.innerHTML = '';
-      const urlFields = document.getElementById('adminImgUrlFields');
-      urlFields.innerHTML = '';
-      files.forEach((f,i) => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const item = document.createElement('div'); item.className='preview-item';
-          item.innerHTML=`<img src="${ev.target.result}"><button class="remove-preview" onclick="removePreviewFile(${i})">×</button>`;
-          preview.appendChild(item);
-        };
-        reader.readAsDataURL(f);
-        // URL field fallback
-        const div=document.createElement('div'); div.className='form-field'; div.style.marginBottom='12px';
-        div.innerHTML=`<label>رابط الصورة ${i+1} (اختياري - يمكن الرفع من Firebase Storage)</label><input type="url" id="adminImgUrl_${i}" placeholder="https://...">`;
-        urlFields.appendChild(div);
-      });
+      const file = e.target.files[0];
+      if (!file) return;
+      adminSelectedFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('adminImgPreview').innerHTML = `
+          <div style="position:relative;display:inline-block;">
+            <img src="${ev.target.result}" style="width:200px;height:160px;object-fit:cover;border-radius:16px;border:3px solid var(--teal);display:block;">
+            <button onclick="clearAdminImg()" style="position:absolute;top:-10px;right:-10px;background:var(--coral);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);">×</button>
+          </div>
+          <p style="margin-top:10px;font-size:14px;color:var(--teal);font-weight:700;">✅ ${file.name} — جاهزة للرفع</p>`;
+      };
+      reader.readAsDataURL(file);
     });
 
-    window.removePreviewFile = (i) => {
-      adminImgFiles.splice(i,1);
-      document.getElementById('adminImgFile').value='';
-      // Re-trigger preview
-      const preview=document.getElementById('adminImgPreview'); preview.innerHTML='';
-      adminImgFiles.forEach((f,idx)=>{
-        const r=new FileReader();
-        r.onload=ev=>{const item=document.createElement('div');item.className='preview-item';item.innerHTML=`<img src="${ev.target.result}"><button class="remove-preview" onclick="removePreviewFile(${idx})">×</button>`;preview.appendChild(item);};
-        r.readAsDataURL(f);
-      });
+    window.clearAdminImg = () => {
+      adminSelectedFile = null;
+      document.getElementById('adminImgPreview').innerHTML = '';
+      document.getElementById('adminImgFile').value = '';
+      document.getElementById('adminUploadProgressWrap').style.display = 'none';
     };
 
     document.getElementById('adminPublishImgBtn').addEventListener('click', async () => {
-      const title=document.getElementById('adminImgTitle').value.trim();
-      const desc=document.getElementById('adminImgDesc').value.trim();
-      const m=document.getElementById('adminImgMsg');
+      const title = document.getElementById('adminImgTitle').value.trim();
+      const desc  = document.getElementById('adminImgDesc').value.trim();
+      const m = document.getElementById('adminImgMsg');
+
       if (!title) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى إدخال عنوان الصورة'; return; }
+      if (!adminSelectedFile) { m.className='form-msg msg-err'; m.textContent='⚠️ يرجى اختيار صورة من جهازك'; return; }
 
-      // Get URLs - either from URL inputs or use placeholder
-      const urlInputs = document.querySelectorAll('[id^="adminImgUrl_"]');
-      let published = 0;
+      // تعطيل الزر أثناء الرفع
+      const btn = document.getElementById('adminPublishImgBtn');
+      btn.disabled = true; btn.textContent = '⏳ جاري الرفع...';
+      m.className='form-msg'; m.textContent='';
 
-      if (urlInputs.length === 0 && adminImgFiles.length === 0) {
-        m.className='form-msg msg-err'; m.textContent='⚠️ يرجى اختيار صور أو إدخال روابط'; return;
+      // إظهار شريط التقدم
+      document.getElementById('adminUploadProgressWrap').style.display = 'block';
+
+      try {
+        // رفع الصورة لـ Firebase Storage
+        const fileName = `gallery/${Date.now()}_${adminSelectedFile.name.replace(/\s/g,'_')}`;
+        const storageRef = storage.ref(fileName);
+        const uploadTask = storageRef.put(adminSelectedFile);
+
+        uploadTask.on('state_changed',
+          // تقدم الرفع
+          snapshot => {
+            const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            document.getElementById('adminUploadBar').style.width = pct + '%';
+            document.getElementById('adminUploadPct').textContent = pct + '%';
+          },
+          // خطأ
+          err => {
+            m.className='form-msg msg-err'; m.textContent='❌ فشل الرفع: ' + err.message;
+            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
+            document.getElementById('adminUploadProgressWrap').style.display = 'none';
+          },
+          // نجاح الرفع
+          async () => {
+            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+
+            // حفظ بيانات الصورة في Firestore
+            await db.collection('gallery_images').add({
+              title,
+              description: desc,
+              imageUrl: downloadURL,
+              status: 'approved',
+              uploadedBy: 'المديرة',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // إعادة تعيين الواجهة
+            m.className='form-msg msg-ok'; m.textContent='✅ تم رفع الصورة ونشرها في المعرض بنجاح!';
+            showToast('تم رفع الصورة ونشرها ✅', 'success');
+            document.getElementById('adminImgTitle').value='';
+            document.getElementById('adminImgDesc').value='';
+            window.clearAdminImg();
+            btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
+            loadPublishedImages();
+            setTimeout(()=>m.textContent='', 5000);
+          }
+        );
+      } catch(e) {
+        m.className='form-msg msg-err'; m.textContent='❌ خطأ: ' + e.message;
+        btn.disabled = false; btn.textContent = '🚀 نشر الصورة مباشرة';
+        document.getElementById('adminUploadProgressWrap').style.display = 'none';
       }
-
-      m.className='form-msg'; m.textContent='⏳ جاري النشر...';
-
-      // If URL inputs exist, use them
-      if (urlInputs.length > 0) {
-        for (let i=0; i<urlInputs.length; i++) {
-          const url = urlInputs[i].value.trim() || generatePlaceholderEmoji(i);
-          await db.collection('gallery_images').add({
-            title, description:desc, imageUrl:url,
-            status:'approved', uploadedBy:'المديرة',
-            isPlaceholder: !urlInputs[i].value.trim(),
-            createdAt:firebase.firestore.FieldValue.serverTimestamp()
-          });
-          published++;
-        }
-      } else {
-        // No files selected either - add with placeholder
-        await db.collection('gallery_images').add({
-          title, description:desc, imageUrl:'',
-          status:'approved', uploadedBy:'المديرة',
-          isPlaceholder:true,
-          createdAt:firebase.firestore.FieldValue.serverTimestamp()
-        });
-        published = 1;
-      }
-
-      m.className='form-msg msg-ok'; m.textContent=`✅ تم نشر ${published} صورة بنجاح في المعرض!`;
-      showToast(`تم نشر ${published} صورة في المعرض ✅`,'success');
-      document.getElementById('adminImgTitle').value=''; document.getElementById('adminImgDesc').value='';
-      document.getElementById('adminImgPreview').innerHTML=''; document.getElementById('adminImgUrlFields').innerHTML='';
-      adminImgFiles=[]; loadPublishedImages();
-      setTimeout(()=>m.textContent='',4000);
     });
-
-    function generatePlaceholderEmoji(i) {
-      const emojis=['🎨','🎪','📖','🎭','🌱','🏆','🎵','🎮','🏃','🌟'];
-      return emojis[i % emojis.length];
-    }
 
     document.getElementById('adminPublishVidBtn').addEventListener('click', async () => {
       const title=document.getElementById('adminVidTitle').value.trim();
