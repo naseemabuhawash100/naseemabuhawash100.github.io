@@ -32,12 +32,12 @@
 <body>
 <div class="box">
   <h2>🔧 إصلاح بيانات المستخدمين</h2>
-  <p class="sub">سجّلي دخول بحساب المديرة أولاً حتى يتم الإصلاح</p>
+  <p class="sub">سجّلي دخول بحساب المديرة حتى يتم الإصلاح</p>
 
   <div class="step">
     <strong>📋 التعليمات:</strong><br>
     أدخلي إيميل وكلمة مرور حساب المديرة<br>
-    ثم اضغطي "تسجيل الدخول والإصلاح"
+    ثم اضغطي الزر — سيتم إضافة بيانات المديرة والمعلمة تلقائياً
   </div>
 
   <div style="text-align:right;">
@@ -77,7 +77,8 @@
     const btn      = document.getElementById('fixBtn');
 
     if (!email || !password) {
-      addLog('⚠️ يرجى إدخال الإيميل وكلمة المرور', 'err'); return;
+      addLog('⚠️ يرجى إدخال الإيميل وكلمة المرور', 'err');
+      return;
     }
 
     btn.disabled = true;
@@ -85,14 +86,14 @@
     document.getElementById('log').innerHTML = '';
 
     try {
-      // ── 1. تسجيل الدخول ──
+      // 1. تسجيل الدخول
       addLog('🔐 جاري تسجيل الدخول...', 'info');
       await auth.signInWithEmailAndPassword(email, password);
       addLog('✅ تم تسجيل الدخول بنجاح', 'ok');
 
       btn.textContent = '⏳ جاري إضافة البيانات...';
 
-      // ── 2. إضافة بيانات المديرة ──
+      // 2. بيانات المديرة
       addLog('📝 إضافة بيانات المديرة...', 'info');
       await db.collection('users').doc('u3be3EV3DJgMwUXkrw5aQIZsMFQ2').set({
         name: 'مديرة الروضة',
@@ -105,7 +106,7 @@
       });
       addLog('✅ تم إضافة بيانات المديرة', 'ok');
 
-      // ── 3. إضافة بيانات المعلمة ──
+      // 3. بيانات المعلمة
       addLog('📝 إضافة بيانات المعلمة...', 'info');
       await db.collection('users').doc('UoqCnjnOh7aQyj29D0rpfw4jQWs2').set({
         name: 'معلمة الروضة',
@@ -119,8 +120,8 @@
       });
       addLog('✅ تم إضافة بيانات المعلمة', 'ok');
 
-      // ── 4. تحقق ──
-      addLog('🔍 جاري التحقق...', 'info');
+      // 4. تحقق
+      addLog('🔍 جاري التحقق من البيانات...', 'info');
       const [d1, d2] = await Promise.all([
         db.collection('users').doc('u3be3EV3DJgMwUXkrw5aQIZsMFQ2').get(),
         db.collection('users').doc('UoqCnjnOh7aQyj29D0rpfw4jQWs2').get()
@@ -131,7 +132,7 @@
         document.getElementById('log').insertAdjacentHTML('beforeend', `
           <div class="done">
             <h3>🎉 تم الإصلاح بنجاح!</h3>
-            <p>ارجعي الآن لصفحة الروضة وجربي تسجيل الدخول</p>
+            <p>ارجعي الآن لصفحة الروضة وجربي تسجيل الدخول بشكل طبيعي</p>
           </div>`);
         btn.textContent = '✅ اكتمل الإصلاح';
         btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
@@ -141,17 +142,17 @@
 
     } catch(e) {
       let msg = e.message;
-      if (e.code === 'auth/wrong-password')    msg = 'كلمة المرور غير صحيحة';
-      if (e.code === 'auth/user-not-found')    msg = 'الإيميل غير موجود في Firebase';
-      if (e.code === 'auth/invalid-email')     msg = 'صيغة الإيميل غير صحيحة';
-      if (e.code === 'permission-denied')      msg = 'لا يوجد صلاحية — تحققي من Firestore Rules';
+      if (e.code === 'auth/wrong-password')       msg = 'كلمة المرور غير صحيحة';
+      if (e.code === 'auth/user-not-found')       msg = 'الإيميل غير موجود في Firebase';
+      if (e.code === 'auth/invalid-email')        msg = 'صيغة الإيميل غير صحيحة';
+      if (e.code === 'auth/invalid-credential')   msg = 'الإيميل أو كلمة المرور غير صحيحة';
+      if (e.code === 'permission-denied')         msg = 'لا يوجد صلاحية — راجعي Firestore Rules';
       addLog('❌ خطأ: ' + msg, 'err');
       btn.disabled = false;
       btn.textContent = '🔄 إعادة المحاولة';
     }
   }
 
-  // Enter key
   document.addEventListener('keypress', e => {
     if (e.key === 'Enter') loginAndFix();
   });
