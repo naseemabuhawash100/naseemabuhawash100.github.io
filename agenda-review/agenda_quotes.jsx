@@ -418,7 +418,7 @@
     return "long";
   }
 
-  var done = 0, missing = [], small = [], tight = [], long = [];
+  var done = 0, missing = [], small = [], tight = [], tooLong = [];
   for (p = 0; p < abs.length; p++) {
     var tf = byPage[p];
     if (!tf) { missing.push(p + 1); continue; }
@@ -430,7 +430,7 @@
     var r = fit(tf, size0, lead0, auto0);
     if (r == "small") small.push(p + 1);
     else if (r == "tight") tight.push(p + 1);
-    else if (r == "long") long.push(p + 1);
+    else if (r == "long") tooLong.push(p + 1);
     done++;
   }
 
@@ -438,5 +438,5 @@
         (missing.length ? "\nما لقيت العبارة القديمة بالصفحات: " + missing.join(", ") : "") +
         (small.length ? "\nخط أصغر شوي بالصفحات: " + small.join(", ") : "") +
         (tight.length ? "\nخط أصغر وسطور أقرب بالصفحات: " + tight.join(", ") : "") +
-        (long.length ? "\n⚠ ما وسعت حتى بعد التصغير، راجعها يدوياً: " + long.join(", ") : ""));
+        (tooLong.length ? "\n⚠ ما وسعت حتى بعد التصغير، راجعها يدوياً: " + tooLong.join(", ") : ""));
 })();
