@@ -63,19 +63,30 @@ for s in (-1, 1):
     el('circle', layer, cx=W / 2 + s * 83, cy=y, r=1.4, fill=RED)
 layer.append(heart(W / 2, y, 4.4, fill=RED))
 
-# still life on the tablecloth
-place(board, 74, 518, 0.66, -4, 67.5, 475.5)
-place(sugar, 340, 512, 1.0, 6, 142.5, 527.5)
-place(cookie, 150, 560, 1.15, -14, 136, 440.5)
-place(star, 300, 566, 1.05, 12, 319, 34.5)
+# still life: items stand on one baseline, tall pieces frame the label, small ones sit centred below it
+BASE = 566
+def shadow(cx, w):
+    el('ellipse', layer, cx=cx, cy=BASE + 1, rx=w / 2, ry=3.2, fill='#3d0d14', opacity=0.22)
+for cx, w in ((70, 70), (W - 74, 74), (W / 2 - 24, 40), (W / 2 + 26, 32)):
+    shadow(cx, w)
+place(board, 70, BASE, 0.56, 9, 67.5, 585)        # anchors = bottom-centre of each artwork
+place(sugar, W - 74, BASE, 1.0, 0, 142.5, 579)
+place(cookie, W / 2 - 26, BASE, 1.4, 0, 136, 456)
+place(star, W / 2 + 28, BASE, 1.65, 0, 319, 46)
 
 # label on the cloth
-lx, ly, lw, lh = W / 2, 528, 132, 40
+lx, ly, lw, lh = W / 2, 494, 132, 40
 el('rect', layer, x=lx - lw / 2 + 1, y=ly - lh / 2 + 2, width=lw, height=lh, rx=5, fill='#5a1520', opacity=0.18)
 el('rect', layer, x=lx - lw / 2, y=ly - lh / 2, width=lw, height=lh, rx=5, fill=CREAM, stroke=DEEP, stroke_width=1.2)
 el('rect', layer, x=lx - lw / 2 + 4, y=ly - lh / 2 + 4, width=lw - 8, height=lh - 8, rx=3, fill='none',
    stroke=DEEP, stroke_width=0.5, stroke_dasharray='2.5 2')
 d, _ = text_path('RECIPE BOOK', 'PlayfairDisplay[wght].ttf', 12, lx, ly + 4.3, spacing=0.22)
 el('path', layer, d=d, fill=NAVY)
+
+# stitching around the whole cover; cream halo keeps it visible on both paper and gingham
+I, dash = 12, '6 3.5'
+for colour, sw in ((CREAM, 2.6), (DEEP, 1.2)):
+    el('rect', layer, x=I, y=I, width=W - 2 * I, height=H - 2 * I, rx=6, fill='none', stroke=colour,
+       stroke_width=sw, stroke_dasharray=dash, stroke_linecap='round')
 
 tree.write(OUT, encoding='UTF-8', xml_declaration=True)
